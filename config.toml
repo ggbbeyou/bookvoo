@@ -1,0 +1,21 @@
+[haoex]
+host="0.0.0.0:8080"
+
+
+
+
+[kline]
+api_host="0.0.0.0:8081"
+interval=["m1", "d1", "mn"]
+
+
+[kline.db]
+driver = "postgres" 
+dsn = "host=localhost port=5432 user=postgres password=postgres dbname=test sslmode=disable"
+show_sql = true
+
+[kline.redis]
+host = "127.0.0.1:6379"
+db = 0
+password = ""
+trade_log_subscribe_key="list:trade_log"
