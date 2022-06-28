@@ -1,0 +1,25 @@
+#depth table {
+    margin: 0px;
+}
+#depth table td, th {
+    padding: 1px 1px;
+    min-height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+}
+.layui-table td, .layui-table th  {
+    padding: 1px 1px;
+    font-size: 12px;
+    min-height: 20px;
+    line-height: 20px;
+}
+
+.market-area {
+    border: 1px dashed orange; 
+    border-radius: 5px;
+    padding: 20px 5px 0px 5px;
+}
+
+.action-order-area {
+    border: 1px dashed orange; 
+}

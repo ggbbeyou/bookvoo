@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -41,6 +42,7 @@ func Run(config string, r *gin.Engine) {
 func setupRouter(router *gin.Engine) {
 
 	router.LoadHTMLGlob("./template/default/*.html")
+	router.StaticFS("/statics", http.Dir("./template/default/statics"))
 
 	sendMsg = make(chan []byte, 100)
 
