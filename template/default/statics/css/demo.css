@@ -15,11 +15,15 @@
 }
 
 .market-area {
-    border: 1px dashed orange; 
-    border-radius: 5px;
+    border-bottom: 1px dashed orange; 
     padding: 20px 5px 0px 5px;
 }
 
 .action-order-area {
-    border: 1px dashed orange; 
+    border-right: 1px dashed orange; 
+    margin-top: 10px;
+}
+
+.action-ask-area {
+    border-right: 1px dashed orange; 
 }

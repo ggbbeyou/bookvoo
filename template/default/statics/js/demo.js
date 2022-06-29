@@ -86,8 +86,8 @@
 
         $(".opt").on("click", function () {
             var type = $(this).hasClass("sell") ? "ask" : "bid";
-            var price_type = $("select[name='price_type']").val();
-            var mtype = $("input[name='mtype']:checked").val();
+            var price_type = $("select[name='price_type_"+ type +"']").val();
+            var mtype = $("input[name='mtype_"+ type +"']:checked").val();
 
             $.ajax({
                 url: "/api/new_order",
@@ -102,13 +102,13 @@
 
                     if (price_type == "market") {
                         if (mtype == "q") {
-                            data.quantity = $("input[name='quantity']").val();
+                            data.quantity = $("input[name='quantity_"+ type +"']").val();
                         } else {
-                            data.amount = $("input[name='amount']").val();
+                            data.amount = $("input[name='amount_"+ type +"']").val();
                         }
                     } else {
-                        data.price = $("input[name='price']").val();
-                        data.quantity = $("input[name='quantity']").val();
+                        data.price = $("input[name='price_"+ type +"']").val();
+                        data.quantity = $("input[name='quantity_"+ type +"']").val();
                     }
 
                     console.log(data);
@@ -164,16 +164,17 @@
 
 
         form.on('select(price_type)', function (data) {
+            var tt = $(data.elem).attr("data");
             if (data.value == "limit") {
-                $(".item-price").show();
-                $(".item-quantity").show();
-                $(".item-amount").hide();
-                $(".item-market-type").hide();
-                $(".qty-tips").hide();
+                $(".item-price-"+tt).show();
+                $(".item-quantity-"+tt).show();
+                $(".item-amount-"+tt).hide();
+                $(".item-market-type-"+tt).hide();
+                $(".qty-tips-"+tt).hide();
             } else if (data.value == "market") {
-                $(".item-price").hide();
-                $(".item-market-type").show();
-                $(".qty-tips").show();
+                $(".item-price-"+tt).hide();
+                $(".item-market-type-"+tt).show();
+                $(".qty-tips-"+tt).show();
             }
             form.render('select');
         });

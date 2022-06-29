@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/yzimhao/haoex/market"
 	"github.com/yzimhao/haoex/tradecore"
@@ -16,6 +14,6 @@ func main() {
 
 	//pages
 	views.Run("./config.toml", router)
-	time.Sleep(time.Second * time.Duration(3))
+
 	router.Run(":8080")
 }
