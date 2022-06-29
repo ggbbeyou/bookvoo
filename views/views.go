@@ -181,12 +181,13 @@ func pushDepth() {
 
 func newOrder(c *gin.Context) {
 	type args struct {
-		OrderId   string `json:"order_id"`
-		OrderType string `json:"order_type"`
-		PriceType string `json:"price_type"`
-		Price     string `json:"price"`
-		Quantity  string `json:"quantity"`
-		Amount    string `json:"amount"`
+		OrderId    string    `json:"order_id"`
+		OrderType  string    `json:"order_type"`
+		PriceType  string    `json:"price_type"`
+		Price      string    `json:"price"`
+		Quantity   string    `json:"quantity"`
+		Amount     string    `json:"amount"`
+		CreateTime time.Time `json:"create_time"`
 	}
 
 	var param args
@@ -198,6 +199,7 @@ func newOrder(c *gin.Context) {
 	amount := string2decimal(param.Amount)
 	price := string2decimal(param.Price)
 	quantity := string2decimal(param.Quantity)
+	param.CreateTime = time.Now()
 
 	var pt trading_engine.PriceType
 	if param.PriceType == "market" {
