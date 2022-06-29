@@ -10,9 +10,7 @@
 </head>
 
 <script id="depth-ask-tpl" type="text/html">
-
-    <tr><th colspan="2" style="text-align:center;">委托</th></tr>
-    <tr><th width="40%">价格</th><th>数量</th></tr>
+    <tr><th width="40%">委托价格</th><th>委托数量</th></tr>
     
     {%#  layui.each(d, function(index, item){ %}
     <tr>
@@ -104,20 +102,17 @@
         <div class="layui-row market-area">
             <div class="layui-col-md8" id="kchart" style="height: 600px;"></div>
             <div class="layui-col-md4" id="depth" style="height: 600px;">
-                <div class="layui-row" style="height: 250px;">
+                <div class="layui-row" style="height: auto;">
                     <table class="layui-table depth-ask">
                         <tr>
-                            <th colspan="2" style="text-align:center;">委托</th>
-                        </tr>
-                        <tr>
-                            <th width="40%">价格</th>
-                            <th>数量</th>
+                            <th width="40%">委托价格</th>
+                            <th>委托数量</th>
                         </tr>
                         <tr></tr>
                     </table>
                 </div>
 
-                <div class="layui-row" style="background-color: #F6F6F6; height: 100px;">
+                <div class="layui-row latest-price-area">
                     <div style="text-align: center; color:red;">最新价 <span class="latest-price">-</span></div>
                 </div>
 

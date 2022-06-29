@@ -4,14 +4,22 @@
 #depth table td, th {
     padding: 1px 1px;
     min-height: 20px;
-    line-height: 20px;
-    font-size: 12px;
+    line-height: 22px;
+    font-size: 14px;
+    text-align: center;
 }
+
+
+#depth table th {
+    text-align: center;
+}
+
+
 .layui-table td, .layui-table th  {
     padding: 1px 1px;
-    font-size: 12px;
+    font-size: 14px;
     min-height: 20px;
-    line-height: 20px;
+    line-height: 22px;
 }
 
 .market-area {
@@ -26,4 +34,14 @@
 
 .action-ask-area {
     border-right: 1px dashed orange; 
+}
+
+.latest-price-area {
+    height: 40px;
+    line-height: 40px;
+    vertical-align: middle;
+}
+
+.trade-log th, td {
+    text-align: center;
 }
