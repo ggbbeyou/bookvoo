@@ -1,4 +1,4 @@
-module github.com/yzimhao/haoex
+module github.com/yzimhao/bookvoo
 
 go 1.18
 

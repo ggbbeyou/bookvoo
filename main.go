@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/yzimhao/haoex/market"
-	"github.com/yzimhao/haoex/tradecore"
-	"github.com/yzimhao/haoex/views"
+	"github.com/yzimhao/bookvoo/market"
+	"github.com/yzimhao/bookvoo/tradecore"
+	"github.com/yzimhao/bookvoo/views"
 )
 
 func main() {

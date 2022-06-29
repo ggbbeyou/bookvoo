@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yzimhao/haoex/tradecore"
-	"github.com/yzimhao/haoex/wss"
+	"github.com/yzimhao/bookvoo/tradecore"
+	"github.com/yzimhao/bookvoo/wss"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
