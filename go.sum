@@ -664,6 +664,8 @@ github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9de
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
+github.com/yzimhao/gowss v0.0.0-20220630095013-7efae8aca2e4 h1:NZXuSCbwBfL9Q+az3b3XhveCC9e6r8vc3/OKqdxXSEI=
+github.com/yzimhao/gowss v0.0.0-20220630095013-7efae8aca2e4/go.mod h1:eK7fbSSaHhwA1BHCWrHdbEgHzbXYcvqfH9ZakSwmFH0=
 github.com/yzimhao/kline v0.0.0-20220628034805-4990bb479a18 h1:QKunDskNHNiz0rtNR4fEozxBZVtyflocXDbYvdnylt4=
 github.com/yzimhao/kline v0.0.0-20220628034805-4990bb479a18/go.mod h1:7NG4AzQGuECH0G1y4G7WAGFFXH3TwkCYnVof9OTbJCI=
 github.com/yzimhao/utilgo v0.0.1 h1:vrkVLq20oTC8XYvuYodyAZ6gHkyhf7mfZj6NWgmSOmY=

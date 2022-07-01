@@ -8,6 +8,24 @@
             , form = layui.form
             , element = layui.element; //元素操作 等等...
 
+        var cur_symbol = "demo";
+
+        function rendertradelog(data) {
+            var logView = $(".trade-log .log"),
+                logTpl = $("#trade-log-tpl").html();
+        
+            data['TradeTime'] = formatTime(data.TradeTime);
+            laytpl(logTpl).render(data, function (html) {
+                if ($(".log-item").length > 10) {
+                    $(".log-item").last().remove();
+                }
+                logView.after(html);
+        
+                //remove myorder
+                $("tr[order-id='" + data.AskOrderId + "']").remove();
+                $("tr[order-id='" + data.BidOrderId + "']").remove();
+            });
+        }
 
         var socket = function () {
             if (window["WebSocket"]) {
@@ -20,12 +38,25 @@
                     }, 5e3);
                 };
 
+                 //订阅一些推送消息
+                conn.onopen = function(){
+                    var subs = {
+                        sub: [
+                            "depth."+cur_symbol,
+                            "kline.m1."+cur_symbol,
+                            "trade."+cur_symbol,
+                        ]
+                    };
+                    conn.send(JSON.stringify(subs));
+                };
+                
+
                 conn.onmessage = function (evt) {
                     var messages = evt.data.split('\n');
                     for (var i = 0; i < messages.length; i++) {
-                        var data = JSON.parse(messages[i]);
-                        if (data.tag == "depth") {
-                            var info = data.data;
+                        var msg = JSON.parse(messages[i]);
+                        if (msg.type == "depth."+cur_symbol) {
+                            var info = msg.body;
                             var askTpl = $("#depth-ask-tpl").html()
                                 , askView = $(".depth-ask")
                                 , bidTpl = $("#depth-bid-tpl").html()
@@ -39,28 +70,34 @@
                                 bidView.html(html);
                             });
 
-                        } else if (data.tag == "trade") {
-                            rendertradelog(data.data);
+                        } else if (msg.type == "trade."+cur_symbol) {
+                            rendertradelog(msg.body);
                             
-                        } else if (data.tag == "new_order") {
+                        } else if (msg.type == "new_order."+cur_symbol) {
                             var myorderView = $(".myorder"),
                                 myorderTpl = $("#myorder-tpl").html();
 
-                            data.data['create_time'] = formatTime(data.data.create_time);
-                            laytpl(myorderTpl).render(data.data, function (html) {
+                            msg.body['create_time'] = formatTime(msg.body.create_time);
+                            laytpl(myorderTpl).render(msg.body, function (html) {
                                 if ($(".order-item").length > 30) {
                                     $(".order-item").last().remove();
                                 }
                                 myorderView.after(html);
                             });
-                        } else if (data.tag == "latest_price") {
-                            $(".latest-price").html(data.data.latest_price);
+                        } else if (msg.type == "latest_price."+cur_symbol) {
+                            $(".latest-price").html(msg.body.latest_price);
+                        }else if(msg.type=="kline.m1."+cur_symbol){
+                            window.kLchart.updateData({
+                                timestamp: msg.body.open_at * 1000,
+                                open: parseFloat(msg.body.open),
+                                high: parseFloat(msg.body.high),
+                                low: parseFloat(msg.body.low),
+                                close: parseFloat(msg.body.close),
+                                volume: parseFloat(msg.body.volume),
+                            });
                         }
                     }
                 };
-
-                //订阅一些推送消息
-                // conn.send("ping");
 
             } else {
                 layer.msg("<b>Your browser does not support WebSockets.</b>");

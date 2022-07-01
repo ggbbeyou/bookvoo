@@ -11,7 +11,8 @@ import (
 	"time"
 
 	"github.com/yzimhao/bookvoo/tradecore"
-	"github.com/yzimhao/bookvoo/wss"
+	"github.com/yzimhao/gowss"
+	kline "github.com/yzimhao/kline/core"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
@@ -20,7 +21,7 @@ import (
 	"github.com/yzimhao/trading_engine"
 )
 
-var sendMsg chan []byte
+var socket *gowss.Hub
 var web *gin.Engine
 
 var recentTrade []interface{}
@@ -44,8 +45,6 @@ func setupRouter(router *gin.Engine) {
 	router.LoadHTMLGlob("./template/default/*.html")
 	router.StaticFS("/statics", http.Dir("./template/default/statics"))
 
-	sendMsg = make(chan []byte, 100)
-
 	go pushDepth()
 	go watchTradeLog()
 
@@ -61,24 +60,9 @@ func setupRouter(router *gin.Engine) {
 
 	//websocket
 	{
-		wss.HHub = wss.NewHub()
-		go wss.HHub.Run()
-		go func() {
-			for {
-				select {
-				case data := <-sendMsg:
-					wss.HHub.Send(data)
-				default:
-					time.Sleep(time.Duration(100) * time.Millisecond)
-				}
-			}
-		}()
-
-		router.GET("/ws", wss.ServeWs)
-		router.GET("/pong", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"message": "pong",
-			})
+		socket = gowss.NewHub()
+		router.GET("/ws", func(ctx *gin.Context) {
+			socket.ServeWs(ctx.Writer, ctx.Request)
 		})
 	}
 }
@@ -109,12 +93,11 @@ func trade_log(c *gin.Context) {
 }
 
 func sendMessage(tag string, data interface{}) {
-	msg := gin.H{
-		"tag":  tag,
-		"data": data,
+
+	socket.Broadcast <- gowss.MsgBody{
+		To:   tag,
+		Body: data,
 	}
-	msgByte, _ := json.Marshal(msg)
-	sendMsg <- []byte(msgByte)
 }
 
 func pubTradeLog(log trading_engine.TradeResult) {
@@ -127,6 +110,10 @@ func pubTradeLog(log trading_engine.TradeResult) {
 func watchTradeLog() {
 	for {
 		select {
+		case nk, ok := <-kline.ChNewKline:
+			if ok {
+				sendMessage(fmt.Sprintf("kline.%s.%s", nk.Period, nk.Symbol), nk)
+			}
 		case log, ok := <-tradecore.DemoPair.ChTradeResult:
 			if ok {
 				//
@@ -140,7 +127,7 @@ func watchTradeLog() {
 					"AskOrderId":    log.AskOrderId,
 					"BidOrderId":    log.BidOrderId,
 				}
-				sendMessage("trade", relog)
+				sendMessage("trade.demo", relog)
 
 				if len(recentTrade) >= 10 {
 					recentTrade = recentTrade[1:]
@@ -148,13 +135,13 @@ func watchTradeLog() {
 				recentTrade = append(recentTrade, relog)
 
 				//latest price
-				sendMessage("latest_price", gin.H{
+				sendMessage("latest_price.demo", gin.H{
 					"latest_price": tradecore.DemoPair.Price2String(log.TradePrice),
 				})
 
 			}
 		case cancelOrderId := <-tradecore.DemoPair.ChCancelResult:
-			sendMessage("cancel_order", gin.H{
+			sendMessage("cancel_order.demo", gin.H{
 				"OrderId": cancelOrderId,
 			})
 		default:
@@ -172,7 +159,7 @@ func pushDepth() {
 		ask := tradecore.DemoPair.GetAskDepth(10)
 		bid := tradecore.DemoPair.GetBidDepth(10)
 
-		sendMessage("depth", gin.H{
+		sendMessage("depth.demo", gin.H{
 			"ask": ask,
 			"bid": bid,
 		})
@@ -259,7 +246,7 @@ func newOrder(c *gin.Context) {
 		tradecore.DemoPair.ChNewOrder <- item
 	}
 
-	go sendMessage("new_order", param)
+	go sendMessage("new_order.demo", param)
 
 	c.JSON(200, gin.H{
 		"ok": true,
@@ -320,7 +307,7 @@ func cancelOrder(c *gin.Context) {
 		tradecore.DemoPair.CancelOrder(trading_engine.OrderSideBuy, param.OrderId)
 	}
 
-	go sendMessage("cancel_order", param)
+	go sendMessage("cancel_order.demo", param)
 
 	c.JSON(200, gin.H{
 		"ok": true,

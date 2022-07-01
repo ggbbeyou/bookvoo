@@ -6,12 +6,15 @@ replace github.com/yzimhao/trading_engine => ../trading_engine
 
 replace github.com/yzimhao/kline => ../kline
 
+replace github.com/yzimhao/gowss => ../gowss
+
 require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/shopspring/decimal v1.3.1
+	github.com/yzimhao/gowss v0.0.0-20220630095013-7efae8aca2e4
 	github.com/yzimhao/kline v0.0.0-20220628034805-4990bb479a18
 	github.com/yzimhao/trading_engine v0.0.3
 )

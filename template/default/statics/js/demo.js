@@ -31,15 +31,16 @@
             //     },
                 
             // ]);
+            window.Kdata = [];
             var loadKline = function(){
                 $.ajax({
                     url: "/api/v1/market/klines?symbol=demo&period=m1",
                     type: "GET",
                     dataType: "json",
                     success: function(d){
-                        var data = [];
+                        
                         for(var i=0; i<d.length; i++){
-                            data.push({
+                            Kdata.push({
                                 timestamp: d[i][0] * 1000,
                                 open: parseFloat(d[i][1]),
                                 high: parseFloat(d[i][2]),
@@ -49,20 +50,32 @@
                             });                            
                         }
 
-                        chart.applyNewData(data.reverse());
+                        chart.applyNewData(Kdata.reverse());
                     },
                 })
             };
 
             loadKline();
-            setInterval(() => {
-               loadKline(); 
-            }, 2e3);
-            window.chart = chart;
+            window.kLchart = chart;
         };
         kchart();
 
-
+        function rendertradelog(data) {
+            var logView = $(".trade-log .log"),
+                logTpl = $("#trade-log-tpl").html();
+        
+            data['TradeTime'] = formatTime(data.TradeTime);
+            laytpl(logTpl).render(data, function (html) {
+                if ($(".log-item").length > 10) {
+                    $(".log-item").last().remove();
+                }
+                logView.after(html);
+        
+                //remove myorder
+                $("tr[order-id='" + data.AskOrderId + "']").remove();
+                $("tr[order-id='" + data.BidOrderId + "']").remove();
+            });
+        }
 
 
 
@@ -201,22 +214,7 @@
         });
 
 
-        function rendertradelog(data) {
-            var logView = $(".trade-log .log"),
-                logTpl = $("#trade-log-tpl").html();
-
-            data['TradeTime'] = formatTime(data.TradeTime);
-            laytpl(logTpl).render(data, function (html) {
-                if ($(".log-item").length > 10) {
-                    $(".log-item").last().remove();
-                }
-                logView.after(html);
-
-                //remove myorder
-                $("tr[order-id='" + data.AskOrderId + "']").remove();
-                $("tr[order-id='" + data.BidOrderId + "']").remove();
-            });
-        }
+        
 
 
         
