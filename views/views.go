@@ -10,9 +10,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/spf13/viper"
 	"github.com/yzimhao/bookvoo/tradecore"
 	"github.com/yzimhao/gowss"
 	kline "github.com/yzimhao/kline/core"
+	"github.com/yzimhao/utilgo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
@@ -21,32 +23,35 @@ import (
 	"github.com/yzimhao/trading_engine"
 )
 
-var socket *gowss.Hub
-var web *gin.Engine
+var (
+	socket *gowss.Hub
 
-var recentTrade []interface{}
-var rdc *redis.Client
+	recentTrade []interface{}
+	rdc         *redis.Client
+	conf        *viper.Viper
+)
 
 func Run(config string, r *gin.Engine) {
+
+	conf = utilgo.ViperInit(config)
 
 	trading_engine.Debug = false
 	recentTrade = make([]interface{}, 0)
 
 	rdc = redis.NewClient(&redis.Options{
-		Addr:     ":6379",
-		DB:       0,
-		Password: "",
+		Addr:     conf.GetString("main.redis.host"),
+		DB:       conf.GetInt("main.redis.db"),
+		Password: conf.GetString("main.redis.password"),
 	})
 	setupRouter(r)
-}
-
-func setupRouter(router *gin.Engine) {
-
-	router.LoadHTMLGlob("./template/default/*.html")
-	router.StaticFS("/statics", http.Dir("./template/default/statics"))
 
 	go pushDepth()
 	go watchTradeLog()
+}
+
+func setupRouter(router *gin.Engine) {
+	router.LoadHTMLGlob("./template/default/*.html")
+	router.StaticFS("/statics", http.Dir("./template/default/statics"))
 
 	router.GET("/api/depth", depth)
 	router.GET("/api/trade_log", trade_log)
@@ -54,8 +59,10 @@ func setupRouter(router *gin.Engine) {
 	router.POST("/api/cancel_order", cancelOrder)
 	router.GET("/api/test_rand", testOrder)
 
-	router.GET("/demo", func(c *gin.Context) {
-		c.HTML(200, "demo.html", nil)
+	router.GET("/t/:symbol", func(c *gin.Context) {
+		c.HTML(200, "demo.html", gin.H{
+			"symbol": c.Param("symbol"),
+		})
 	})
 
 	//websocket

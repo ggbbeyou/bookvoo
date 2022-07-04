@@ -19,22 +19,10 @@
             chart.createTechnicalIndicator('MA', false, { id: 'candle_pane' });
             // Create sub technical indicator VOL
             chart.createTechnicalIndicator('VOL');
-            // Fill data
-            // chart.applyNewData([
-            //     {
-            //         close: 4976.16,
-            //         high: 4977.99,
-            //         low: 4970.12,
-            //         open: 4972.89,
-            //         timestamp: 1587660000000,
-            //         volume: 204,
-            //     },
-                
-            // ]);
             window.Kdata = [];
             var loadKline = function(){
                 $.ajax({
-                    url: "/api/v1/market/klines?symbol=demo&period=m1",
+                    url: "/api/v1/market/klines?symbol="+symbol+"&period=m1",
                     type: "GET",
                     dataType: "json",
                     success: function(d){
@@ -47,7 +35,7 @@
                                 low: parseFloat(d[i][3]),
                                 close: parseFloat(d[i][4]),
                                 volume: parseFloat(d[i][5]),
-                            });                            
+                            });
                         }
 
                         chart.applyNewData(Kdata.reverse());
@@ -106,6 +94,7 @@
                     var data = {
                         price_type: price_type,
                         order_type: type,
+                        "symbol": symbol,
                     };
 
                     if (price_type == "market") {
@@ -141,7 +130,7 @@
             me.attr("disabled", true);
 
             $.ajax({
-                url: "/api/test_rand?op_type=" + op_type,
+                url: "/api/test_rand?op_type=" + op_type + "&symbol="+symbol,
                 type: "get",
                 success: function (d) {
                     layer.msg("操作" + d.ok + " askLen:" + d.data.ask_len + " bidLen:" + d.data.bid_len);
@@ -159,6 +148,7 @@
                 dataType: "json",
                 contentType: "application/json",
                 data: JSON.stringify({
+                    "symbol": symbol,
                     order_id: me.parents("tr").attr("order-id")
                 }),
                 success: function (d) {
@@ -200,7 +190,7 @@
 
 
         $().ready(function(){
-            $.get("/api/trade_log", function (d) {
+            $.get("/api/trade_log?symbol="+symbol, function (d) {
                 if (d.ok) {
                     $(".latest-price").html(d.data.latest_price);
 

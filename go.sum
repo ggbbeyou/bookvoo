@@ -531,8 +531,8 @@ github.com/yzimhao/gowss v0.0.0-20220701071354-3e6000f6f377 h1:gx1VXw/F5YRW8IS+7
 github.com/yzimhao/gowss v0.0.0-20220701071354-3e6000f6f377/go.mod h1:eK7fbSSaHhwA1BHCWrHdbEgHzbXYcvqfH9ZakSwmFH0=
 github.com/yzimhao/kline v0.0.0-20220701071317-20fee0dcc479 h1:R9qBk1CYlNy1ssFcxV2AN95lvrWBH1RYi9OZ9nariMk=
 github.com/yzimhao/kline v0.0.0-20220701071317-20fee0dcc479/go.mod h1:7NG4AzQGuECH0G1y4G7WAGFFXH3TwkCYnVof9OTbJCI=
-github.com/yzimhao/trading_engine v0.0.4 h1:FrqpkENLJsyHyzFnqmquucL5keyP4Hm5Pzul+yKnQ9M=
-github.com/yzimhao/trading_engine v0.0.4/go.mod h1:fE6l9UtRjQOxdHDA0B0ZkwpCtpNEYFvKfcn1z9MgD70=
+github.com/yzimhao/trading_engine v0.0.3 h1:PnztkH3KMBeGoKK7hsLfiYT+v5IB5Mit9IInweR+46U=
+github.com/yzimhao/trading_engine v0.0.3/go.mod h1:BspSSbMtAbOpasd/oBuuyIML4yHmq8trxTjdS8upGbQ=
 github.com/yzimhao/utilgo v0.0.1 h1:vrkVLq20oTC8XYvuYodyAZ6gHkyhf7mfZj6NWgmSOmY=
 github.com/yzimhao/utilgo v0.0.1/go.mod h1:KwdCEGisy4yVmn1rJpwmKko8JHizquM2joN7qLGH3N0=
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=

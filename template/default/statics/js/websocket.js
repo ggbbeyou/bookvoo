@@ -8,7 +8,7 @@
             , form = layui.form
             , element = layui.element; //元素操作 等等...
 
-        var cur_symbol = "demo";
+        var cur_symbol = symbol;
 
         function rendertradelog(data) {
             var logView = $(".trade-log .log"),

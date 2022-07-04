@@ -1,6 +1,14 @@
 [main]
 host="0.0.0.0:8082"
 
+[main.redis]
+host = "127.0.0.1:6379"
+db = 0
+password = ""
+trade_log_subscribe_key="list:trade_log"
+
+
+
 
 
 
