@@ -53,12 +53,18 @@ func setupRouter(router *gin.Engine) {
 	router.LoadHTMLGlob("./template/default/*.html")
 	router.StaticFS("/statics", http.Dir("./template/default/statics"))
 
+	//迁移到别处
 	router.GET("/api/depth", depth)
 	router.GET("/api/trade_log", trade_log)
-	router.POST("/api/new_order", newOrder)
-	router.POST("/api/cancel_order", cancelOrder)
+
+	api := router.Group("/api/v1/order")
+
+	api.POST("/new", newOrder)
+	api.POST("/cancel", cancelOrder)
+
 	router.GET("/api/test_rand", testOrder)
 
+	//pages
 	router.GET("/t/:symbol", func(c *gin.Context) {
 		c.HTML(200, "demo.html", gin.H{
 			"symbol": c.Param("symbol"),
