@@ -56,13 +56,12 @@ func setupRouter(router *gin.Engine) {
 	//迁移到别处
 	router.GET("/api/depth", depth)
 	router.GET("/api/trade_log", trade_log)
+	router.GET("/api/test_rand", testOrder)
 
 	api := router.Group("/api/v1/order")
 
 	api.POST("/new", newOrder)
 	api.POST("/cancel", cancelOrder)
-
-	router.GET("/api/test_rand", testOrder)
 
 	//pages
 	router.GET("/t/:symbol", func(c *gin.Context) {

@@ -86,7 +86,7 @@
             var mtype = $("input[name='mtype_"+ type +"']:checked").val();
 
             $.ajax({
-                url: "/api/new_order",
+                url: "/api/v1/order/new",
                 type: "post",
                 dataType: "json",
                 contentType: "application/json",
@@ -143,7 +143,7 @@
         $("body").on("click", ".cancel", function () {
             var me = $(this);
             $.ajax({
-                url: "/api/cancel_order",
+                url: "/api/v1/order/cancel",
                 type: "post",
                 dataType: "json",
                 contentType: "application/json",

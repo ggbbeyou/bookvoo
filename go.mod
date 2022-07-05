@@ -4,8 +4,6 @@ go 1.18
 
 replace github.com/yzimhao/trading_engine => ../trading_engine
 
-replace github.com/yzimhao/kline => ../kline
-
 replace github.com/yzimhao/gowss => ../gowss
 
 require (

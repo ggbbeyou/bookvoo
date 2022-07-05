@@ -54,7 +54,7 @@ func start(config string) {
 	c := utilgo.ViperInit(config)
 	router := gin.Default()
 	go tradecore.Run(config, router)
-	go market.Run(config, router)
+	go market.RunWithGinRouter(config, router)
 
 	//pages
 	views.Run(config, router)
