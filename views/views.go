@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"github.com/yzimhao/bookvoo/tradecore"
+	"github.com/yzimhao/bookvoo/core/base"
 	"github.com/yzimhao/gowss"
 	kline "github.com/yzimhao/kline/core"
 	"github.com/yzimhao/utilgo"
@@ -85,8 +85,8 @@ func depth(c *gin.Context) {
 	if limitInt <= 0 || limitInt > 100 {
 		limitInt = 10
 	}
-	a := tradecore.DemoPair.GetAskDepth(limitInt)
-	b := tradecore.DemoPair.GetBidDepth(limitInt)
+	a := base.MatchingEngine["demo"].GetAskDepth(limitInt)
+	b := base.MatchingEngine["demo"].GetBidDepth(limitInt)
 
 	c.JSON(200, gin.H{
 		"ask": a,
@@ -98,7 +98,7 @@ func trade_log(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"ok": true,
 		"data": gin.H{
-			"latest_price": tradecore.DemoPair.Price2String(tradecore.DemoPair.LatestPrice()),
+			"latest_price": base.MatchingEngine["demo"].Price2String(base.MatchingEngine["demo"].LatestPrice()),
 			"trade_log":    recentTrade,
 		},
 	})
@@ -126,15 +126,15 @@ func watchTradeLog() {
 			if ok {
 				sendMessage(fmt.Sprintf("kline.%s.%s", nk.Period, nk.Symbol), nk)
 			}
-		case log, ok := <-tradecore.DemoPair.ChTradeResult:
+		case log, ok := <-base.MatchingEngine["demo"].ChTradeResult:
 			if ok {
 				//
 				pubTradeLog(log)
 
 				relog := gin.H{
-					"TradePrice":    tradecore.DemoPair.Price2String(log.TradePrice),
-					"TradeAmount":   tradecore.DemoPair.Price2String(log.TradeAmount),
-					"TradeQuantity": tradecore.DemoPair.Qty2String(log.TradeQuantity),
+					"TradePrice":    base.MatchingEngine["demo"].Price2String(log.TradePrice),
+					"TradeAmount":   base.MatchingEngine["demo"].Price2String(log.TradeAmount),
+					"TradeQuantity": base.MatchingEngine["demo"].Qty2String(log.TradeQuantity),
 					"TradeTime":     time.Unix(log.TradeTime/1e9, 0),
 					"AskOrderId":    log.AskOrderId,
 					"BidOrderId":    log.BidOrderId,
@@ -148,11 +148,11 @@ func watchTradeLog() {
 
 				//latest price
 				sendMessage("latest_price.demo", gin.H{
-					"latest_price": tradecore.DemoPair.Price2String(log.TradePrice),
+					"latest_price": base.MatchingEngine["demo"].Price2String(log.TradePrice),
 				})
 
 			}
-		case cancelOrderId := <-tradecore.DemoPair.ChCancelResult:
+		case cancelOrderId := <-base.MatchingEngine["demo"].ChCancelResult:
 			sendMessage("cancel_order.demo", gin.H{
 				"OrderId": cancelOrderId,
 			})
@@ -168,8 +168,8 @@ func pushDepth() {
 
 		time.Sleep(time.Duration(150) * time.Millisecond)
 
-		ask := tradecore.DemoPair.GetAskDepth(10)
-		bid := tradecore.DemoPair.GetBidDepth(10)
+		ask := base.MatchingEngine["demo"].GetAskDepth(10)
+		bid := base.MatchingEngine["demo"].GetBidDepth(10)
 
 		sendMessage("depth.demo", gin.H{
 			"ask": ask,
@@ -250,12 +250,12 @@ func newOrder(c *gin.Context) {
 	if strings.ToLower(param.OrderType) == "ask" {
 		param.OrderId = fmt.Sprintf("a-%s", orderId)
 		item := trading_engine.NewAskItem(pt, param.OrderId, string2decimal(param.Price), string2decimal(param.Quantity), string2decimal(param.Amount), time.Now().UnixNano())
-		tradecore.DemoPair.ChNewOrder <- item
+		base.MatchingEngine["demo"].ChNewOrder <- item
 
 	} else {
 		param.OrderId = fmt.Sprintf("b-%s", orderId)
 		item := trading_engine.NewBidItem(pt, param.OrderId, string2decimal(param.Price), string2decimal(param.Quantity), string2decimal(param.Amount), time.Now().UnixNano())
-		tradecore.DemoPair.ChNewOrder <- item
+		base.MatchingEngine["demo"].ChNewOrder <- item
 	}
 
 	go sendMessage("new_order.demo", param)
@@ -263,8 +263,8 @@ func newOrder(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"ok": true,
 		"data": gin.H{
-			"ask_len": tradecore.DemoPair.AskLen(),
-			"bid_len": tradecore.DemoPair.BidLen(),
+			"ask_len": base.MatchingEngine["demo"].AskLen(),
+			"bid_len": base.MatchingEngine["demo"].BidLen(),
 		},
 	})
 }
@@ -282,11 +282,11 @@ func testOrder(c *gin.Context) {
 			if op == "ask" {
 				orderId = fmt.Sprintf("a-%s", orderId)
 				item := trading_engine.NewAskLimitItem(orderId, randDecimal(20, 50), randDecimal(20, 100), time.Now().UnixNano())
-				tradecore.DemoPair.ChNewOrder <- item
+				base.MatchingEngine["demo"].ChNewOrder <- item
 			} else {
 				orderId = fmt.Sprintf("b-%s", orderId)
 				item := trading_engine.NewBidLimitItem(orderId, randDecimal(1, 20), randDecimal(20, 100), time.Now().UnixNano())
-				tradecore.DemoPair.ChNewOrder <- item
+				base.MatchingEngine["demo"].ChNewOrder <- item
 			}
 
 		}
@@ -295,8 +295,8 @@ func testOrder(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"ok": true,
 		"data": gin.H{
-			"ask_len": tradecore.DemoPair.AskLen(),
-			"bid_len": tradecore.DemoPair.BidLen(),
+			"ask_len": base.MatchingEngine["demo"].AskLen(),
+			"bid_len": base.MatchingEngine["demo"].BidLen(),
 		},
 	})
 }
@@ -314,9 +314,9 @@ func cancelOrder(c *gin.Context) {
 		return
 	}
 	if strings.HasPrefix(param.OrderId, "a-") {
-		tradecore.DemoPair.CancelOrder(trading_engine.OrderSideSell, param.OrderId)
+		base.MatchingEngine["demo"].CancelOrder(trading_engine.OrderSideSell, param.OrderId)
 	} else {
-		tradecore.DemoPair.CancelOrder(trading_engine.OrderSideBuy, param.OrderId)
+		base.MatchingEngine["demo"].CancelOrder(trading_engine.OrderSideBuy, param.OrderId)
 	}
 
 	go sendMessage("cancel_order.demo", param)

@@ -5,9 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	cli "github.com/urfave/cli/v2"
+	"github.com/yzimhao/bookvoo/core"
 	"github.com/yzimhao/bookvoo/market"
-	"github.com/yzimhao/bookvoo/tradecore"
+	"github.com/yzimhao/bookvoo/user"
 	"github.com/yzimhao/bookvoo/views"
+
 	"github.com/yzimhao/utilgo"
 	"github.com/yzimhao/utilgo/pack"
 )
@@ -53,9 +55,10 @@ func main() {
 func start(config string) {
 	c := utilgo.ViperInit(config)
 	router := gin.Default()
-	go tradecore.Run(config, router)
-	go market.RunWithGinRouter(config, router)
 
+	go core.Run(config, router)
+	go user.Run(config, router)
+	go market.RunWithGinRouter(config, router)
 	//pages
 	views.Run(config, router)
 
