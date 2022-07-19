@@ -68,3 +68,7 @@ func RunMatching() {
 	trade_symbol := "demo"
 	MatchingEngine[trade_symbol] = trading_engine.NewTradePair(trade_symbol, 2, 0)
 }
+
+func SetDbEngine(db *xorm.Engine) {
+	db_engine = db
+}

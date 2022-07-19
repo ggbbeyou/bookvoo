@@ -6,12 +6,25 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"xorm.io/xorm"
 )
 
 var (
 	db_engine *xorm.Engine
 )
+
+func SetDbEngine(db *xorm.Engine) {
+	db_engine = db
+
+	err := db_engine.Sync2(
+		new(UnfinishedOrder),
+	)
+	if err != nil {
+		logrus.Errorf("sync2: %s", err)
+	}
+
+}
 
 func order_id_by_side(side OrderSide) string {
 	if side == OrderSideAsk {

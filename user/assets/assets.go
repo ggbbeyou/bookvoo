@@ -35,7 +35,7 @@ const (
 	FreezeStatusDone FreezeStatus = 1
 )
 
-type AssetFreezeRecord struct {
+type assetFreezeRecord struct {
 	Id           int64        `xorm:"pk autoincr bigint"`
 	UserId       int64        `xorm:"bigint index notnull"`
 	SymbolId     int          `xorm:"index notnull"`

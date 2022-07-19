@@ -4,11 +4,16 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
 	"github.com/yzimhao/bookvoo/core"
 	"github.com/yzimhao/bookvoo/market"
 	"github.com/yzimhao/bookvoo/user"
 	"github.com/yzimhao/bookvoo/views"
+	"xorm.io/xorm"
+
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 
 	"github.com/yzimhao/utilgo"
 	"github.com/yzimhao/utilgo/pack"
@@ -55,6 +60,19 @@ func main() {
 func start(config string) {
 	c := utilgo.ViperInit(config)
 	router := gin.Default()
+
+	default_db := func() *xorm.Engine {
+		dsn := c.GetString("db.dsn")
+		driver := c.GetString("db.driver")
+		conn, err := xorm.NewEngine(driver, dsn)
+		if err != nil {
+			logrus.Panic(err)
+		}
+		return conn
+	}()
+
+	core.SetDbEngine(default_db)
+	user.SetDbEngine(default_db)
 
 	go core.Run(config, router)
 	go user.Run(config, router)
