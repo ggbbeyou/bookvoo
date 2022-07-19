@@ -10,8 +10,8 @@ import (
 func transfer(db *xorm.Session, from, to int64, symbol_id int, amount string, business_id, info string) (success bool, err error) {
 	db.Begin()
 	defer func() {
-		logrus.Error(err)
 		if err != nil {
+			logrus.Error(err)
 			db.Rollback()
 		} else {
 			db.Commit()
