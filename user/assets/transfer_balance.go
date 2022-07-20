@@ -7,16 +7,18 @@ import (
 	"xorm.io/xorm"
 )
 
-func transfer(db *xorm.Session, from, to int64, symbol_id int, amount string, business_id, info string) (success bool, err error) {
-	db.Begin()
-	defer func() {
-		if err != nil {
-			logrus.Error(err)
-			db.Rollback()
-		} else {
-			db.Commit()
-		}
-	}()
+func transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_id int, amount string, business_id, info string) (success bool, err error) {
+	if enable_transaction {
+		db.Begin()
+		defer func() {
+			if err != nil {
+				logrus.Error(err)
+				db.Rollback()
+			} else {
+				db.Commit()
+			}
+		}()
+	}
 
 	from_user := Assets{UserId: from, SymbolId: symbol_id}
 	has_from, err := db.Table(new(Assets)).Where("user_id=? and symbol_id=?", from, symbol_id).ForUpdate().Get(&from_user)
@@ -25,7 +27,7 @@ func transfer(db *xorm.Session, from, to int64, symbol_id int, amount string, bu
 	}
 	//非根账户检查余额
 	if from != ROOTUSERID {
-		if check_amount_lt_zero(from_user.Available) {
+		if check_number_lt_zero(from_user.Available) {
 			return false, fmt.Errorf("available balance less than zero")
 		}
 	}

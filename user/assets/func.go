@@ -40,12 +40,22 @@ func number_sub(s1, s2 string) string {
 	return ss1.Sub(ss2).String()
 }
 
-func check_amount_lt_zero(s string) bool {
+func check_number_lt_zero(s string) bool {
 	ss, _ := decimal.NewFromString(s)
 	if ss.Cmp(decimal.Zero) < 0 {
 		return true
+	} else {
+		return false
 	}
-	return false
+}
+
+func check_number_gt_zero(s string) bool {
+	ss, _ := decimal.NewFromString(s)
+	if ss.Cmp(decimal.Zero) > 0 {
+		return true
+	} else {
+		return false
+	}
 }
 
 func number(num string) string {
