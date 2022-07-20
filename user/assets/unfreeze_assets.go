@@ -54,7 +54,7 @@ func unfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, sy
 
 	//解冻资产为可用
 	assets := Assets{UserId: user_id, SymbolId: symbol_id}
-	_, err = db.Table(new(Assets)).Where("user_id=? and symbol_id=?", user_id, symbol_id).Get(&assets)
+	_, err = db.Table(new(Assets)).Where("user_id=? and symbol_id=?", user_id, symbol_id).ForUpdate().Get(&assets)
 	if err != nil {
 		return false, err
 	}
