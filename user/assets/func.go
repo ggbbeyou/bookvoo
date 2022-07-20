@@ -28,21 +28,27 @@ func SetDbEngine(db *xorm.Engine) {
 	}
 }
 
+func UserAssets(user_id int64, symbol_id int) Assets {
+	row := Assets{}
+	db_engine.Table(new(Assets)).Where("user_id=? and symbol_id=?", user_id, symbol_id).Get(&row)
+	return row
+}
+
+func d(s string) decimal.Decimal {
+	ss, _ := decimal.NewFromString(s)
+	return ss
+}
+
 func number_add(s1, s2 string) string {
-	ss1, _ := decimal.NewFromString(s1)
-	ss2, _ := decimal.NewFromString(s2)
-	return ss1.Add(ss2).String()
+	return d(s1).Add(d(s2)).String()
 }
 
 func number_sub(s1, s2 string) string {
-	ss1, _ := decimal.NewFromString(s1)
-	ss2, _ := decimal.NewFromString(s2)
-	return ss1.Sub(ss2).String()
+	return d(s1).Sub(d(s2)).String()
 }
 
 func check_number_lt_zero(s string) bool {
-	ss, _ := decimal.NewFromString(s)
-	if ss.Cmp(decimal.Zero) < 0 {
+	if d(s).Cmp(decimal.Zero) < 0 {
 		return true
 	} else {
 		return false
@@ -50,8 +56,7 @@ func check_number_lt_zero(s string) bool {
 }
 
 func check_number_gt_zero(s string) bool {
-	ss, _ := decimal.NewFromString(s)
-	if ss.Cmp(decimal.Zero) > 0 {
+	if d(s).Cmp(decimal.Zero) > 0 {
 		return true
 	} else {
 		return false
@@ -59,8 +64,7 @@ func check_number_gt_zero(s string) bool {
 }
 
 func check_number_eq_zero(s string) bool {
-	ss, _ := decimal.NewFromString(s)
-	if ss.Cmp(decimal.Zero) == 0 {
+	if d(s).Cmp(decimal.Zero) == 0 {
 		return true
 	} else {
 		return false
@@ -68,6 +72,5 @@ func check_number_eq_zero(s string) bool {
 }
 
 func number(num string) string {
-	ss, _ := decimal.NewFromString(num)
-	return ss.String()
+	return d(num).String()
 }
