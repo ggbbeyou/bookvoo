@@ -6,20 +6,22 @@ import (
 	"xorm.io/xorm"
 )
 
-func freezeAssets(db *xorm.Session, user_id int64, symbol_id int, freeze_amount, business_id, info string) (success bool, err error) {
+func freezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symbol_id int, freeze_amount, business_id, info string) (success bool, err error) {
 
 	if !check_number_gt_zero(freeze_amount) {
 		return false, fmt.Errorf("freeze amount should be gt zero")
 	}
 
-	db.Begin()
-	defer func() {
-		if err != nil {
-			db.Rollback()
-		} else {
-			db.Commit()
-		}
-	}()
+	if enable_transaction {
+		db.Begin()
+		defer func() {
+			if err != nil {
+				db.Rollback()
+			} else {
+				db.Commit()
+			}
+		}()
+	}
 
 	item := Assets{UserId: user_id, SymbolId: symbol_id}
 	_, err = db.Table(new(Assets)).Where("user_id=? and symbol_id=?", user_id, symbol_id).ForUpdate().Get(&item)
