@@ -58,6 +58,15 @@ func check_number_gt_zero(s string) bool {
 	}
 }
 
+func check_number_eq_zero(s string) bool {
+	ss, _ := decimal.NewFromString(s)
+	if ss.Cmp(decimal.Zero) == 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
 func number(num string) string {
 	ss, _ := decimal.NewFromString(num)
 	return ss.String()

@@ -42,7 +42,7 @@ func Test_main(t *testing.T) {
 	db := db_engine.NewSession()
 	defer db.Close()
 
-	Convey("充值", t, func() {
+	Convey("从根账户充值100", t, func() {
 		f, err := transfer(db, true, ROOTUSERID, 1, 1, "100", "r0001", "recharge")
 		So(err, ShouldBeNil)
 		So(f, ShouldBeTrue)
@@ -63,6 +63,32 @@ func Test_main(t *testing.T) {
 	Convey("冻结数量0的资产", t, func() {
 		f, err := freezeAssets(db, true, 1, 1, "0", "a003", "trade")
 		So(err, ShouldBeError, fmt.Errorf("freeze amount should be gt zero"))
+		So(f, ShouldBeFalse)
+	})
+
+	Convey("解冻业务订单号", t, func() {
+		f, err := unfreezeAssets(db, true, 1, 1, "a001", "10")
+		So(err, ShouldBeNil)
+		So(f, ShouldBeTrue)
+	})
+
+	Convey("解冻业务订单部分金额", t, func() {
+		freezeAssets(db, true, 1, 1, "10", "a005", "trade")
+		f, err := unfreezeAssets(db, true, 1, 1, "a005", "8")
+		So(err, ShouldBeNil)
+		So(f, ShouldBeTrue)
+	})
+
+	Convey("解冻超过业务订单金额的数量", t, func() {
+		freezeAssets(db, true, 1, 1, "10", "a006", "trade")
+		f, err := unfreezeAssets(db, true, 1, 1, "a006", "20")
+		So(err, ShouldBeError, fmt.Errorf("unfreeze amount must lt freeze amount"))
+		So(f, ShouldBeFalse)
+	})
+
+	Convey("解冻不存在的业务订单号", t, func() {
+		f, err := unfreezeAssets(db, true, 1, 1, "a004", "10")
+		So(err, ShouldBeError, fmt.Errorf("not found"))
 		So(f, ShouldBeFalse)
 	})
 }
