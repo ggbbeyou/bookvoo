@@ -49,19 +49,19 @@ func Test_main(t *testing.T) {
 	})
 
 	Convey("冻结用户资产", t, func() {
-		f, err := freezeAssets(db, 1, 1, "10", "a001", "trade")
+		f, err := freezeAssets(db, true, 1, 1, "10", "a001", "trade")
 		So(err, ShouldBeNil)
 		So(f, ShouldBeTrue)
 	})
 
 	Convey("冻结负数的资产", t, func() {
-		f, err := freezeAssets(db, 1, 1, "-10", "a002", "trade")
+		f, err := freezeAssets(db, true, 1, 1, "-10", "a002", "trade")
 		So(err, ShouldBeError, fmt.Errorf("freeze amount should be gt zero"))
 		So(f, ShouldBeFalse)
 	})
 
 	Convey("冻结数量0的资产", t, func() {
-		f, err := freezeAssets(db, 1, 1, "0", "a003", "trade")
+		f, err := freezeAssets(db, true, 1, 1, "0", "a003", "trade")
 		So(err, ShouldBeError, fmt.Errorf("freeze amount should be gt zero"))
 		So(f, ShouldBeFalse)
 	})
