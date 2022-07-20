@@ -35,10 +35,11 @@ func transfer(db *xorm.Session, from, to int64, symbol_id int, amount string, bu
 	if err != nil {
 		return false, err
 	}
-	from_before := from_user.Total
+	from_before := number(from_user.Total)
 	from_user.Total = number_sub(from_user.Total, amount)
 	from_user.Available = number_sub(from_user.Available, amount)
 	if !has_from {
+		from_user.Freeze = "0"
 		_, err = db.Table(new(Assets)).Insert(&from_user)
 	} else {
 		_, err = db.Table(new(Assets)).Where("user_id=? and symbol_id=?", from, symbol_id).Update(&from_user)
@@ -47,10 +48,11 @@ func transfer(db *xorm.Session, from, to int64, symbol_id int, amount string, bu
 		return false, err
 	}
 
-	to_before := to_user.Total
+	to_before := number(to_user.Total)
 	to_user.Total = number_add(to_user.Total, amount)
 	to_user.Available = number_add(to_user.Available, amount)
 	if !has_to {
+		to_user.Freeze = "0"
 		_, err = db.Table(new(Assets)).Insert(&to_user)
 	} else {
 		_, err = db.Table(new(Assets)).Where("user_id=? and symbol_id=?", to, symbol_id).Update(&to_user)
@@ -66,7 +68,7 @@ func transfer(db *xorm.Session, from, to int64, symbol_id int, amount string, bu
 		Before:   from_before,
 		Amount:   amount,
 		After:    from_user.Total,
-		Info:     fmt.Sprintf("%s %s", info, business_id),
+		Info:     fmt.Sprintf("id: %s to: %d info: %s", business_id, to, info),
 	}
 	_, err = db.Table(new(assetsLog)).Insert(&from_log)
 	if err != nil {
@@ -79,7 +81,7 @@ func transfer(db *xorm.Session, from, to int64, symbol_id int, amount string, bu
 		Before:   to_before,
 		Amount:   amount,
 		After:    to_user.Total,
-		Info:     fmt.Sprintf("%s %s", info, business_id),
+		Info:     fmt.Sprintf("id: %s from: %d info: %s", business_id, from, info),
 	}
 	_, err = db.Table(new(assetsLog)).Insert(&to_log)
 	if err != nil {

@@ -11,7 +11,7 @@ import (
 
 func init() {
 	driver := "mysql"
-	dsn := "root:root@tcp(localhost:3306)/test?charset=utf8&loc=Local"
+	dsn := "root:root@tcp(localhost:13306)/test?charset=utf8&loc=Local"
 
 	logrus.Infof("dsn: %s", dsn)
 
@@ -21,6 +21,13 @@ func init() {
 	}
 	db_engine = conn
 	db_engine.ShowSQL(true)
+
+	db_engine.DropTables(new(Assets), new(assetsLog))
+
+	db_engine.Sync2(
+		new(Assets),
+		new(assetsLog),
+	)
 }
 
 func Test_freezeAssets(t *testing.T) {

@@ -14,13 +14,13 @@ func freezeAssets(ses *xorm.Session, user_id int64, symbol_id int, freeze_amount
 	}
 
 	item.Available = number_sub(item.Available, freeze_amount)
-	item.Freezed = number_add(item.Freezed, freeze_amount)
+	item.Freeze = number_add(item.Freeze, freeze_amount)
 
 	if check_amount_lt_zero(item.Available) {
 		return false, fmt.Errorf("available balance less than zero")
 	}
 
-	if check_amount_lt_zero(item.Freezed) {
+	if check_amount_lt_zero(item.Freeze) {
 		return false, fmt.Errorf("freeze balance less than zero")
 	}
 

@@ -8,9 +8,9 @@ import (
 type Assets struct {
 	UserId     int64     `xorm:"pk notnull unique(userid_symbol)"`
 	SymbolId   int       `xorm:"notnull unique(userid_symbol)"`
-	Total      string    `xorm:"decimal(40,20) notnull"`
-	Freezed    string    `xorm:"decimal(40,20) notnull"`
-	Available  string    `xorm:"decimal(40,20) notnull"`
+	Total      string    `xorm:"decimal(40,20) default(0) notnull"`
+	Freeze     string    `xorm:"decimal(40,20) default(0) notnull"`
+	Available  string    `xorm:"decimal(40,20) default(0) notnull"`
 	CreateTime time.Time `xorm:"timestamp created"`
 	UpdateTime time.Time `xorm:"timestamp updated"`
 }
@@ -20,9 +20,9 @@ type assetsLog struct {
 	Id         int64     `xorm:"pk autoincr bigint"`
 	UserId     int64     `xorm:"index notnull"`
 	SymbolId   int       `xorm:"index notnull"`
-	Before     string    `xorm:"decimal(40,20)"` // 变动前
-	Amount     string    `xorm:"decimal(40,20)"` // 变动数
-	After      string    `xorm:"decimal(40,20)"` // 变动后
+	Before     string    `xorm:"decimal(40,20) default(0)"` // 变动前
+	Amount     string    `xorm:"decimal(40,20) default(0)"` // 变动数
+	After      string    `xorm:"decimal(40,20) default(0)"` // 变动后
 	Info       string    `xorm:"varchar(64)"`
 	CreateTime time.Time `xorm:"timestamp created"`
 }

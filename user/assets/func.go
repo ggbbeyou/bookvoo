@@ -101,3 +101,8 @@ func check_amount_lt_zero(s string) bool {
 	}
 	return false
 }
+
+func number(num string) string {
+	ss, _ := decimal.NewFromString(num)
+	return ss.String()
+}
