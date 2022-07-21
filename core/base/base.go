@@ -83,8 +83,15 @@ func GetTradePairBySymbol(symbol string) (*TradePairOpt, error) {
 func RunMatching() {
 	MatchingEngine = make(map[string]*trading_engine.TradePair)
 
-	trade_symbol := "demo"
-	MatchingEngine[trade_symbol] = trading_engine.NewTradePair(trade_symbol, 2, 0)
+	db := db_engine.NewSession()
+	defer db.Close()
+
+	rows := []TradePairOpt{}
+	db.Table(new(TradePairOpt)).Where("status=?", statusEnable).Find(&rows)
+
+	for _, row := range rows {
+		MatchingEngine[row.Symbol] = trading_engine.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
+	}
 }
 
 func SetDbEngine(db *xorm.Engine) {

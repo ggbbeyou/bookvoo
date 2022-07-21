@@ -12,11 +12,11 @@ type orderStatus int
 type orderSide int
 
 const (
-	orderSideAsk orderSide = 1
-	orderSideBid orderSide = 2
+	OrderSideAsk orderSide = 1
+	OrderSideBid orderSide = 2
 
-	orderTypeLimit  orderType = 1
-	orderTypeMarket orderType = 2
+	OrderTypeLimit  orderType = 1
+	OrderTypeMarket orderType = 2
 
 	orderStatusNew  orderStatus = 0
 	orderStatusDone orderStatus = 1
@@ -39,7 +39,7 @@ type TradeOrder struct {
 	TradeAmount   string      `xorm:"decimal(40,20) notnull default(0)"`
 	TotalAmount   string      `xorm:"decimal(40,20) notnull default(0)"` //包含手续费
 	Status        orderStatus `xorm:"tinyint(1)"`
-	CreateTime    time.Time   `xorm:"timestamp created"`
+	CreateTime    int64       `xorm:"bigint"`
 	UpdateTime    time.Time   `xorm:"timestamp updated"`
 }
 
@@ -66,6 +66,7 @@ func (to *TradeOrder) Save(db *xorm.Session) error {
 		}
 	}
 
+	to.CreateTime = time.Now().UnixNano()
 	_, err = db.Table(to).Insert(to)
 	if err != nil {
 		return err

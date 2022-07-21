@@ -12,8 +12,8 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/yzimhao/bookvoo/core/base"
+	"github.com/yzimhao/bookvoo/user/orders"
 	"github.com/yzimhao/gowss"
-	kline "github.com/yzimhao/kline/core"
 	"github.com/yzimhao/utilgo"
 
 	"github.com/gin-gonic/gin"
@@ -85,8 +85,8 @@ func depth(c *gin.Context) {
 	if limitInt <= 0 || limitInt > 100 {
 		limitInt = 10
 	}
-	a := base.MatchingEngine["demo"].GetAskDepth(limitInt)
-	b := base.MatchingEngine["demo"].GetBidDepth(limitInt)
+	a := base.MatchingEngine["ethusd"].GetAskDepth(limitInt)
+	b := base.MatchingEngine["ethusd"].GetBidDepth(limitInt)
 
 	c.JSON(200, gin.H{
 		"ask": a,
@@ -98,7 +98,7 @@ func trade_log(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"ok": true,
 		"data": gin.H{
-			"latest_price": base.MatchingEngine["demo"].Price2String(base.MatchingEngine["demo"].LatestPrice()),
+			"latest_price": base.MatchingEngine["ethusd"].Price2String(base.MatchingEngine["ethusd"].LatestPrice()),
 			"trade_log":    recentTrade,
 		},
 	})
@@ -121,25 +121,27 @@ func pubTradeLog(log trading_engine.TradeResult) {
 
 func watchTradeLog() {
 	for {
+
+		time.Sleep(time.Second * time.Duration(3))
 		select {
-		case nk, ok := <-kline.ChNewKline:
-			if ok {
-				sendMessage(fmt.Sprintf("kline.%s.%s", nk.Period, nk.Symbol), nk)
-			}
-		case log, ok := <-base.MatchingEngine["demo"].ChTradeResult:
+		// case nk, ok := <-kline.ChNewKline:
+		// 	if ok {
+		// 		sendMessage(fmt.Sprintf("kline.%s.%s", nk.Period, nk.Symbol), nk)
+		// 	}
+		case log, ok := <-base.MatchingEngine["ethusd"].ChTradeResult:
 			if ok {
 				//
 				pubTradeLog(log)
 
 				relog := gin.H{
-					"TradePrice":    base.MatchingEngine["demo"].Price2String(log.TradePrice),
-					"TradeAmount":   base.MatchingEngine["demo"].Price2String(log.TradeAmount),
-					"TradeQuantity": base.MatchingEngine["demo"].Qty2String(log.TradeQuantity),
+					"TradePrice":    base.MatchingEngine["ethusd"].Price2String(log.TradePrice),
+					"TradeAmount":   base.MatchingEngine["ethusd"].Price2String(log.TradeAmount),
+					"TradeQuantity": base.MatchingEngine["ethusd"].Qty2String(log.TradeQuantity),
 					"TradeTime":     time.Unix(log.TradeTime/1e9, 0),
 					"AskOrderId":    log.AskOrderId,
 					"BidOrderId":    log.BidOrderId,
 				}
-				sendMessage("trade.demo", relog)
+				sendMessage("trade.ethusd", relog)
 
 				if len(recentTrade) >= 10 {
 					recentTrade = recentTrade[1:]
@@ -147,13 +149,13 @@ func watchTradeLog() {
 				recentTrade = append(recentTrade, relog)
 
 				//latest price
-				sendMessage("latest_price.demo", gin.H{
-					"latest_price": base.MatchingEngine["demo"].Price2String(log.TradePrice),
+				sendMessage("latest_price.ethusd", gin.H{
+					"latest_price": base.MatchingEngine["ethusd"].Price2String(log.TradePrice),
 				})
 
 			}
-		case cancelOrderId := <-base.MatchingEngine["demo"].ChCancelResult:
-			sendMessage("cancel_order.demo", gin.H{
+		case cancelOrderId := <-base.MatchingEngine["ethusd"].ChCancelResult:
+			sendMessage("cancel_order.ethusd", gin.H{
 				"OrderId": cancelOrderId,
 			})
 		default:
@@ -168,10 +170,10 @@ func pushDepth() {
 
 		time.Sleep(time.Duration(150) * time.Millisecond)
 
-		ask := base.MatchingEngine["demo"].GetAskDepth(10)
-		bid := base.MatchingEngine["demo"].GetBidDepth(10)
+		ask := base.MatchingEngine["ethusd"].GetAskDepth(10)
+		bid := base.MatchingEngine["ethusd"].GetBidDepth(10)
 
-		sendMessage("depth.demo", gin.H{
+		sendMessage("depth.ethusd", gin.H{
 			"ask": ask,
 			"bid": bid,
 		})
@@ -179,6 +181,8 @@ func pushDepth() {
 }
 
 func newOrder(c *gin.Context) {
+	symbol := "ethusd"
+
 	type args struct {
 		OrderId    string    `json:"order_id"`
 		OrderType  string    `json:"order_type"`
@@ -200,12 +204,12 @@ func newOrder(c *gin.Context) {
 	quantity := string2decimal(param.Quantity)
 	param.CreateTime = time.Now()
 
-	var pt trading_engine.PriceType
+	// var pt trading_engine.PriceType
 	if param.PriceType == "market" {
 		param.Price = "0"
-		pt = trading_engine.PriceTypeMarket
+		// pt = trading_engine.PriceTypeMarket
 		if param.Amount != "" {
-			pt = trading_engine.PriceTypeMarketAmount
+			// pt = trading_engine.PriceTypeMarketAmount
 			//市价按成交金额卖出时，默认持有该资产1000个
 			param.Quantity = "100"
 			if amount.Cmp(decimal.NewFromFloat(100000000)) > 0 || amount.Cmp(decimal.Zero) <= 0 {
@@ -217,7 +221,7 @@ func newOrder(c *gin.Context) {
 			}
 
 		} else if param.Quantity != "" {
-			pt = trading_engine.PriceTypeMarketQuantity
+			// pt = trading_engine.PriceTypeMarketQuantity
 			//市价按数量买入资产时，需要用户账户所有可用资产数量，测试默认100块
 			param.Amount = "100"
 			if quantity.Cmp(decimal.NewFromFloat(100000000)) > 0 || quantity.Cmp(decimal.Zero) <= 0 {
@@ -229,7 +233,7 @@ func newOrder(c *gin.Context) {
 			}
 		}
 	} else {
-		pt = trading_engine.PriceTypeLimit
+		// pt = trading_engine.PriceTypeLimit
 		param.Amount = "0"
 		if price.Cmp(decimal.NewFromFloat(100000000)) > 0 || price.Cmp(decimal.Zero) < 0 {
 			c.JSON(200, gin.H{
@@ -248,24 +252,37 @@ func newOrder(c *gin.Context) {
 	}
 
 	if strings.ToLower(param.OrderType) == "ask" {
-		param.OrderId = fmt.Sprintf("a-%s", orderId)
-        orders.
-		item := trading_engine.NewAskItem(pt, param.OrderId, string2decimal(param.Price), string2decimal(param.Quantity), string2decimal(param.Amount), time.Now().UnixNano())
-		base.MatchingEngine["demo"].ChNewOrder <- item
+		order, err := orders.NewLimitOrder(1, symbol, orders.OrderSideAsk, param.Price, param.Quantity)
+		if err != nil {
+			c.JSON(200, gin.H{
+				"ok":    false,
+				"error": err.Error(),
+			})
+			return
+		}
+		item := trading_engine.NewAskLimitItem(order.OrderId, string2decimal(order.Price), string2decimal(order.Quantity), order.CreateTime)
+		base.MatchingEngine[symbol].ChNewOrder <- item
 
 	} else {
-		param.OrderId = fmt.Sprintf("b-%s", orderId)
-		item := trading_engine.NewBidItem(pt, param.OrderId, string2decimal(param.Price), string2decimal(param.Quantity), string2decimal(param.Amount), time.Now().UnixNano())
-		base.MatchingEngine["demo"].ChNewOrder <- item
+		order, err := orders.NewLimitOrder(1, symbol, orders.OrderSideBid, param.Price, param.Quantity)
+		if err != nil {
+			c.JSON(200, gin.H{
+				"ok":    false,
+				"error": err.Error(),
+			})
+			return
+		}
+		item := trading_engine.NewAskLimitItem(order.OrderId, string2decimal(order.Price), string2decimal(order.Quantity), order.CreateTime)
+		base.MatchingEngine[symbol].ChNewOrder <- item
 	}
 
-	go sendMessage("new_order.demo", param)
+	go sendMessage(fmt.Sprintf("new_order.%s", symbol), param)
 
 	c.JSON(200, gin.H{
 		"ok": true,
 		"data": gin.H{
-			"ask_len": base.MatchingEngine["demo"].AskLen(),
-			"bid_len": base.MatchingEngine["demo"].BidLen(),
+			"ask_len": base.MatchingEngine[symbol].AskLen(),
+			"bid_len": base.MatchingEngine[symbol].BidLen(),
 		},
 	})
 }
@@ -283,11 +300,11 @@ func testOrder(c *gin.Context) {
 			if op == "ask" {
 				orderId = fmt.Sprintf("a-%s", orderId)
 				item := trading_engine.NewAskLimitItem(orderId, randDecimal(20, 50), randDecimal(20, 100), time.Now().UnixNano())
-				base.MatchingEngine["demo"].ChNewOrder <- item
+				base.MatchingEngine["ethusd"].ChNewOrder <- item
 			} else {
 				orderId = fmt.Sprintf("b-%s", orderId)
 				item := trading_engine.NewBidLimitItem(orderId, randDecimal(1, 20), randDecimal(20, 100), time.Now().UnixNano())
-				base.MatchingEngine["demo"].ChNewOrder <- item
+				base.MatchingEngine["ethusd"].ChNewOrder <- item
 			}
 
 		}
@@ -296,8 +313,8 @@ func testOrder(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"ok": true,
 		"data": gin.H{
-			"ask_len": base.MatchingEngine["demo"].AskLen(),
-			"bid_len": base.MatchingEngine["demo"].BidLen(),
+			"ask_len": base.MatchingEngine["ethusd"].AskLen(),
+			"bid_len": base.MatchingEngine["ethusd"].BidLen(),
 		},
 	})
 }
@@ -315,12 +332,12 @@ func cancelOrder(c *gin.Context) {
 		return
 	}
 	if strings.HasPrefix(param.OrderId, "a-") {
-		base.MatchingEngine["demo"].CancelOrder(trading_engine.OrderSideSell, param.OrderId)
+		base.MatchingEngine["ethusd"].CancelOrder(trading_engine.OrderSideSell, param.OrderId)
 	} else {
-		base.MatchingEngine["demo"].CancelOrder(trading_engine.OrderSideBuy, param.OrderId)
+		base.MatchingEngine["ethusd"].CancelOrder(trading_engine.OrderSideBuy, param.OrderId)
 	}
 
-	go sendMessage("cancel_order.demo", param)
+	go sendMessage("cancel_order.ethusd", param)
 
 	c.JSON(200, gin.H{
 		"ok": true,

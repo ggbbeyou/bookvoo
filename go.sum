@@ -531,8 +531,6 @@ github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9de
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yzimhao/gowss v0.0.0-20220701071354-3e6000f6f377 h1:gx1VXw/F5YRW8IS+7losU1+eah5JvyVzpKWQm4DPVAw=
 github.com/yzimhao/gowss v0.0.0-20220701071354-3e6000f6f377/go.mod h1:eK7fbSSaHhwA1BHCWrHdbEgHzbXYcvqfH9ZakSwmFH0=
-github.com/yzimhao/kline v0.0.0-20220701071317-20fee0dcc479 h1:R9qBk1CYlNy1ssFcxV2AN95lvrWBH1RYi9OZ9nariMk=
-github.com/yzimhao/kline v0.0.0-20220701071317-20fee0dcc479/go.mod h1:7NG4AzQGuECH0G1y4G7WAGFFXH3TwkCYnVof9OTbJCI=
 github.com/yzimhao/trading_engine v0.0.3 h1:PnztkH3KMBeGoKK7hsLfiYT+v5IB5Mit9IInweR+46U=
 github.com/yzimhao/trading_engine v0.0.3/go.mod h1:BspSSbMtAbOpasd/oBuuyIML4yHmq8trxTjdS8upGbQ=
 github.com/yzimhao/utilgo v0.0.1 h1:vrkVLq20oTC8XYvuYodyAZ6gHkyhf7mfZj6NWgmSOmY=

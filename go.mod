@@ -14,7 +14,6 @@ require (
 	github.com/spf13/viper v1.12.0
 	github.com/urfave/cli/v2 v2.10.3
 	github.com/yzimhao/gowss v0.0.0-20220701071354-3e6000f6f377
-	github.com/yzimhao/kline v0.0.0-20220701071317-20fee0dcc479
 	github.com/yzimhao/trading_engine v0.0.3
 	github.com/yzimhao/utilgo v0.0.1
 	xorm.io/xorm v1.3.1

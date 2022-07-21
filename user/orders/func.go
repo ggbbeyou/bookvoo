@@ -27,7 +27,7 @@ func SetDbEngine(db *xorm.Engine) {
 }
 
 func order_id_by_side(side orderSide) string {
-	if side == orderSideAsk {
+	if side == OrderSideAsk {
 		return make_order_id("A")
 	} else {
 		return make_order_id("B")
