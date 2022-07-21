@@ -70,7 +70,13 @@ func GetTradePairBySymbol(symbol string) (*TradePairOpt, error) {
 	defer db.Close()
 
 	item := TradePairOpt{}
-	_, err := db.Table(new(TradePairOpt)).Where("symbol=?", symbol).Get(&item)
+	has, err := db.Table(new(TradePairOpt)).Where("symbol=?", symbol).Get(&item)
+	if err != nil {
+		return nil, err
+	}
+	if !has {
+		return nil, err
+	}
 	return &item, err
 }
 

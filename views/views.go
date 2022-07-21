@@ -249,6 +249,7 @@ func newOrder(c *gin.Context) {
 
 	if strings.ToLower(param.OrderType) == "ask" {
 		param.OrderId = fmt.Sprintf("a-%s", orderId)
+        orders.
 		item := trading_engine.NewAskItem(pt, param.OrderId, string2decimal(param.Price), string2decimal(param.Quantity), string2decimal(param.Amount), time.Now().UnixNano())
 		base.MatchingEngine["demo"].ChNewOrder <- item
 

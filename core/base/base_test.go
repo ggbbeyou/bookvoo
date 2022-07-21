@@ -33,35 +33,39 @@ func Test_main(t *testing.T) {
 	db := db_engine.NewSession()
 	defer db.Close()
 
-	usd, eth := int64(0), int64(0)
+	usd_id, eth_id := 0, 0
 	Convey("添加测试用资产symbol信息", t, func() {
-		usd_id, err := db.Insert(&SymbolInfo{
+		usdInfo := SymbolInfo{
 			Symbol:       "usd",
 			Name:         "美元",
 			MinPrecision: 8,
 			ShowPrec:     2,
 			Standard:     true,
 			Status:       statusEnable,
-		})
+		}
+		_, err := db.Insert(&usdInfo)
 		So(err, ShouldBeNil)
-		usd = usd_id
+		usd_id = usdInfo.Id
 
-		eth, err = db.Insert(&SymbolInfo{
+		ethInfo := SymbolInfo{
 			Symbol:       "eth",
 			Name:         "以太坊",
 			MinPrecision: 18,
 			ShowPrec:     8,
 			Status:       statusEnable,
-		})
+		}
+		_, err = db.Insert(&ethInfo)
+
+		eth_id = ethInfo.Id
 		So(err, ShouldBeNil)
 	})
 
 	Convey("添加测试用交易对信息", t, func() {
-		_, err := db.Insert(&TradePairOpt{
+		id, err := db.Insert(&TradePairOpt{
 			Symbol:         "ethusd",
 			Name:           "ETHUSD",
-			TradeSymbolId:  int(eth),
-			BaseSymbolId:   int(usd),
+			TradeSymbolId:  int(eth_id),
+			BaseSymbolId:   int(usd_id),
 			PricePrec:      2,
 			QtyPrec:        4,
 			AllowMinQty:    "0.0001",
@@ -72,5 +76,6 @@ func Test_main(t *testing.T) {
 			Status:         statusEnable,
 		})
 		So(err, ShouldBeNil)
+		logrus.Info(id)
 	})
 }

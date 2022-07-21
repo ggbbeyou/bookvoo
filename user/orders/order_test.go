@@ -12,6 +12,10 @@ import (
 	"xorm.io/xorm"
 )
 
+var (
+	test_symbol = "ethusd"
+)
+
 func init() {
 	driver := "mysql"
 	dsn := "root:root@tcp(localhost:13306)/test?charset=utf8&loc=Local"
@@ -25,8 +29,10 @@ func init() {
 	db_engine = conn
 	db_engine.ShowSQL(true)
 
+	table := TradeOrder{TradeSymbol: test_symbol}
 	db_engine.DropTables(
 		new(UnfinishedOrder),
+		table,
 	)
 
 	SetDbEngine(db_engine)
@@ -38,13 +44,13 @@ func Test_main(t *testing.T) {
 	defer db.Close()
 
 	Convey("限价买单", t, func() {
-		order, err := trade_limit_order(1, "ethusd", orderSideBid, "1.00", "2", "0.001")
+		order, err := limit_order(1, "ethusd", orderSideBid, "1.00", "2")
 		So(err, ShouldBeNil)
 		So(order, ShouldStartWith, "B")
 	})
 
 	Convey("限价卖单", t, func() {
-		order, err := trade_limit_order(1, "ethusd", orderSideAsk, "1.00", "2", "0.001")
+		order, err := limit_order(1, "ethusd", orderSideAsk, "1.00", "2")
 		So(err, ShouldBeNil)
 		So(order, ShouldStartWith, "A")
 	})
