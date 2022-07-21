@@ -38,9 +38,14 @@ func Test_main(t *testing.T) {
 	defer db.Close()
 
 	Convey("限价买单", t, func() {
-
 		order, err := trade_limit_order(1, "ethusd", orderSideBid, "1.00", "2", "0.001")
 		So(err, ShouldBeNil)
 		So(order, ShouldStartWith, "B")
+	})
+
+	Convey("限价卖单", t, func() {
+		order, err := trade_limit_order(1, "ethusd", orderSideAsk, "1.00", "2", "0.001")
+		So(err, ShouldBeNil)
+		So(order, ShouldStartWith, "A")
 	})
 }

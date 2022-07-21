@@ -31,8 +31,11 @@ func trade_limit_order(user_id int64, trade_symbol string, side orderSide, price
 	db := db_engine.NewSession()
 	defer db.Close()
 
-	//todo 开启事务
-	db.Begin()
+	err = db.Begin()
+	if err != nil {
+		return "", err
+	}
+
 	defer func() {
 		if err != nil {
 			db.Rollback()
@@ -43,11 +46,15 @@ func trade_limit_order(user_id int64, trade_symbol string, side orderSide, price
 
 	//冻结相应资产
 	if neworder.OrderSide == orderSideAsk {
-
+		//卖单部分fee在订单成交后结算的部分收取
 		_, err = assets.FreezeAssets(db, false, user_id, tp.TradeSymbolId, qty, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return "", err
 		}
+		neworder.Fee = "0"
+		neworder.TradeAmount = "0"
+		neworder.TotalAmount = "0"
+
 	} else if neworder.OrderSide == orderSideBid {
 		//买单的冻结金额
 		amount := core.D(price).Mul(core.D(qty))

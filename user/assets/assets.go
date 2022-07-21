@@ -20,7 +20,8 @@ const (
 
 // 用户资产余额表
 type Assets struct {
-	UserId     int64     `xorm:"pk notnull unique(userid_symbol)"`
+	Id         int64     `xorm:"pk autoincr bigint"`
+	UserId     int64     `xorm:"notnull unique(userid_symbol)"`
 	SymbolId   int       `xorm:"notnull unique(userid_symbol)"`
 	Total      string    `xorm:"decimal(40,20) default(0) notnull"`
 	Freeze     string    `xorm:"decimal(40,20) default(0) notnull"`

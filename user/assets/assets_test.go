@@ -43,6 +43,11 @@ func Test_main(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(f, ShouldBeTrue)
 
+		//symbol_id=2也充值100
+		f, err = transfer(db, true, ROOTUSERID, 1, 2, "100", "r0002", Behavior_Recharge)
+		So(err, ShouldBeNil)
+		So(f, ShouldBeTrue)
+
 		user1 := UserAssets(1, 1)
 		So(d(user1.Total), ShouldEqual, d("100"))
 		So(d(user1.Available), ShouldEqual, d("100"))
