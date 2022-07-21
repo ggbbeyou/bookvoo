@@ -6,11 +6,11 @@ import (
 	"github.com/yzimhao/bookvoo/user/assets"
 )
 
-func NewLimitOrder(user_id int64, trade_symbol string, side orderSide, price, qty string) (order *TradeOrder, err error) {
+func NewLimitOrder(user_id int64, trade_symbol string, side OrderSide, price, qty string) (order *TradeOrder, err error) {
 	return limit_order(user_id, trade_symbol, side, price, qty)
 }
 
-func limit_order(user_id int64, trade_symbol string, side orderSide, price, qty string) (order *TradeOrder, err error) {
+func limit_order(user_id int64, trade_symbol string, side OrderSide, price, qty string) (order *TradeOrder, err error) {
 	tp, err := base.GetTradePairBySymbol(trade_symbol)
 	if err != nil {
 		return nil, err

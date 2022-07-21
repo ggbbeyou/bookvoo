@@ -142,22 +142,6 @@ func pushDepth() {
 func newOrder(c *gin.Context) {
 	symbol := "ethusd"
 
-	type args struct {
-		OrderId    string    `json:"order_id"`
-		OrderType  string    `json:"order_type"`
-		PriceType  string    `json:"price_type"`
-		Price      string    `json:"price"`
-		Quantity   string    `json:"quantity"`
-		Amount     string    `json:"amount"`
-		CreateTime time.Time `json:"create_time"`
-	}
-
-	var param args
-	c.BindJSON(&param)
-
-	orderId := uuid.NewString()
-	param.OrderId = orderId
-
 	amount := string2decimal(param.Amount)
 	price := string2decimal(param.Price)
 	quantity := string2decimal(param.Quantity)

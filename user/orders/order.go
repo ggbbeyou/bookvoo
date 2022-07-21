@@ -7,16 +7,16 @@ import (
 	"xorm.io/xorm"
 )
 
-type orderType int
+type OrderType string
+type OrderSide string
 type orderStatus int
-type orderSide int
 
 const (
-	OrderSideAsk orderSide = 1
-	OrderSideBid orderSide = 2
+	OrderSideAsk OrderSide = "Ask"
+	OrderSideBid OrderSide = "Bid"
 
-	OrderTypeLimit  orderType = 1
-	OrderTypeMarket orderType = 2
+	OrderTypeLimit  OrderType = "Limit"
+	OrderTypeMarket OrderType = "Market"
 
 	orderStatusNew  orderStatus = 0
 	orderStatusDone orderStatus = 1
@@ -28,8 +28,8 @@ type TradeOrder struct {
 	TradeSymbol   string      `xorm:"-"`
 	TradingPair   int         `xorm:"notnull index(pair_id) index(oa)"`
 	OrderId       string      `xorm:"varchar(30) unique(order_id) notnull"`
-	OrderSide     orderSide   `xorm:"index(order_side) index(oa)"`
-	OrderType     orderType   `xorm:"tinyint(1) default(0)"` //价格策略，市价单，限价单
+	OrderSide     OrderSide   `xorm:"varchar(10) index(order_side) index(oa)"`
+	OrderType     OrderType   `xorm:"varchar(10)"` //价格策略，市价单，限价单
 	UserId        int64       `xorm:"bigint index(userid) index(oa) notnull"`
 	Price         string      `xorm:"decimal(40,20) index(oa) notnull default(0)"`
 	Quantity      string      `xorm:"decimal(40,20) notnull default(0)"`
