@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
-	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/spf13/viper"
 	"github.com/yzimhao/bookvoo/core/base"
 	"github.com/yzimhao/bookvoo/user/orders"
+	"github.com/yzimhao/bookvoo/views/api"
+	"github.com/yzimhao/bookvoo/views/pages"
 	"github.com/yzimhao/gowss"
 	"github.com/yzimhao/utilgo"
 
@@ -50,25 +50,9 @@ func Run(config string, r *gin.Engine) {
 }
 
 func setupRouter(router *gin.Engine) {
-	router.LoadHTMLGlob("./template/default/*.html")
-	router.StaticFS("/statics", http.Dir("./template/default/statics"))
-
-	//迁移到别处
-	router.GET("/api/depth", depth)
-	router.GET("/api/trade_log", trade_log)
-	router.GET("/api/test_rand", testOrder)
-
-	api := router.Group("/api/v1/order")
-
-	api.POST("/new", newOrder)
-	api.POST("/cancel", cancelOrder)
-
 	//pages
-	router.GET("/t/:symbol", func(c *gin.Context) {
-		c.HTML(200, "demo.html", gin.H{
-			"symbol": c.Param("symbol"),
-		})
-	})
+	pages.SetupRouter(router)
+	api.SetupRouter(router)
 
 	//websocket
 	{
@@ -77,31 +61,6 @@ func setupRouter(router *gin.Engine) {
 			socket.ServeWs(ctx.Writer, ctx.Request)
 		})
 	}
-}
-
-func depth(c *gin.Context) {
-	limit := c.Query("limit")
-	limitInt, _ := strconv.Atoi(limit)
-	if limitInt <= 0 || limitInt > 100 {
-		limitInt = 10
-	}
-	a := base.MatchingEngine["ethusd"].GetAskDepth(limitInt)
-	b := base.MatchingEngine["ethusd"].GetBidDepth(limitInt)
-
-	c.JSON(200, gin.H{
-		"ask": a,
-		"bid": b,
-	})
-}
-
-func trade_log(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"ok": true,
-		"data": gin.H{
-			"latest_price": base.MatchingEngine["ethusd"].Price2String(base.MatchingEngine["ethusd"].LatestPrice()),
-			"trade_log":    recentTrade,
-		},
-	})
 }
 
 func sendMessage(tag string, data interface{}) {
