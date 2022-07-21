@@ -6,7 +6,11 @@ import (
 	"xorm.io/xorm"
 )
 
-func freezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symbol_id int, freeze_amount, business_id, info string) (success bool, err error) {
+func FreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symbol_id int, freeze_amount, business_id string, info OpBehavior) (success bool, err error) {
+	return freezeAssets(db, enable_transaction, user_id, symbol_id, freeze_amount, business_id, info)
+}
+
+func freezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symbol_id int, freeze_amount, business_id string, info OpBehavior) (success bool, err error) {
 
 	if !check_number_gt_zero(freeze_amount) {
 		return false, fmt.Errorf("freeze amount should be gt zero")
@@ -54,7 +58,7 @@ func freezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symb
 		FreezeAmount: freeze_amount,
 		BusinessId:   business_id,
 		Status:       FreezeStatusNew,
-		Info:         info,
+		Info:         string(info),
 	}
 	_, err = db.Table(new(assetFreezeRecord)).Insert(&lg)
 	if err != nil {

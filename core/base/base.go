@@ -8,8 +8,7 @@ import (
 )
 
 var (
-	db_engine *xorm.Engine
-
+	db_engine      *xorm.Engine
 	MatchingEngine map[string]*trading_engine.TradePair
 )
 
@@ -21,14 +20,15 @@ const (
 )
 
 type SymbolInfo struct {
-	Id        int    `xorm:"pk autoincr int"`
-	Symbol    string `xorm:"varchar(100) notnull unique(symbol)"`
-	Name      string `xorm:"varchar(250) notnull"`
-	Precision int    `xorm:"default(0)"`
-
-	Status     status    `xorm:"default(0) notnull"`
-	CreateTime time.Time `xorm:"timestamp created"`
-	UpdateTime time.Time `xorm:"timestamp updated"`
+	Id           int       `xorm:"pk autoincr int"`
+	Symbol       string    `xorm:"varchar(100) notnull unique(symbol)"`
+	Name         string    `xorm:"varchar(250) notnull"`
+	ShowPrec     int       `xorm:"default(0)"`
+	MinPrecision int       `xorm:"default(0)"`
+	Standard     bool      `xorm:"default(0)"`
+	Status       status    `xorm:"default(0) notnull"`
+	CreateTime   time.Time `xorm:"timestamp created"`
+	UpdateTime   time.Time `xorm:"timestamp updated"`
 }
 
 type TradePairOpt struct {
@@ -39,8 +39,8 @@ type TradePairOpt struct {
 	TradeSymbolId int `xorm:"default(0) unique(symbol_base)"`
 	BaseSymbolId  int `xorm:"default(0) unique(symbol_base)"`
 
-	PricePerc      int    `xorm:"default(2)"`
-	QtyPerc        int    `xorm:"default(0)"`
+	PricePrec      int    `xorm:"default(2)"`
+	QtyPrec        int    `xorm:"default(0)"`
 	AllowMinQty    string `xorm:"decimal(40,20) notnull"`
 	AllowMaxQty    string `xorm:"decimal(40,20) notnull"`
 	AllowMinAmount string `xorm:"decimal(40,20) notnull"`
@@ -52,22 +52,26 @@ type TradePairOpt struct {
 	UpdateTime time.Time `xorm:"timestamp updated"`
 }
 
-func GetTradePairById(pair_id int) *TradePairOpt {
-	db := db_engine.NewSession()
-	defer db.Close()
-
-	item := TradePairOpt{}
-	db.Table(new(TradePairOpt)).Where("id=?", pair_id).Get(&item)
-	return &item
+func (t *TradePairOpt) TableName() string {
+	return "trade_pair_option"
 }
 
-func GetTradePairBySymbol(symbol string) *TradePairOpt {
+func GetTradePairById(pair_id int) (*TradePairOpt, error) {
 	db := db_engine.NewSession()
 	defer db.Close()
 
 	item := TradePairOpt{}
-	db.Table(new(TradePairOpt)).Where("symbol=?", symbol).Get(&item)
-	return &item
+	_, err := db.Table(new(TradePairOpt)).Where("id=?", pair_id).Get(&item)
+	return &item, err
+}
+
+func GetTradePairBySymbol(symbol string) (*TradePairOpt, error) {
+	db := db_engine.NewSession()
+	defer db.Close()
+
+	item := TradePairOpt{}
+	_, err := db.Table(new(TradePairOpt)).Where("symbol=?", symbol).Get(&item)
+	return &item, err
 }
 
 func RunMatching() {

@@ -4,6 +4,20 @@ import (
 	"time"
 )
 
+// 用户资产冻结记录
+type FreezeStatus int
+type OpBehavior string
+
+const (
+	FreezeStatusNew  FreezeStatus = 0
+	FreezeStatusDone FreezeStatus = 1
+
+	Behavior_Trade    OpBehavior = "trade"
+	Behavior_Recharge OpBehavior = "recharge"
+	Behavior_Withdraw OpBehavior = "withdraw"
+	Behavior_Transfer OpBehavior = "transfer"
+)
+
 // 用户资产余额表
 type Assets struct {
 	UserId     int64     `xorm:"pk notnull unique(userid_symbol)"`
@@ -26,14 +40,6 @@ type assetsLog struct {
 	Info       string    `xorm:"varchar(64)"`
 	CreateTime time.Time `xorm:"timestamp created"`
 }
-
-// 用户资产冻结记录
-type FreezeStatus int
-
-const (
-	FreezeStatusNew  FreezeStatus = 0
-	FreezeStatusDone FreezeStatus = 1
-)
 
 type assetFreezeRecord struct {
 	Id           int64        `xorm:"pk autoincr bigint"`

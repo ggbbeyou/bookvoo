@@ -7,7 +7,7 @@ import (
 	"xorm.io/xorm"
 )
 
-func transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_id int, amount string, business_id, info string) (success bool, err error) {
+func transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_id int, amount string, business_id string, info OpBehavior) (success bool, err error) {
 	if enable_transaction {
 		db.Begin()
 		defer func() {

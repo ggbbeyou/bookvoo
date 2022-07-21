@@ -39,7 +39,7 @@ func Test_main(t *testing.T) {
 	defer db.Close()
 
 	Convey("从根账户充值100", t, func() {
-		f, err := transfer(db, true, ROOTUSERID, 1, 1, "100", "r0001", "recharge")
+		f, err := transfer(db, true, ROOTUSERID, 1, 1, "100", "r0001", Behavior_Recharge)
 		So(err, ShouldBeNil)
 		So(f, ShouldBeTrue)
 
@@ -50,7 +50,7 @@ func Test_main(t *testing.T) {
 	})
 
 	Convey("冻结用户资产", t, func() {
-		f, err := freezeAssets(db, true, 1, 1, "10", "a001", "trade")
+		f, err := freezeAssets(db, true, 1, 1, "10", "a001", Behavior_Trade)
 		So(err, ShouldBeNil)
 		So(f, ShouldBeTrue)
 
@@ -61,7 +61,7 @@ func Test_main(t *testing.T) {
 	})
 
 	Convey("冻结负数的资产", t, func() {
-		f, err := freezeAssets(db, true, 1, 1, "-10", "a002", "trade")
+		f, err := freezeAssets(db, true, 1, 1, "-10", "a002", Behavior_Trade)
 		So(err, ShouldBeError, fmt.Errorf("freeze amount should be gt zero"))
 		So(f, ShouldBeFalse)
 	})
@@ -89,7 +89,7 @@ func Test_main(t *testing.T) {
 	})
 
 	Convey("解冻业务订单部分金额", t, func() {
-		freezeAssets(db, true, 1, 1, "10", "a005", "trade")
+		freezeAssets(db, true, 1, 1, "10", "a005", Behavior_Trade)
 		f, err := unfreezeAssets(db, true, 1, 1, "a005", "8")
 		So(err, ShouldBeNil)
 		So(f, ShouldBeTrue)
@@ -101,7 +101,7 @@ func Test_main(t *testing.T) {
 	})
 
 	Convey("解冻超过业务订单金额的数量", t, func() {
-		freezeAssets(db, true, 1, 1, "10", "a006", "trade")
+		freezeAssets(db, true, 1, 1, "10", "a006", Behavior_Trade)
 		f, err := unfreezeAssets(db, true, 1, 1, "a006", "20")
 		So(err, ShouldBeError, fmt.Errorf("unfreeze amount must lt freeze amount"))
 		So(f, ShouldBeFalse)
