@@ -27,7 +27,7 @@ type SymbolInfo struct {
 	Precision int    `xorm:"default(0)"`
 
 	Status     status    `xorm:"default(0) notnull"`
-	CreateTime time.Time `xorm:"bigint created"`
+	CreateTime time.Time `xorm:"timestamp created"`
 	UpdateTime time.Time `xorm:"timestamp updated"`
 }
 
@@ -48,7 +48,7 @@ type TradePairOpt struct {
 	FeeRate        string `xorm:"decimal(40,20) notnull default(0)"`
 
 	Status     status    `xorm:"default(0) notnull"`
-	CreateTime time.Time `xorm:"bigint created"`
+	CreateTime time.Time `xorm:"timestamp created"`
 	UpdateTime time.Time `xorm:"timestamp updated"`
 }
 
