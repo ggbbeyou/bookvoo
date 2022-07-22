@@ -3,23 +3,29 @@ definitions:
     properties:
       data: {}
       ok:
-        type: boolean
+        type: integer
       reason:
         type: string
     type: object
   api.new_order_request:
     properties:
       amount:
+        example: "100.00"
         type: string
       order_type:
+        example: limit/market
         type: string
       price:
+        example: "1.00"
         type: string
       quantity:
+        example: "12"
         type: string
       side:
+        example: sell/buy
         type: string
       symbol:
+        example: ethusd
         type: string
     required:
     - order_type
@@ -29,11 +35,38 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/v1/depth:
+    get:
+      parameters:
+      - description: 'eg: ethusd'
+        in: query
+        name: symbol
+        required: true
+        type: string
+      - description: 默认100，最大5000
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api._response'
+      summary: 深度信息
+      tags:
+      - 交易相关
   /api/v1/order/new:
     post:
       consumes:
       - application/json
-      description: 新订单，支持限价单、市价单
+      description: |-
+        新订单，支持限价单、市价单
+        不同订单类型的参数要求：
+        限价单: {"symbol": "ethusd", "order_type": "limit", "side": "sell", "price": "1.00", "quantity": "100"}
+        市价-按数量: {"symbol": "ethusd", "order_type": "market", "side": "sell", "quantity": "100"}
+        市价-按金额: {"symbol": "ethusd", "order_type": "market", "side": "sell", "amount": "1000.00"}
       parameters:
       - description: Bearer 用户令牌
         in: header
@@ -42,6 +75,7 @@ paths:
       - description: 请求参数
         in: body
         name: object
+        required: true
         schema:
           $ref: '#/definitions/api.new_order_request'
       produces:
@@ -53,7 +87,7 @@ paths:
             $ref: '#/definitions/api._response'
       security:
       - ApiKeyAuth: []
-      summary: 创建一个新订单
+      summary: 创建一个新委托订单
       tags:
-      - 订单相关
+      - 交易相关
 swagger: "2.0"

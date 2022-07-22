@@ -12,11 +12,11 @@ type OrderSide string
 type orderStatus int
 
 const (
-	OrderSideAsk OrderSide = "Ask"
-	OrderSideBid OrderSide = "Bid"
+	OrderSideAsk OrderSide = "sell"
+	OrderSideBid OrderSide = "buy"
 
-	OrderTypeLimit  OrderType = "Limit"
-	OrderTypeMarket OrderType = "Market"
+	OrderTypeLimit  OrderType = "limit"
+	OrderTypeMarket OrderType = "market"
 
 	orderStatusNew  orderStatus = 0
 	orderStatusDone orderStatus = 1

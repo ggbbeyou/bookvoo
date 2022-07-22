@@ -9,23 +9,26 @@ import (
 )
 
 type new_order_request struct {
-	Symbol    string           `json:"symbol" binding:"required"`
-	Side      orders.OrderSide `json:"side" binding:"required"`
-	OrderType orders.OrderType `json:"order_type" binding:"required"`
-
-	Price    string `json:"price"`
-	Quantity string `json:"quantity"`
-	Amount   string `json:"amount"`
+	Symbol    string           `json:"symbol" binding:"required" example:"ethusd"`
+	Side      orders.OrderSide `json:"side" binding:"required" example:"sell/buy"`
+	OrderType orders.OrderType `json:"order_type" binding:"required" example:"limit/market"`
+	Price     string           `json:"price" example:"1.00"`
+	Quantity  string           `json:"quantity" example:"12"`
+	Amount    string           `json:"amount" example:"100.00"`
 }
 
-// order_new 创建一个新订单
-// @Summary 创建一个新订单
+// 新委托订单
+// @Summary 创建一个新委托订单
 // @Description 新订单，支持限价单、市价单
-// @Tags 订单相关
+// @Description 不同订单类型的参数要求：
+// @Description 限价单: {"symbol": "ethusd", "order_type": "limit", "side": "sell", "price": "1.00", "quantity": "100"}
+// @Description 市价-按数量: {"symbol": "ethusd", "order_type": "market", "side": "sell", "quantity": "100"}
+// @Description 市价-按金额: {"symbol": "ethusd", "order_type": "market", "side": "sell", "amount": "1000.00"}
+// @Tags 交易相关
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string false "Bearer 用户令牌"
-// @Param object body new_order_request false "请求参数"
+// @Param object body new_order_request true "请求参数"
 // @Security ApiKeyAuth
 // @Success 200 {object} _response
 // @Router /api/v1/order/new [post]
