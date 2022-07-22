@@ -1,5 +1,22 @@
-# bookvoo
-开源交易软件
+### bookvoo 开源交易软件
+
+##### 快速开发
+ - fork当前后，clone到本地目录, 一下开发环境再macos下进行的，其他的环境需要自行研究下
+```
+    cd bookvoo
+    # 启动项目依赖的数据库、redis等
+    docker-compose up -d
+    # 安装自动自动生成api文档的工具
+    go install github.com/swaggo/swag/cmd/swag
+    # 执行一次test，test结束会插入一些测试的基础数据
+    make test
+    #生成一遍文档
+    make docs
+    #启动主程序 
+    go run main.go
+    # 访问 http://127.0.0.1:8082/t/ethusd
+    # 访问文档 http://127.0.0.1:8082/docs/index.html
+```
 
 ##### 功能列表
   - [ ] 用户中心
