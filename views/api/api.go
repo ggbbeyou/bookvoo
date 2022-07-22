@@ -13,14 +13,25 @@ type _response struct {
 }
 
 func SetupRouter(router *gin.Engine) {
-	apiV1 := router.Group("/api/v1/")
+	apiV1 := router.Group("/api/v1")
 
 	apiV1.GET("/depth", depth)
 	apiV1.GET("/trade/log", tradelog)
 
 	//todo 验证登录状态
-	apiV1.POST("/order/new", order_new)
-	apiV1.POST("/order/cancel", order_cancel)
+	order := apiV1.Group("/order")
+	{
+		//查询订单
+		order.GET("/", nil)
+		//创建订单
+		order.POST("/new", order_new)
+		//取消订单
+		order.POST("/cancel", order_cancel)
+		//当前挂单
+		order.GET("/open", nil)
+		//查询所有订单 获取所有帐户订单； 有效，已取消或已完成。 带有symbol
+		order.GET("/all", nil)
+	}
 }
 
 func response(c *gin.Context, ok int, reason string, data interface{}) {
