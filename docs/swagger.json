@@ -38,6 +38,51 @@
                 }
             }
         },
+        "/api/v1/order/cancel": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "取消还未完成的订单",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "交易相关"
+                ],
+                "summary": "取消一个委托订单",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.cancel_order_request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api._response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/order/new": {
             "post": {
                 "security": [
@@ -93,6 +138,14 @@
                     "type": "integer"
                 },
                 "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.cancel_order_request": {
+            "type": "object",
+            "properties": {
+                "order_id": {
                     "type": "string"
                 }
             }

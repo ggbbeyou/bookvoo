@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 	"github.com/yzimhao/bookvoo/core"
 	"github.com/yzimhao/bookvoo/core/base"
 	"github.com/yzimhao/bookvoo/user/orders"
@@ -45,7 +46,13 @@ func order_new(c *gin.Context) {
 		return
 	} else if req.OrderType == orders.OrderTypeMarket {
 		//todo
-		market_order(c, req)
+		if core.D(req.Amount).Cmp(decimal.Zero) > 0 {
+			//按金额操作
+			market_order_by_amount(c, req.Symbol, req.Side, req.Amount)
+		} else if core.D(req.Quantity).Cmp(decimal.Zero) > 0 {
+			//按数量操作
+			market_order_by_qty(c, req.Symbol, req.Side, req.Quantity)
+		}
 		return
 	}
 
@@ -65,10 +72,10 @@ func limit_order(c *gin.Context, req new_order_request) {
 	success(c, gin.H{"order_id": order.OrderId})
 }
 
-func market_order(c *gin.Context, req new_order_request) {
+func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide, amount string) {
 
 }
 
-func order_cancel(c *gin.Context) {
+func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, qty string) {
 
 }

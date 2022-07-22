@@ -7,6 +7,11 @@ definitions:
       reason:
         type: string
     type: object
+  api.cancel_order_request:
+    properties:
+      order_id:
+        type: string
+    type: object
   api.new_order_request:
     properties:
       amount:
@@ -55,6 +60,34 @@ paths:
           schema:
             $ref: '#/definitions/api._response'
       summary: 深度信息
+      tags:
+      - 交易相关
+  /api/v1/order/cancel:
+    post:
+      consumes:
+      - application/json
+      description: 取消还未完成的订单
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        type: string
+      - description: 请求参数
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/api.cancel_order_request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api._response'
+      security:
+      - ApiKeyAuth: []
+      summary: 取消一个委托订单
       tags:
       - 交易相关
   /api/v1/order/new:
