@@ -12,8 +12,8 @@ func FreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symb
 
 func freezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symbol_id int, freeze_amount, business_id string, info OpBehavior) (success bool, err error) {
 
-	if !check_number_gt_zero(freeze_amount) {
-		return false, fmt.Errorf("freeze amount should be gt zero")
+	if check_number_lt_zero(freeze_amount) {
+		return false, fmt.Errorf("freeze amount should be >= 0")
 	}
 
 	if enable_transaction {
@@ -31,6 +31,10 @@ func freezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symb
 	_, err = db.Table(new(Assets)).Where("user_id=? and symbol_id=?", user_id, symbol_id).ForUpdate().Get(&item)
 	if err != nil {
 		return false, err
+	}
+
+	if d(freeze_amount).Equal(d("0")) {
+		freeze_amount = item.Available
 	}
 
 	item.Available = number_sub(item.Available, freeze_amount)

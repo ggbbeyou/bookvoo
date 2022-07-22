@@ -18,8 +18,8 @@ func unfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, sy
 		}()
 	}
 
-	if !check_number_gt_zero(unfreeze_amount) {
-		return false, fmt.Errorf("unfreeze amount should be gt zero")
+	if check_number_lt_zero(unfreeze_amount) {
+		return false, fmt.Errorf("unfreeze amount should be >= 0")
 	}
 
 	row := assetFreezeRecord{UserId: user_id, SymbolId: symbol_id, BusinessId: business_id}
@@ -30,11 +30,15 @@ func unfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, sy
 	}
 
 	if !has {
-		return false, fmt.Errorf("not found")
+		return false, fmt.Errorf("not found business_id")
 	}
 
 	if row.Status == FreezeStatusDone {
 		return false, fmt.Errorf("repeat unfreeze")
+	}
+
+	if d(unfreeze_amount).Equal(d("0")) {
+		unfreeze_amount = row.FreezeAmount
 	}
 
 	row.FreezeAmount = number_sub(row.FreezeAmount, unfreeze_amount)

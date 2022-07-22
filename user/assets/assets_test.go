@@ -34,98 +34,166 @@ func init() {
 	SetDbEngine(db_engine)
 }
 
+func cleanUserAssets(user_id int64) (err error) {
+	db := db_engine.NewSession()
+	defer db.Close()
+
+	db.Begin()
+	defer func() {
+		if err != nil {
+			db.Rollback()
+		} else {
+			db.Commit()
+		}
+	}()
+
+	//资产表
+	_, err = db.Table(new(Assets)).Where("user_id=?", user_id).Delete()
+	if err != nil {
+		return err
+	}
+
+	//资产变化日志表
+	_, err = db.Table(new(assetsLog)).Where("user_id=?", user_id).Delete()
+	if err != nil {
+		return err
+	}
+	//资产冻结记录
+	_, err = db.Table(new(assetFreezeRecord)).Where("user_id=?", user_id).Delete()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func Test_main(t *testing.T) {
 	db := db_engine.NewSession()
 	defer db.Close()
 
+	var (
+		user1      int64 = 1
+		symbol_usd int   = 1
+		symbol_eth int   = 2
+	)
+
+	initAssets := func(uid int64, sid int, amount string) {
+		transfer(db, true, ROOTUSERID, uid, sid, amount, "r001", Behavior_Recharge)
+	}
+
 	Convey("从根账户充值100", t, func() {
-		f, err := transfer(db, true, ROOTUSERID, 1, 1, "100", "r0001", Behavior_Recharge)
-		So(err, ShouldBeNil)
-		So(f, ShouldBeTrue)
+		initAssets(user1, symbol_usd, "100")
+		user := UserAssets(user1, symbol_usd)
+		So(d(user.Total), ShouldEqual, d("100"))
+		So(d(user.Available), ShouldEqual, d("100"))
+		So(d(user.Freeze), ShouldEqual, d("0"))
 
-		//symbol_id=2也充值100
-		f, err = transfer(db, true, ROOTUSERID, 1, 2, "100", "r0002", Behavior_Recharge)
+		err := cleanUserAssets(user1)
 		So(err, ShouldBeNil)
-		So(f, ShouldBeTrue)
-
-		user1 := UserAssets(1, 1)
-		So(d(user1.Total), ShouldEqual, d("100"))
-		So(d(user1.Available), ShouldEqual, d("100"))
-		So(d(user1.Freeze), ShouldEqual, d("0"))
 	})
 
 	Convey("冻结用户资产", t, func() {
-		f, err := freezeAssets(db, true, 1, 1, "10", "a001", Behavior_Trade)
+		initAssets(user1, symbol_usd, "100")
+		f, err := freezeAssets(db, true, user1, symbol_usd, "10", "a001", Behavior_Trade)
 		So(err, ShouldBeNil)
 		So(f, ShouldBeTrue)
 
-		user1 := UserAssets(1, 1)
-		So(d(user1.Total), ShouldEqual, d("100"))
-		So(d(user1.Available), ShouldEqual, d("90"))
-		So(d(user1.Freeze), ShouldEqual, d("10"))
+		user := UserAssets(user1, symbol_usd)
+		So(d(user.Total), ShouldEqual, d("100"))
+		So(d(user.Available), ShouldEqual, d("90"))
+		So(d(user.Freeze), ShouldEqual, d("10"))
+
+		err = cleanUserAssets(user1)
+		So(err, ShouldBeNil)
 	})
 
 	Convey("冻结负数的资产", t, func() {
-		f, err := freezeAssets(db, true, 1, 1, "-10", "a002", Behavior_Trade)
-		So(err, ShouldBeError, fmt.Errorf("freeze amount should be gt zero"))
-		So(f, ShouldBeFalse)
-	})
+		initAssets(user1, symbol_usd, "100")
 
-	Convey("冻结数量0的资产", t, func() {
-		f, err := freezeAssets(db, true, 1, 1, "0", "a003", "trade")
-		So(err, ShouldBeError, fmt.Errorf("freeze amount should be gt zero"))
+		f, err := freezeAssets(db, true, user1, symbol_usd, "-10", "a002", Behavior_Trade)
+		So(err, ShouldBeError, fmt.Errorf("freeze amount should be >= 0"))
 		So(f, ShouldBeFalse)
 
-		user1 := UserAssets(1, 1)
-		So(d(user1.Total), ShouldEqual, d("100"))
-		So(d(user1.Available), ShouldEqual, d("90"))
-		So(d(user1.Freeze), ShouldEqual, d("10"))
+		err = cleanUserAssets(user1)
+		So(err, ShouldBeNil)
 	})
 
-	Convey("解冻业务订单号", t, func() {
-		f, err := unfreezeAssets(db, true, 1, 1, "a001", "10")
+	Convey("冻结数量0的资产，则冻结全部可用", t, func() {
+		initAssets(user1, symbol_usd, "100")
+		f, err := freezeAssets(db, true, user1, symbol_usd, "0", "a003", Behavior_Trade)
 		So(err, ShouldBeNil)
 		So(f, ShouldBeTrue)
 
-		user1 := UserAssets(1, 1)
-		So(d(user1.Total), ShouldEqual, d("100"))
-		So(d(user1.Available), ShouldEqual, d("100"))
-		So(d(user1.Freeze), ShouldEqual, d("0"))
-	})
+		user := UserAssets(user1, symbol_usd)
+		So(d(user.Total), ShouldEqual, d("100"))
+		So(d(user.Available), ShouldEqual, d("0"))
+		So(d(user.Freeze), ShouldEqual, d("100"))
 
-	Convey("解冻业务订单部分金额", t, func() {
-		freezeAssets(db, true, 1, 1, "10", "a005", Behavior_Trade)
-		f, err := unfreezeAssets(db, true, 1, 1, "a005", "8")
+		err = cleanUserAssets(user1)
 		So(err, ShouldBeNil)
-		So(f, ShouldBeTrue)
-
-		user1 := UserAssets(1, 1)
-		So(d(user1.Total), ShouldEqual, d("100"))
-		So(d(user1.Available), ShouldEqual, d("98"))
-		So(d(user1.Freeze), ShouldEqual, d("2"))
-	})
-
-	Convey("解冻超过业务订单金额的数量", t, func() {
-		freezeAssets(db, true, 1, 1, "10", "a006", Behavior_Trade)
-		f, err := unfreezeAssets(db, true, 1, 1, "a006", "20")
-		So(err, ShouldBeError, fmt.Errorf("unfreeze amount must lt freeze amount"))
-		So(f, ShouldBeFalse)
-
-		user1 := UserAssets(1, 1)
-		So(d(user1.Total), ShouldEqual, d("100"))
-		So(d(user1.Available), ShouldEqual, d("88"))
-		So(d(user1.Freeze), ShouldEqual, d("12"))
-
 	})
 
 	Convey("解冻不存在的业务订单号", t, func() {
-		f, err := unfreezeAssets(db, true, 1, 1, "a004", "10")
-		So(err, ShouldBeError, fmt.Errorf("not found"))
+		f, err := unfreezeAssets(db, true, user1, symbol_usd, "a004", "10")
+		So(err, ShouldBeError, fmt.Errorf("not found business_id"))
+		So(f, ShouldBeFalse)
+	})
+
+	Convey("解冻订单号剩余全部资产", t, func() {
+		initAssets(user1, symbol_usd, "100")
+		freezeAssets(db, true, user1, symbol_usd, "10", "a005", Behavior_Trade)
+		f, err := unfreezeAssets(db, true, user1, symbol_usd, "a005", "0")
+		So(err, ShouldBeNil)
+		So(f, ShouldBeTrue)
+
+		user := UserAssets(user1, symbol_usd)
+		So(d(user.Total), ShouldEqual, d("100"))
+		So(d(user.Available), ShouldEqual, d("100"))
+		So(d(user.Freeze), ShouldEqual, d("0"))
+
+		err = cleanUserAssets(user1)
+		So(err, ShouldBeNil)
+	})
+
+	Convey("解冻业务订单部分资产", t, func() {
+		initAssets(user1, symbol_usd, "100")
+		freezeAssets(db, true, user1, symbol_usd, "10", "a006", Behavior_Trade)
+		f, err := unfreezeAssets(db, true, user1, symbol_usd, "a006", "1.2")
+		So(err, ShouldBeNil)
+		So(f, ShouldBeTrue)
+
+		user := UserAssets(user1, symbol_usd)
+		So(d(user.Total), ShouldEqual, d("100"))
+		So(d(user.Available), ShouldEqual, d("91.2"))
+		So(d(user.Freeze), ShouldEqual, d("8.8"))
+
+		err = cleanUserAssets(user1)
+		So(err, ShouldBeNil)
+	})
+
+	Convey("解冻超过业务订单金额的数量", t, func() {
+		initAssets(user1, symbol_usd, "100")
+		freezeAssets(db, true, user1, symbol_usd, "10", "a006", Behavior_Trade)
+		f, err := unfreezeAssets(db, true, user1, symbol_usd, "a006", "11")
+		So(err, ShouldBeError, fmt.Errorf("unfreeze amount must lt freeze amount"))
 		So(f, ShouldBeFalse)
 
-		user1 := UserAssets(1, 1)
-		So(d(user1.Total), ShouldEqual, d("100"))
-		So(d(user1.Available), ShouldEqual, d("88"))
-		So(d(user1.Freeze), ShouldEqual, d("12"))
+		err = cleanUserAssets(user1)
+		So(err, ShouldBeNil)
 	})
+
+	Convey("解冻负数的数量", t, func() {
+		initAssets(user1, symbol_usd, "100")
+		freezeAssets(db, true, user1, symbol_usd, "10", "a006", Behavior_Trade)
+		f, err := unfreezeAssets(db, true, user1, symbol_usd, "a006", "-2")
+		So(err, ShouldBeError, fmt.Errorf("unfreeze amount should be >= 0"))
+		So(f, ShouldBeFalse)
+
+		err = cleanUserAssets(user1)
+		So(err, ShouldBeNil)
+	})
+
+	//上面测试做完后，生成一点测试数据
+	cleanUserAssets(ROOTUSERID)
+	initAssets(user1, symbol_usd, "1000")
+	initAssets(user1, symbol_eth, "1000")
 }
