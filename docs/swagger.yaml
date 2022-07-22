@@ -1,0 +1,59 @@
+definitions:
+  api._response:
+    properties:
+      data: {}
+      ok:
+        type: boolean
+      reason:
+        type: string
+    type: object
+  api.new_order_request:
+    properties:
+      amount:
+        type: string
+      order_type:
+        type: string
+      price:
+        type: string
+      quantity:
+        type: string
+      side:
+        type: string
+      symbol:
+        type: string
+    required:
+    - order_type
+    - side
+    - symbol
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/order/new:
+    post:
+      consumes:
+      - application/json
+      description: 新订单，支持限价单、市价单
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        type: string
+      - description: 请求参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/api.new_order_request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api._response'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建一个新订单
+      tags:
+      - 订单相关
+swagger: "2.0"

@@ -10,7 +10,6 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/yzimhao/bookvoo/core/base"
-	"github.com/yzimhao/bookvoo/user/orders"
 	"github.com/yzimhao/bookvoo/views/api"
 	"github.com/yzimhao/bookvoo/views/pages"
 	"github.com/yzimhao/gowss"
@@ -140,94 +139,94 @@ func pushDepth() {
 }
 
 func newOrder(c *gin.Context) {
-	symbol := "ethusd"
+	// symbol := "ethusd"
 
-	amount := string2decimal(param.Amount)
-	price := string2decimal(param.Price)
-	quantity := string2decimal(param.Quantity)
-	param.CreateTime = time.Now()
+	// amount := string2decimal(param.Amount)
+	// price := string2decimal(param.Price)
+	// quantity := string2decimal(param.Quantity)
+	// param.CreateTime = time.Now()
 
-	// var pt trading_engine.PriceType
-	if param.PriceType == "market" {
-		param.Price = "0"
-		// pt = trading_engine.PriceTypeMarket
-		if param.Amount != "" {
-			// pt = trading_engine.PriceTypeMarketAmount
-			//市价按成交金额卖出时，默认持有该资产1000个
-			param.Quantity = "100"
-			if amount.Cmp(decimal.NewFromFloat(100000000)) > 0 || amount.Cmp(decimal.Zero) <= 0 {
-				c.JSON(200, gin.H{
-					"ok":    false,
-					"error": "金额必须大于0，且不能超过 100000000",
-				})
-				return
-			}
+	// // var pt trading_engine.PriceType
+	// if param.PriceType == "market" {
+	// 	param.Price = "0"
+	// 	// pt = trading_engine.PriceTypeMarket
+	// 	if param.Amount != "" {
+	// 		// pt = trading_engine.PriceTypeMarketAmount
+	// 		//市价按成交金额卖出时，默认持有该资产1000个
+	// 		param.Quantity = "100"
+	// 		if amount.Cmp(decimal.NewFromFloat(100000000)) > 0 || amount.Cmp(decimal.Zero) <= 0 {
+	// 			c.JSON(200, gin.H{
+	// 				"ok":    false,
+	// 				"error": "金额必须大于0，且不能超过 100000000",
+	// 			})
+	// 			return
+	// 		}
 
-		} else if param.Quantity != "" {
-			// pt = trading_engine.PriceTypeMarketQuantity
-			//市价按数量买入资产时，需要用户账户所有可用资产数量，测试默认100块
-			param.Amount = "100"
-			if quantity.Cmp(decimal.NewFromFloat(100000000)) > 0 || quantity.Cmp(decimal.Zero) <= 0 {
-				c.JSON(200, gin.H{
-					"ok":    false,
-					"error": "数量必须大于0，且不能超过 100000000",
-				})
-				return
-			}
-		}
-	} else {
-		// pt = trading_engine.PriceTypeLimit
-		param.Amount = "0"
-		if price.Cmp(decimal.NewFromFloat(100000000)) > 0 || price.Cmp(decimal.Zero) < 0 {
-			c.JSON(200, gin.H{
-				"ok":    false,
-				"error": "价格必须大于等于0，且不能超过 100000000",
-			})
-			return
-		}
-		if quantity.Cmp(decimal.NewFromFloat(100000000)) > 0 || quantity.Cmp(decimal.Zero) <= 0 {
-			c.JSON(200, gin.H{
-				"ok":    false,
-				"error": "数量必须大于0，且不能超过 100000000",
-			})
-			return
-		}
-	}
+	// 	} else if param.Quantity != "" {
+	// 		// pt = trading_engine.PriceTypeMarketQuantity
+	// 		//市价按数量买入资产时，需要用户账户所有可用资产数量，测试默认100块
+	// 		param.Amount = "100"
+	// 		if quantity.Cmp(decimal.NewFromFloat(100000000)) > 0 || quantity.Cmp(decimal.Zero) <= 0 {
+	// 			c.JSON(200, gin.H{
+	// 				"ok":    false,
+	// 				"error": "数量必须大于0，且不能超过 100000000",
+	// 			})
+	// 			return
+	// 		}
+	// 	}
+	// } else {
+	// 	// pt = trading_engine.PriceTypeLimit
+	// 	param.Amount = "0"
+	// 	if price.Cmp(decimal.NewFromFloat(100000000)) > 0 || price.Cmp(decimal.Zero) < 0 {
+	// 		c.JSON(200, gin.H{
+	// 			"ok":    false,
+	// 			"error": "价格必须大于等于0，且不能超过 100000000",
+	// 		})
+	// 		return
+	// 	}
+	// 	if quantity.Cmp(decimal.NewFromFloat(100000000)) > 0 || quantity.Cmp(decimal.Zero) <= 0 {
+	// 		c.JSON(200, gin.H{
+	// 			"ok":    false,
+	// 			"error": "数量必须大于0，且不能超过 100000000",
+	// 		})
+	// 		return
+	// 	}
+	// }
 
-	if strings.ToLower(param.OrderType) == "ask" {
-		order, err := orders.NewLimitOrder(1, symbol, orders.OrderSideAsk, param.Price, param.Quantity)
-		if err != nil {
-			c.JSON(200, gin.H{
-				"ok":    false,
-				"error": err.Error(),
-			})
-			return
-		}
-		item := trading_engine.NewAskLimitItem(order.OrderId, string2decimal(order.Price), string2decimal(order.Quantity), order.CreateTime)
-		base.MatchingEngine[symbol].ChNewOrder <- item
+	// if strings.ToLower(param.OrderType) == "ask" {
+	// 	order, err := orders.NewLimitOrder(1, symbol, orders.OrderSideAsk, param.Price, param.Quantity)
+	// 	if err != nil {
+	// 		c.JSON(200, gin.H{
+	// 			"ok":    false,
+	// 			"error": err.Error(),
+	// 		})
+	// 		return
+	// 	}
+	// 	item := trading_engine.NewAskLimitItem(order.OrderId, string2decimal(order.Price), string2decimal(order.Quantity), order.CreateTime)
+	// 	base.MatchingEngine[symbol].ChNewOrder <- item
 
-	} else {
-		order, err := orders.NewLimitOrder(1, symbol, orders.OrderSideBid, param.Price, param.Quantity)
-		if err != nil {
-			c.JSON(200, gin.H{
-				"ok":    false,
-				"error": err.Error(),
-			})
-			return
-		}
-		item := trading_engine.NewAskLimitItem(order.OrderId, string2decimal(order.Price), string2decimal(order.Quantity), order.CreateTime)
-		base.MatchingEngine[symbol].ChNewOrder <- item
-	}
+	// } else {
+	// 	order, err := orders.NewLimitOrder(1, symbol, orders.OrderSideBid, param.Price, param.Quantity)
+	// 	if err != nil {
+	// 		c.JSON(200, gin.H{
+	// 			"ok":    false,
+	// 			"error": err.Error(),
+	// 		})
+	// 		return
+	// 	}
+	// 	item := trading_engine.NewAskLimitItem(order.OrderId, string2decimal(order.Price), string2decimal(order.Quantity), order.CreateTime)
+	// 	base.MatchingEngine[symbol].ChNewOrder <- item
+	// }
 
-	go sendMessage(fmt.Sprintf("new_order.%s", symbol), param)
+	// go sendMessage(fmt.Sprintf("new_order.%s", symbol), param)
 
-	c.JSON(200, gin.H{
-		"ok": true,
-		"data": gin.H{
-			"ask_len": base.MatchingEngine[symbol].AskLen(),
-			"bid_len": base.MatchingEngine[symbol].BidLen(),
-		},
-	})
+	// c.JSON(200, gin.H{
+	// 	"ok": true,
+	// 	"data": gin.H{
+	// 		"ask_len": base.MatchingEngine[symbol].AskLen(),
+	// 		"bid_len": base.MatchingEngine[symbol].BidLen(),
+	// 	},
+	// })
 }
 
 func testOrder(c *gin.Context) {

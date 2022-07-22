@@ -1,0 +1,94 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/api/v1/order/new": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "新订单，支持限价单、市价单",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "订单相关"
+                ],
+                "summary": "创建一个新订单",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "object",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/api.new_order_request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api._response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api._response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "ok": {
+                    "type": "boolean"
+                },
+                "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.new_order_request": {
+            "type": "object",
+            "required": [
+                "order_type",
+                "side",
+                "symbol"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "order_type": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "string"
+                },
+                "side": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
