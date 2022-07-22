@@ -8,7 +8,6 @@ import (
 	"github.com/yzimhao/bookvoo/core/base"
 )
 
-// 委托深度
 // @Summary 深度信息
 // @Tags 交易相关
 // @Produce application/json

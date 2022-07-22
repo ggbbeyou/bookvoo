@@ -57,9 +57,9 @@ func limit_order(c *gin.Context, req new_order_request) {
 		fail(c, err.Error())
 		return
 	}
-	if req.Side == orders.OrderSideAsk {
+	if req.Side == orders.OrderSideSell {
 		base.MatchingEngine[req.Symbol].ChNewOrder <- te.NewAskLimitItem(order.OrderId, core.D(order.Price), core.D(order.Quantity), order.CreateTime)
-	} else if req.Side == orders.OrderSideBid {
+	} else if req.Side == orders.OrderSideBuy {
 		base.MatchingEngine[req.Symbol].ChNewOrder <- te.NewBidLimitItem(order.OrderId, core.D(order.Price), core.D(order.Quantity), order.CreateTime)
 	}
 	success(c, gin.H{"order_id": order.OrderId})
