@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	"github.com/yzimhao/bookvoo/core/base"
+	"github.com/yzimhao/bookvoo/user/assets"
 
 	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
@@ -37,6 +38,7 @@ func init() {
 
 	SetDbEngine(db_engine)
 	base.SetDbEngine(db_engine)
+	assets.SetDbEngine(db_engine)
 }
 
 func Test_main(t *testing.T) {
@@ -53,5 +55,15 @@ func Test_main(t *testing.T) {
 		order, err := limit_order(1, "ethusd", OrderSideSell, "1.00", "2")
 		So(err, ShouldBeNil)
 		So(order.OrderId, ShouldStartWith, "A")
+	})
+
+	Convey("市价按数量", t, func() {
+		order, err := market_order_qty(1, "ethusd", OrderSideSell, "1")
+		So(err, ShouldBeNil)
+		So(order.OrderId, ShouldStartWith, "A")
+
+		order, err = market_order_qty(1, "ethusd", OrderSideBuy, "1")
+		So(err, ShouldBeNil)
+		So(order.OrderId, ShouldStartWith, "B")
 	})
 }
