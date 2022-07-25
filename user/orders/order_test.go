@@ -65,6 +65,8 @@ func Test_main(t *testing.T) {
 		order, err = market_order_qty(1, "ethusd", OrderSideBuy, "1")
 		So(err, ShouldBeNil)
 		So(order.OrderId, ShouldStartWith, "B")
+
+		// assets.UnfreezeAssets(db, true, order.UserId, order.OrderId, "0")
 	})
 
 	Convey("市价按成交额", t, func() {

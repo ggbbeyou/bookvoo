@@ -142,7 +142,14 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 		if err != nil {
 			return nil, err
 		}
+		neworder.Fee = "0"
+		neworder.TradeAmount = core.D(amount).Mul(core.D("1").Sub(core.D(neworder.FeeRate))).String()
+		neworder.TotalAmount = amount
 	}
 
-	return nil, nil
+	if err = neworder.Save(db); err != nil {
+		return nil, err
+	}
+
+	return &neworder, nil
 }

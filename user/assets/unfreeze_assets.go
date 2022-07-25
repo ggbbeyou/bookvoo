@@ -6,6 +6,10 @@ import (
 	"xorm.io/xorm"
 )
 
+func UnfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symbol_id int, business_id, unfreeze_amount string) (success bool, err error) {
+	return unfreezeAssets(db, enable_transaction, user_id, symbol_id, business_id, unfreeze_amount)
+}
+
 func unfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symbol_id int, business_id, unfreeze_amount string) (success bool, err error) {
 	if enable_transaction {
 		db.Begin()
