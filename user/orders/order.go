@@ -26,23 +26,23 @@ const (
 
 // 委托记录表
 type TradeOrder struct {
-	Id            int64       `xorm:"pk autoincr bigint"`
-	TradeSymbol   string      `xorm:"-"`
-	TradingPair   int         `xorm:"notnull index(pair_id) index(oa)"`
-	OrderId       string      `xorm:"varchar(30) unique(order_id) notnull"`
-	OrderSide     OrderSide   `xorm:"varchar(10) index(order_side) index(oa)"`
-	OrderType     OrderType   `xorm:"varchar(10)"` //价格策略，市价单，限价单
-	UserId        int64       `xorm:"bigint index(userid) index(oa) notnull"`
-	Price         string      `xorm:"decimal(40,20) index(oa) notnull default(0)"`
-	Quantity      string      `xorm:"decimal(40,20) notnull default(0)"`
-	UnfinishedQty string      `xorm:"decimal(40,20) notnull default(0)"`
-	FeeRate       string      `xorm:"decimal(40,20) notnull default(0)"`
-	Fee           string      `xorm:"decimal(40,20) notnull default(0)"`
-	TradeAmount   string      `xorm:"decimal(40,20) notnull default(0)"`
-	TotalAmount   string      `xorm:"decimal(40,20) notnull default(0)"` //包含手续费
-	Status        orderStatus `xorm:"tinyint(1)"`
-	CreateTime    int64       `xorm:"bigint"`
-	UpdateTime    time.Time   `xorm:"timestamp updated"`
+	Id            int64       `xorm:"pk autoincr bigint" json:"-"`
+	TradeSymbol   string      `xorm:"-" json:"symbol"`
+	TradingPair   int         `xorm:"notnull index(pair_id) index(oa)" json:"-"`
+	OrderId       string      `xorm:"varchar(30) unique(order_id) notnull" json:"order_id"`
+	OrderSide     OrderSide   `xorm:"varchar(10) index(order_side) index(oa)" json:"order_side"`
+	OrderType     OrderType   `xorm:"varchar(10)" json:"order_type"` //价格策略，市价单，限价单
+	UserId        int64       `xorm:"bigint index(userid) index(oa) notnull" json:"-"`
+	Price         string      `xorm:"decimal(40,20) index(oa) notnull default(0)" json:"price"`
+	Quantity      string      `xorm:"decimal(40,20) notnull default(0)" json:"quantity"`
+	UnfinishedQty string      `xorm:"decimal(40,20) notnull default(0)" json:"unfinish_qty"`
+	FeeRate       string      `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	Fee           string      `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	TradeAmount   string      `xorm:"decimal(40,20) notnull default(0)" json:"trade_amount"`
+	TotalAmount   string      `xorm:"decimal(40,20) notnull default(0)" json:"-"` //包含手续费
+	Status        orderStatus `xorm:"tinyint(1)" json:"status"`
+	CreateTime    int64       `xorm:"bigint" json:"create_time"`
+	UpdateTime    time.Time   `xorm:"timestamp updated" json:"-"`
 }
 
 func (to *TradeOrder) Save(db *xorm.Session) error {

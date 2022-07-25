@@ -66,4 +66,14 @@ func Test_main(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(order.OrderId, ShouldStartWith, "B")
 	})
+
+	Convey("市价按成交额", t, func() {
+		order, err := market_order_amount(1, "ethusd", OrderSideSell, "100.00")
+		So(err, ShouldBeNil)
+		So(order.OrderId, ShouldStartWith, "A")
+
+		order, err = market_order_amount(1, "ethusd", OrderSideBuy, "100.00")
+		So(err, ShouldBeNil)
+		So(order.OrderId, ShouldStartWith, "B")
+	})
 }

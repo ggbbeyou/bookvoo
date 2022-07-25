@@ -9,6 +9,10 @@ import (
 	te "github.com/yzimhao/trading_engine"
 )
 
+var (
+	USERID int64 = 1
+)
+
 type new_order_request struct {
 	Symbol    string           `json:"symbol" binding:"required" example:"ethusd"`
 	Side      orders.OrderSide `json:"side" binding:"required" example:"sell/buy"`
@@ -59,7 +63,7 @@ func order_new(c *gin.Context) {
 }
 
 func limit_order(c *gin.Context, req new_order_request) {
-	order, err := orders.NewLimitOrder(1, req.Symbol, req.Side, req.Price, req.Quantity)
+	order, err := orders.NewLimitOrder(USERID, req.Symbol, req.Side, req.Price, req.Quantity)
 	if err != nil {
 		fail(c, err.Error())
 		return
@@ -72,10 +76,34 @@ func limit_order(c *gin.Context, req new_order_request) {
 	success(c, gin.H{"order_id": order.OrderId})
 }
 
-func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide, amount string) {
+//市价按数量操作
+func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, qty string) {
+	order, err := orders.NewMarketOrderByQty(USERID, symbol, side, qty)
+	if err != nil {
+		fail(c, err.Error())
+		return
+	}
 
+	if side == orders.OrderSideSell {
+		base.MatchingEngine[symbol].ChNewOrder <- te.NewAskMarketQtyItem(order.OrderId, core.D(order.Quantity), order.CreateTime)
+	} else if side == orders.OrderSideBuy {
+		base.MatchingEngine[symbol].ChNewOrder <- te.NewBidMarketQtyItem(order.OrderId, core.D(order.Quantity), core.D(order.TradeAmount), order.CreateTime)
+	}
+	success(c, gin.H{"order_id": order.OrderId})
 }
 
-func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, qty string) {
+//市价按成交量操作
+func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide, amount string) {
+	order, err := orders.NewMarketOrderByAmount(USERID, symbol, side, amount)
+	if err != nil {
+		fail(c, err.Error())
+		return
+	}
 
+	if side == orders.OrderSideSell {
+		base.MatchingEngine[symbol].ChNewOrder <- te.NewAskMarketAmountItem(order.OrderId, core.D(amount), core.D(order.UnfinishedQty), order.CreateTime)
+	} else if side == orders.OrderSideBuy {
+		base.MatchingEngine[symbol].ChNewOrder <- te.NewBidMarketAmountItem(order.OrderId, core.D(order.TradeAmount), order.CreateTime)
+	}
+	success(c, gin.H{"order_id": order.OrderId})
 }
