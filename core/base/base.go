@@ -3,13 +3,11 @@ package base
 import (
 	"time"
 
-	"github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
 )
 
 var (
-	db_engine      *xorm.Engine
-	MatchingEngine map[string]*trading_engine.TradePair
+	db_engine *xorm.Engine
 )
 
 type status int
@@ -78,20 +76,6 @@ func GetTradePairBySymbol(symbol string) (*TradePairOpt, error) {
 		return nil, err
 	}
 	return &item, err
-}
-
-func RunMatching() {
-	MatchingEngine = make(map[string]*trading_engine.TradePair)
-
-	db := db_engine.NewSession()
-	defer db.Close()
-
-	rows := []TradePairOpt{}
-	db.Table(new(TradePairOpt)).Where("status=?", statusEnable).Find(&rows)
-
-	for _, row := range rows {
-		MatchingEngine[row.Symbol] = trading_engine.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
-	}
 }
 
 func SetDbEngine(db *xorm.Engine) {

@@ -23,13 +23,13 @@ func depth(c *gin.Context) {
 		limitInt = 100
 	}
 
-	if _, ok := base.MatchingEngine[symbol]; !ok {
+	if _, ok := base.Engine[symbol]; !ok {
 		fail(c, "invalid symbol")
 		return
 	}
 
-	a := base.MatchingEngine[symbol].GetAskDepth(limitInt)
-	b := base.MatchingEngine[symbol].GetBidDepth(limitInt)
+	a := base.Engine[symbol].GetAskDepth(limitInt)
+	b := base.Engine[symbol].GetBidDepth(limitInt)
 	success(c, gin.H{
 		"ask": a,
 		"bid": b,
@@ -42,7 +42,7 @@ func tradelog(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"ok": true,
 		"data": gin.H{
-			"latest_price": base.MatchingEngine[symbol].Price2String(base.MatchingEngine[symbol].LatestPrice()),
+			"latest_price": base.Engine[symbol].Price2String(base.Engine[symbol].LatestPrice()),
 			"trade_log":    "", //recentTrade,
 		},
 	})

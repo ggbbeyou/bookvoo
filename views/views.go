@@ -86,15 +86,15 @@ func watchTradeLog() {
 		// 	if ok {
 		// 		sendMessage(fmt.Sprintf("kline.%s.%s", nk.Period, nk.Symbol), nk)
 		// 	}
-		case log, ok := <-base.MatchingEngine["ethusd"].ChTradeResult:
+		case log, ok := <-base.Engine["ethusd"].ChTradeResult:
 			if ok {
 				//
 				pubTradeLog(log)
 
 				relog := gin.H{
-					"TradePrice":    base.MatchingEngine["ethusd"].Price2String(log.TradePrice),
-					"TradeAmount":   base.MatchingEngine["ethusd"].Price2String(log.TradeAmount),
-					"TradeQuantity": base.MatchingEngine["ethusd"].Qty2String(log.TradeQuantity),
+					"TradePrice":    base.Engine["ethusd"].Price2String(log.TradePrice),
+					"TradeAmount":   base.Engine["ethusd"].Price2String(log.TradeAmount),
+					"TradeQuantity": base.Engine["ethusd"].Qty2String(log.TradeQuantity),
 					"TradeTime":     time.Unix(log.TradeTime/1e9, 0),
 					"AskOrderId":    log.AskOrderId,
 					"BidOrderId":    log.BidOrderId,
@@ -108,11 +108,11 @@ func watchTradeLog() {
 
 				//latest price
 				sendMessage("latest_price.ethusd", gin.H{
-					"latest_price": base.MatchingEngine["ethusd"].Price2String(log.TradePrice),
+					"latest_price": base.Engine["ethusd"].Price2String(log.TradePrice),
 				})
 
 			}
-		case cancelOrderId := <-base.MatchingEngine["ethusd"].ChCancelResult:
+		case cancelOrderId := <-base.Engine["ethusd"].ChCancelResult:
 			sendMessage("cancel_order.ethusd", gin.H{
 				"OrderId": cancelOrderId,
 			})
@@ -128,8 +128,8 @@ func pushDepth() {
 
 		time.Sleep(time.Duration(150) * time.Millisecond)
 
-		ask := base.MatchingEngine["ethusd"].GetAskDepth(10)
-		bid := base.MatchingEngine["ethusd"].GetBidDepth(10)
+		ask := base.Engine["ethusd"].GetAskDepth(10)
+		bid := base.Engine["ethusd"].GetBidDepth(10)
 
 		sendMessage("depth.ethusd", gin.H{
 			"ask": ask,
@@ -203,7 +203,7 @@ func newOrder(c *gin.Context) {
 	// 		return
 	// 	}
 	// 	item := trading_engine.NewAskLimitItem(order.OrderId, string2decimal(order.Price), string2decimal(order.Quantity), order.CreateTime)
-	// 	base.MatchingEngine[symbol].ChNewOrder <- item
+	// 	base.Engine[symbol].ChNewOrder <- item
 
 	// } else {
 	// 	order, err := orders.NewLimitOrder(1, symbol, orders.OrderSideBid, param.Price, param.Quantity)
@@ -215,7 +215,7 @@ func newOrder(c *gin.Context) {
 	// 		return
 	// 	}
 	// 	item := trading_engine.NewAskLimitItem(order.OrderId, string2decimal(order.Price), string2decimal(order.Quantity), order.CreateTime)
-	// 	base.MatchingEngine[symbol].ChNewOrder <- item
+	// 	base.Engine[symbol].ChNewOrder <- item
 	// }
 
 	// go sendMessage(fmt.Sprintf("new_order.%s", symbol), param)
@@ -223,8 +223,8 @@ func newOrder(c *gin.Context) {
 	// c.JSON(200, gin.H{
 	// 	"ok": true,
 	// 	"data": gin.H{
-	// 		"ask_len": base.MatchingEngine[symbol].AskLen(),
-	// 		"bid_len": base.MatchingEngine[symbol].BidLen(),
+	// 		"ask_len": base.Engine[symbol].AskLen(),
+	// 		"bid_len": base.Engine[symbol].BidLen(),
 	// 	},
 	// })
 }
@@ -242,11 +242,11 @@ func testOrder(c *gin.Context) {
 			if op == "ask" {
 				orderId = fmt.Sprintf("a-%s", orderId)
 				item := trading_engine.NewAskLimitItem(orderId, randDecimal(20, 50), randDecimal(20, 100), time.Now().UnixNano())
-				base.MatchingEngine["ethusd"].ChNewOrder <- item
+				base.Engine["ethusd"].ChNewOrder <- item
 			} else {
 				orderId = fmt.Sprintf("b-%s", orderId)
 				item := trading_engine.NewBidLimitItem(orderId, randDecimal(1, 20), randDecimal(20, 100), time.Now().UnixNano())
-				base.MatchingEngine["ethusd"].ChNewOrder <- item
+				base.Engine["ethusd"].ChNewOrder <- item
 			}
 
 		}
@@ -255,8 +255,8 @@ func testOrder(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"ok": true,
 		"data": gin.H{
-			"ask_len": base.MatchingEngine["ethusd"].AskLen(),
-			"bid_len": base.MatchingEngine["ethusd"].BidLen(),
+			"ask_len": base.Engine["ethusd"].AskLen(),
+			"bid_len": base.Engine["ethusd"].BidLen(),
 		},
 	})
 }
@@ -274,9 +274,9 @@ func cancelOrder(c *gin.Context) {
 		return
 	}
 	if strings.HasPrefix(param.OrderId, "a-") {
-		base.MatchingEngine["ethusd"].CancelOrder(trading_engine.OrderSideSell, param.OrderId)
+		base.Engine["ethusd"].CancelOrder(trading_engine.OrderSideSell, param.OrderId)
 	} else {
-		base.MatchingEngine["ethusd"].CancelOrder(trading_engine.OrderSideBuy, param.OrderId)
+		base.Engine["ethusd"].CancelOrder(trading_engine.OrderSideBuy, param.OrderId)
 	}
 
 	go sendMessage("cancel_order.ethusd", param)
