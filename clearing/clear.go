@@ -70,6 +70,7 @@ func (c *clearing) updateOrder(side orders.OrderSide) error {
 	}
 	order.FinishedQty = d(order.FinishedQty).Add(c.trade_qty).String()
 	order.TradeAmount = d(order.TradeAmount).Add(c.trade_amount).String()
+	order.TradeSymbol = c.symbol
 
 	//todo 一些必要的边界值检查
 
