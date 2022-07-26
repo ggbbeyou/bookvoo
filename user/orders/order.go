@@ -78,5 +78,5 @@ func (to *TradeOrder) Save(db *xorm.Session) error {
 }
 
 func (to *TradeOrder) TableName() string {
-	return fmt.Sprintf("trade_order_%s", to.TradeSymbol)
+	return fmt.Sprintf("order_%s", to.TradeSymbol)
 }

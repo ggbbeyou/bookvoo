@@ -38,7 +38,7 @@ type TradeRecord struct {
 }
 
 func (t *TradeRecord) TableName() string {
-	return fmt.Sprintf("trade_record_%s", t.Symbol)
+	return fmt.Sprintf("order_trade_record_%s", t.Symbol)
 }
 
 func (t *TradeRecord) Save(db *xorm.Session) error {
