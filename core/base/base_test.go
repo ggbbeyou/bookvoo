@@ -41,7 +41,7 @@ func Test_main(t *testing.T) {
 			MinPrecision: 8,
 			ShowPrec:     2,
 			Standard:     true,
-			Status:       statusEnable,
+			Status:       StatusEnable,
 		}
 		_, err := db.Insert(&usdInfo)
 		So(err, ShouldBeNil)
@@ -52,7 +52,7 @@ func Test_main(t *testing.T) {
 			Name:         "以太坊",
 			MinPrecision: 18,
 			ShowPrec:     8,
-			Status:       statusEnable,
+			Status:       StatusEnable,
 		}
 		_, err = db.Insert(&ethInfo)
 
@@ -62,18 +62,18 @@ func Test_main(t *testing.T) {
 
 	Convey("添加测试用交易对信息", t, func() {
 		id, err := db.Insert(&TradePairOpt{
-			Symbol:         "ethusd",
-			Name:           "ETHUSD",
-			TradeSymbolId:  int(eth_id),
-			BaseSymbolId:   int(usd_id),
-			PricePrec:      2,
-			QtyPrec:        4,
-			AllowMinQty:    "0.0001",
-			AllowMaxQty:    "100",
-			AllowMinAmount: "1",
-			AllowMaxAmount: "1000000",
-			FeeRate:        "0.001",
-			Status:         statusEnable,
+			Symbol:           "ethusd",
+			Name:             "ETHUSD",
+			SymbolId:         int(eth_id),
+			StandardSymbolId: int(usd_id),
+			PricePrec:        2,
+			QtyPrec:          4,
+			AllowMinQty:      "0.0001",
+			AllowMaxQty:      "100",
+			AllowMinAmount:   "1",
+			AllowMaxAmount:   "1000000",
+			FeeRate:          "0.001",
+			Status:           StatusEnable,
 		})
 		So(err, ShouldBeNil)
 		logrus.Info(id)

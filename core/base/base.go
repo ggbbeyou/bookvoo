@@ -13,8 +13,8 @@ var (
 type status int
 
 const (
-	statusDisable status = 0
-	statusEnable  status = 1
+	StatusDisable status = 0
+	StatusEnable  status = 1
 )
 
 type SymbolInfo struct {
@@ -23,7 +23,7 @@ type SymbolInfo struct {
 	Name         string    `xorm:"varchar(250) notnull"`
 	ShowPrec     int       `xorm:"default(0)"`
 	MinPrecision int       `xorm:"default(0)"`
-	Standard     bool      `xorm:"default(0)"`
+	Standard     bool      `xorm:"default(0)"` //是否为本位币
 	Status       status    `xorm:"default(0) notnull"`
 	CreateTime   time.Time `xorm:"timestamp created"`
 	UpdateTime   time.Time `xorm:"timestamp updated"`
@@ -34,8 +34,8 @@ type TradePairOpt struct {
 	Symbol string `xorm:"varchar(100) notnull unique(symbol)"`
 	Name   string `xorm:"varchar(250) notnull"`
 
-	TradeSymbolId int `xorm:"default(0) unique(symbol_base)"`
-	BaseSymbolId  int `xorm:"default(0) unique(symbol_base)"`
+	SymbolId         int `xorm:"default(0) unique(symbol_base)"` //交易物品
+	StandardSymbolId int `xorm:"default(0) unique(symbol_base)"` //支付货币
 
 	PricePrec      int    `xorm:"default(2)"`
 	QtyPrec        int    `xorm:"default(0)"`

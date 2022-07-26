@@ -2,7 +2,6 @@ package orders
 
 import (
 	"github.com/sirupsen/logrus"
-	"github.com/yzimhao/bookvoo/core"
 	"github.com/yzimhao/bookvoo/core/base"
 	"github.com/yzimhao/bookvoo/user/assets"
 )
@@ -20,17 +19,17 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 	//todo 检查交易对限制
 
 	neworder := TradeOrder{
-		OrderId:       order_id_by_side(side),
-		TradeSymbol:   trade_symbol,
-		TradingPair:   tp.Id,
-		OrderSide:     side,
-		OrderType:     OrderTypeMarket,
-		UserId:        user_id,
-		Price:         "-1",
-		Quantity:      qty,
-		UnfinishedQty: qty,
-		FeeRate:       tp.FeeRate,
-		Status:        orderStatusNew,
+		OrderId:     order_id_by_side(side),
+		TradeSymbol: trade_symbol,
+		TradingPair: tp.Id,
+		OrderSide:   side,
+		OrderType:   OrderTypeMarket,
+		UserId:      user_id,
+		Price:       "-1",
+		Quantity:    qty,
+		FinishedQty: "0",
+		FeeRate:     tp.FeeRate,
+		Status:      OrderStatusNew,
 	}
 
 	db := db_engine.NewSession()
@@ -38,7 +37,6 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 
 	err = db.Begin()
 	if err != nil {
-		logrus.Error(err, " 22")
 		return nil, err
 	}
 
@@ -52,7 +50,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 
 	//冻结资产
 	if neworder.OrderSide == OrderSideSell {
-		_, err = assets.FreezeAssets(db, false, user_id, tp.TradeSymbolId, qty, neworder.OrderId, assets.Behavior_Trade)
+		_, err = assets.FreezeAssets(db, false, user_id, tp.SymbolId, qty, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return nil, err
 		}
@@ -61,7 +59,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		neworder.TotalAmount = "0"
 	} else if neworder.OrderSide == OrderSideBuy {
 		//冻结所有可用
-		_, err = assets.FreezeTotalAssets(db, false, user_id, tp.BaseSymbolId, neworder.OrderId, assets.Behavior_Trade)
+		_, err = assets.FreezeTotalAssets(db, false, user_id, tp.StandardSymbolId, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return nil, err
 		}
@@ -72,7 +70,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		}
 
 		neworder.Fee = "0"
-		neworder.TradeAmount = core.D(freeze.FreezeAmount).Mul(core.D("1").Sub(core.D(neworder.FeeRate))).String()
+		neworder.TradeAmount = d(freeze.FreezeAmount).Mul(d("1").Sub(d(neworder.FeeRate))).String()
 		neworder.TotalAmount = freeze.FreezeAmount
 	}
 
@@ -98,17 +96,17 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 	//todo 检查交易对限制
 
 	neworder := TradeOrder{
-		OrderId:       order_id_by_side(side),
-		TradeSymbol:   trade_symbol,
-		TradingPair:   tp.Id,
-		OrderSide:     side,
-		OrderType:     OrderTypeMarket,
-		UserId:        user_id,
-		Price:         "-1",
-		Quantity:      "0",
-		UnfinishedQty: "0",
-		FeeRate:       tp.FeeRate,
-		Status:        orderStatusNew,
+		OrderId:     order_id_by_side(side),
+		TradeSymbol: trade_symbol,
+		TradingPair: tp.Id,
+		OrderSide:   side,
+		OrderType:   OrderTypeMarket,
+		UserId:      user_id,
+		Price:       "-1",
+		Quantity:    "0",
+		FinishedQty: "0",
+		FeeRate:     tp.FeeRate,
+		Status:      OrderStatusNew,
 	}
 
 	db := db_engine.NewSession()
@@ -129,21 +127,21 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 	}()
 
 	if neworder.OrderSide == OrderSideSell {
-		_, err = assets.FreezeTotalAssets(db, false, user_id, tp.TradeSymbolId, neworder.OrderId, assets.Behavior_Trade)
+		_, err = assets.FreezeTotalAssets(db, false, user_id, tp.SymbolId, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return nil, err
 		}
 
 		neworder.Fee = "0"
-		neworder.TradeAmount = core.D(amount).Mul(core.D("1").Sub(core.D(neworder.FeeRate))).String()
+		neworder.TradeAmount = d(amount).Mul(d("1").Sub(d(neworder.FeeRate))).String()
 		neworder.TotalAmount = amount
 	} else if neworder.OrderSide == OrderSideBuy {
-		_, err = assets.FreezeAssets(db, false, user_id, tp.BaseSymbolId, amount, neworder.OrderId, assets.Behavior_Trade)
+		_, err = assets.FreezeAssets(db, false, user_id, tp.StandardSymbolId, amount, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return nil, err
 		}
 		neworder.Fee = "0"
-		neworder.TradeAmount = core.D(amount).Mul(core.D("1").Sub(core.D(neworder.FeeRate))).String()
+		neworder.TradeAmount = d(amount).Mul(d("1").Sub(d(neworder.FeeRate))).String()
 		neworder.TotalAmount = amount
 	}
 

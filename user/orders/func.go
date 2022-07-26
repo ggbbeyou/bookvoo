@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 	"xorm.io/xorm"
 )
@@ -41,4 +42,9 @@ func make_order_id(pre string) string {
 	rand.Seed(time.Now().UnixNano())
 	rn := rand.Intn(99)
 	return fmt.Sprintf("%s%s%09d%02d", pre, s, ns, rn)
+}
+
+func d(s string) decimal.Decimal {
+	ss, _ := decimal.NewFromString(s)
+	return ss
 }

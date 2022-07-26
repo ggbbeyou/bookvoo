@@ -20,29 +20,30 @@ const (
 	orderTypeMarketQty    OrderType = "market_qty"
 	orderTypeMarketAmount OrderType = "market_amount"
 
-	orderStatusNew  orderStatus = 0
-	orderStatusDone orderStatus = 1
+	OrderStatusNew    orderStatus = 0
+	OrderStatusDone   orderStatus = 1
+	OrderStatusCancel orderStatus = 2
 )
 
 // 委托记录表
 type TradeOrder struct {
-	Id            int64       `xorm:"pk autoincr bigint" json:"-"`
-	TradeSymbol   string      `xorm:"-" json:"symbol"`
-	TradingPair   int         `xorm:"notnull index(pair_id) index(oa)" json:"-"`
-	OrderId       string      `xorm:"varchar(30) unique(order_id) notnull" json:"order_id"`
-	OrderSide     OrderSide   `xorm:"varchar(10) index(order_side) index(oa)" json:"order_side"`
-	OrderType     OrderType   `xorm:"varchar(10)" json:"order_type"` //价格策略，市价单，限价单
-	UserId        int64       `xorm:"bigint index(userid) index(oa) notnull" json:"-"`
-	Price         string      `xorm:"decimal(40,20) index(oa) notnull default(0)" json:"price"`
-	Quantity      string      `xorm:"decimal(40,20) notnull default(0)" json:"quantity"`
-	UnfinishedQty string      `xorm:"decimal(40,20) notnull default(0)" json:"unfinish_qty"`
-	FeeRate       string      `xorm:"decimal(40,20) notnull default(0)" json:"-"`
-	Fee           string      `xorm:"decimal(40,20) notnull default(0)" json:"-"`
-	TradeAmount   string      `xorm:"decimal(40,20) notnull default(0)" json:"trade_amount"`
-	TotalAmount   string      `xorm:"decimal(40,20) notnull default(0)" json:"-"` //包含手续费
-	Status        orderStatus `xorm:"tinyint(1)" json:"status"`
-	CreateTime    int64       `xorm:"bigint" json:"create_time"`
-	UpdateTime    time.Time   `xorm:"timestamp updated" json:"-"`
+	Id          int64       `xorm:"pk autoincr bigint" json:"-"`
+	TradeSymbol string      `xorm:"-" json:"symbol"`
+	TradingPair int         `xorm:"notnull index(pair_id) index(oa)" json:"-"`
+	OrderId     string      `xorm:"varchar(30) unique(order_id) notnull" json:"order_id"`
+	OrderSide   OrderSide   `xorm:"varchar(10) index(order_side) index(oa)" json:"order_side"`
+	OrderType   OrderType   `xorm:"varchar(10)" json:"order_type"` //价格策略，市价单，限价单
+	UserId      int64       `xorm:"bigint index(userid) index(oa) notnull" json:"-"`
+	Price       string      `xorm:"decimal(40,20) index(oa) notnull default(0)" json:"price"`
+	Quantity    string      `xorm:"decimal(40,20) notnull default(0)" json:"quantity"`
+	FinishedQty string      `xorm:"decimal(40,20) notnull default(0)" json:"finished_qty"`
+	FeeRate     string      `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	Fee         string      `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	TradeAmount string      `xorm:"decimal(40,20) notnull default(0)" json:"trade_amount"`
+	TotalAmount string      `xorm:"decimal(40,20) notnull default(0)" json:"-"` //包含手续费
+	Status      orderStatus `xorm:"tinyint(1)" json:"status"`
+	CreateTime  int64       `xorm:"bigint" json:"create_time"`
+	UpdateTime  time.Time   `xorm:"timestamp updated" json:"-"`
 }
 
 func (to *TradeOrder) Save(db *xorm.Session) error {

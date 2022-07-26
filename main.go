@@ -7,7 +7,9 @@ import (
 	"github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
 	"github.com/yzimhao/bookvoo/core"
+	"github.com/yzimhao/bookvoo/engine"
 	"github.com/yzimhao/bookvoo/market"
+	"github.com/yzimhao/bookvoo/settlement"
 	"github.com/yzimhao/bookvoo/user"
 	"github.com/yzimhao/bookvoo/views"
 	"xorm.io/xorm"
@@ -71,10 +73,13 @@ func start(config string) {
 		return conn
 	}()
 
+	//各模块数据库设置
 	core.SetDbEngine(default_db)
 	user.SetDbEngine(default_db)
+	engine.SetDbEngine(default_db)
+	settlement.SetDbEngine(default_db)
 
-	go core.Run(config, router)
+	go engine.RunMatching()
 	go user.Run(config, router)
 	go market.RunWithGinRouter(config, router)
 	//pages
