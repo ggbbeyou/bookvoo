@@ -1,14 +1,15 @@
-package clearing
+package clearings
 
 import (
-	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/core/base"
 	"github.com/yzimhao/bookvoo/user/orders"
+	"github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
 )
 
 var (
 	db_engine *xorm.Engine
+	Notify    chan trading_engine.TradeResult
 )
 
 func SetDbEngine(db *xorm.Engine) {
@@ -57,35 +58,30 @@ func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err e
 	//检查双方订单状态
 	err = cl.check()
 	if err != nil {
-		logrus.Error("a")
 		return err
 	}
 
 	//写成交日志
 	err = cl.tradeRecord()
 	if err != nil {
-		logrus.Error("d")
 		return err
 	}
 
 	//修改买方订单信息
 	err = cl.updateBid()
 	if err != nil {
-		logrus.Error("c")
 		return err
 	}
 
 	//修改卖方订单信息
 	err = cl.updateAsk()
 	if err != nil {
-		logrus.Error("b")
 		return err
 	}
 
 	//结算三方资产
 	err = cl.transfer()
 	if err != nil {
-		logrus.Error("e")
 		return err
 	}
 	return nil

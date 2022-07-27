@@ -1,4 +1,4 @@
-package clearing
+package clearings
 
 import (
 	"crypto/sha256"
@@ -157,7 +157,6 @@ func (c *clearing) transfer() error {
 		return err
 	}
 	//卖家收到的本位币需要扣除fee
-
 	fee := d(c.record.BidFee).Add(d(c.record.AskFee))
 	_, err = assets.Transfer(c.db, false, c.bid.UserId, c.ask.UserId, c.standard_symbol_id, amount.Sub(fee).String(), c.record.TradeId, assets.Behavior_Trade)
 	if err != nil {

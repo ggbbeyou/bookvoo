@@ -1,4 +1,4 @@
-package clearing
+package clearings
 
 import (
 	"testing"

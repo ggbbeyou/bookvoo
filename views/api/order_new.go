@@ -3,9 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
-	"github.com/yzimhao/bookvoo/core"
 	"github.com/yzimhao/bookvoo/match"
-	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
 	te "github.com/yzimhao/trading_engine"
 )
@@ -51,10 +49,10 @@ func order_new(c *gin.Context) {
 		return
 	} else if req.OrderType == orders.OrderTypeMarket {
 		//todo
-		if core.D(req.Amount).Cmp(decimal.Zero) > 0 {
+		if d(req.Amount).Cmp(decimal.Zero) > 0 {
 			//按金额操作
 			market_order_by_amount(c, req.Symbol, req.Side, req.Amount)
-		} else if core.D(req.Quantity).Cmp(decimal.Zero) > 0 {
+		} else if d(req.Quantity).Cmp(decimal.Zero) > 0 {
 			//按数量操作
 			market_order_by_qty(c, req.Symbol, req.Side, req.Quantity)
 		}
@@ -88,7 +86,7 @@ func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, q
 	if side == orders.OrderSideSell {
 		match.Engine[symbol].ChNewOrder <- te.NewAskMarketQtyItem(order.OrderId, d(order.Quantity), order.CreateTime)
 	} else if side == orders.OrderSideBuy {
-		match.Engine[symbol].ChNewOrder <- te.NewBidMarketQtyItem(order.OrderId, d(order.Quantity), d(order.TradeAmount), order.CreateTime)
+		match.Engine[symbol].ChNewOrder <- te.NewBidMarketQtyItem(order.OrderId, d(order.Quantity), d(order.FreezeQty), order.CreateTime)
 	}
 	success(c, gin.H{"order_id": order.OrderId})
 }
@@ -102,10 +100,10 @@ func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide
 	}
 
 	if side == orders.OrderSideSell {
-        totalQty := assets.
-		match.Engine[symbol].ChNewOrder <- te.NewAskMarketAmountItem(order.OrderId, d(amount), , order.CreateTime)
+
+		match.Engine[symbol].ChNewOrder <- te.NewAskMarketAmountItem(order.OrderId, d(amount), d(order.FreezeQty), order.CreateTime)
 	} else if side == orders.OrderSideBuy {
-		match.Engine[symbol].ChNewOrder <- te.NewBidMarketAmountItem(order.OrderId, d(order.TradeAmount), order.CreateTime)
+		match.Engine[symbol].ChNewOrder <- te.NewBidMarketAmountItem(order.OrderId, d(order.Amount), order.CreateTime)
 	}
 	success(c, gin.H{"order_id": order.OrderId})
 }
