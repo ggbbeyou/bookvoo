@@ -26,6 +26,10 @@ func SetupRouter(router *gin.Engine) {
 	//todo 验证登录状态
 	order := apiV1.Group("/order")
 	{
+		order.Use(func(ctx *gin.Context) {
+			//todo 登陆中间件
+			ctx.Set("user_id", USERID)
+		})
 		//查询订单
 		order.GET("/", nil)
 		//创建订单
@@ -54,6 +58,15 @@ func success(c *gin.Context, data interface{}) {
 
 func fail(c *gin.Context, reason string) {
 	responseJson(c, 0, reason, nil)
+}
+
+func getUserId(c *gin.Context) int64 {
+	val, _ := c.Get("user_id")
+	switch val.(type) {
+	case int64:
+		return val.(int64)
+	}
+	return -1
 }
 
 func d(ss string) decimal.Decimal {

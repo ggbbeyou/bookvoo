@@ -33,7 +33,6 @@ type new_order_request struct {
 // @Success 200 {object} response
 // @Router /api/v1/order/new [post]
 func order_new(c *gin.Context) {
-
 	var req new_order_request
 	if err := c.BindJSON(&req); err != nil {
 		fail(c, err.Error())
@@ -58,7 +57,8 @@ func order_new(c *gin.Context) {
 }
 
 func limit_order(c *gin.Context, req new_order_request) {
-	order, err := orders.NewLimitOrder(USERID, req.Symbol, req.Side, req.Price, req.Quantity)
+	uid := getUserId(c)
+	order, err := orders.NewLimitOrder(uid, req.Symbol, req.Side, req.Price, req.Quantity)
 	if err != nil {
 		fail(c, err.Error())
 		return
@@ -73,7 +73,8 @@ func limit_order(c *gin.Context, req new_order_request) {
 
 //市价按数量操作
 func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, qty string) {
-	order, err := orders.NewMarketOrderByQty(USERID, symbol, side, qty)
+	uid := getUserId(c)
+	order, err := orders.NewMarketOrderByQty(uid, symbol, side, qty)
 	if err != nil {
 		fail(c, err.Error())
 		return
@@ -89,7 +90,8 @@ func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, q
 
 //市价按成交量操作
 func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide, amount string) {
-	order, err := orders.NewMarketOrderByAmount(USERID, symbol, side, amount)
+	uid := getUserId(c)
+	order, err := orders.NewMarketOrderByAmount(uid, symbol, side, amount)
 	if err != nil {
 		fail(c, err.Error())
 		return
