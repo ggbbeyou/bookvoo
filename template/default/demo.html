@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>BookVoo 交易软件 Beta</title>
-    <link rel="stylesheet" type="text/css" href="//www.layuicdn.com/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="/statics/libs/layui-v2.6.8/css/layui.css" />
     <link rel="stylesheet" type="text/css" href="/statics/css/demo.css" />
     <script type="text/javascript" src="/statics/js/lib/klinecharts.min.js"></script>
 
@@ -42,7 +42,7 @@
 
 <script id="myorder-tpl" type="text/html">
     <tr class="order-item" order-id="{% d.order_id%}">
-        <td>{% d.price_type %}</td>
+        <td>{% d.order_type %}</td>
         <td>{% d.price %}</td>
         <td>{% d.quantity %}/<span class="qty_ok">0</span></td>
         <td>{%# if(d.amount==0) { %} - {%#  } else { %}  {% d.amount %} {%# } %}</td>
@@ -136,45 +136,45 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">订单类型</label>
                                 <div class="layui-input-block">
-                                    <select name="price_type_ask" data="ask" lay-filter="price_type">
+                                    <select name="order_type_sell" data="sell" lay-filter="order_type">
                                         <option value="limit">限价单</option>
                                         <option value="market">市价单</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="layui-form-item item-market-type-ask" style="display: none;">
+                            <div class="layui-form-item item-market-type-sell" style="display: none;">
                                 <label class="layui-form-label"></label>
                                 <div class="layui-input-block">
-                                    <input type="radio" name="mtype_ask" lay-filter="market-type" value="q" title="按数量"
+                                    <input type="radio" name="mtype_sell" lay-filter="market-type" value="q" title="按数量"
                                         checked>
-                                    <input type="radio" name="mtype_ask" lay-filter="market-type" value="a" title="按金额"
+                                    <input type="radio" name="mtype_selll" lay-filter="market-type" value="a" title="按金额"
                                         >
                                 </div>
                             </div>
 
-                            <div class="layui-form-item item-price-ask">
+                            <div class="layui-form-item item-price-sell">
                                 <label class="layui-form-label">价格</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="price_ask" required lay-verify="required|number"
+                                    <input type="text" name="price_sell" required lay-verify="required|number"
                                         placeholder="请输入价格" autocomplete="off" class="layui-input" value="1.00">
                                 </div>
                             </div>
 
 
-                            <div class="layui-form-item item-quantity-ask">
+                            <div class="layui-form-item item-quantity-sell">
                                 <label class="layui-form-label">数量</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="quantity_ask" required lay-verify="required|number"
+                                    <input type="text" name="quantity_sell" required lay-verify="required|number"
                                         placeholder="请输入数量" autocomplete="off" class="layui-input" value="10">
-                                        <span class="qty-tips-ask" style="font-size: 10px; display: none;">市价按数量买入时，需要用户可用资金做限制条件，测试系统默认持有100块可用资金</span>
+                                        <span class="qty-tips-sell" style="font-size: 10px; display: none;">市价按数量买入时，需要用户可用资金做限制条件，测试系统默认持有100块可用资金</span>
                                 </div>
                             </div>
 
-                            <div class="layui-form-item item-amount-ask" style="display: none;">
+                            <div class="layui-form-item item-amount-sell" style="display: none;">
                                 <label class="layui-form-label">金额</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="amount_ask" required lay-verify="required|number"
+                                    <input type="text" name="amount_sell" required lay-verify="required|number"
                                         placeholder="交易金额" autocomplete="off" class="layui-input" value="1000.00">
                                         <span style="font-size: 10px;">市价按成交额卖出时，需要用户已持有的资产数量做限制条件，测试系统默认持有100个数量</span>
                                 </div>
@@ -200,45 +200,45 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">订单类型</label>
                                 <div class="layui-input-block">
-                                    <select name="price_type_bid" data="bid" lay-filter="price_type">
+                                    <select name="order_type_buy" data="buy" lay-filter="order_type">
                                         <option value="limit">限价单</option>
                                         <option value="market">市价单</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="layui-form-item item-market-type-bid" style="display: none;">
+                            <div class="layui-form-item item-market-type-buy" style="display: none;">
                                 <label class="layui-form-label"></label>
                                 <div class="layui-input-block">
-                                    <input type="radio" name="mtype_bid" lay-filter="market-type" value="q" title="按数量"
+                                    <input type="radio" name="mtype_buy" lay-filter="market-type" value="q" title="按数量"
                                         checked>
-                                    <input type="radio" name="mtype_bid" lay-filter="market-type" value="a" title="按金额"
+                                    <input type="radio" name="mtype_buy" lay-filter="market-type" value="a" title="按金额"
                                         >
                                 </div>
                             </div>
 
-                            <div class="layui-form-item item-price-bid">
+                            <div class="layui-form-item item-price-buy">
                                 <label class="layui-form-label">价格</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="price_bid" required lay-verify="required|number"
+                                    <input type="text" name="price_buy" required lay-verify="required|number"
                                         placeholder="请输入价格" autocomplete="off" class="layui-input" value="1.00">
                                 </div>
                             </div>
 
 
-                            <div class="layui-form-item item-quantity-bid">
+                            <div class="layui-form-item item-quantity-buy">
                                 <label class="layui-form-label">数量</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="quantity_bid" required lay-verify="required|number"
+                                    <input type="text" name="quantity_buy" required lay-verify="required|number"
                                         placeholder="请输入数量" autocomplete="off" class="layui-input" value="10">
-                                        <span class="qty-tips-bid" style="font-size: 10px; display: none;">市价按数量买入时，需要用户可用资金做限制条件，测试系统默认持有100块可用资金</span>
+                                        <span class="qty-tips-buy" style="font-size: 10px; display: none;">市价按数量买入时，需要用户可用资金做限制条件，测试系统默认持有100块可用资金</span>
                                 </div>
                             </div>
 
-                            <div class="layui-form-item item-amount-bid" style="display: none;">
+                            <div class="layui-form-item item-amount-buy" style="display: none;">
                                 <label class="layui-form-label">金额</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="amount_bid" required lay-verify="required|number"
+                                    <input type="text" name="amount_buy" required lay-verify="required|number"
                                         placeholder="交易金额" autocomplete="off" class="layui-input" value="1000.00">
                                         <span style="font-size: 10px;">市价按成交额卖出时，需要用户已持有的资产数量做限制条件，测试系统默认持有100个数量</span>
                                 </div>
@@ -312,7 +312,7 @@
 
 
 
-    <script src="//www.layuicdn.com/layui/layui.js"></script>
+    <script src="/statics/libs/layui-v2.6.8/layui.js"></script>
     <!--您的Layui代码start-->
     
     <script type="text/javascript" src="/statics/js/func.js"></script>

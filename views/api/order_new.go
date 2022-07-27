@@ -8,10 +8,6 @@ import (
 	te "github.com/yzimhao/trading_engine"
 )
 
-var (
-	USERID int64 = 1
-)
-
 type new_order_request struct {
 	Symbol    string           `json:"symbol" binding:"required" example:"ethusd"`
 	Side      orders.OrderSide `json:"side" binding:"required" example:"sell/buy"`
@@ -34,7 +30,7 @@ type new_order_request struct {
 // @Param Authorization header string false "Bearer 用户令牌"
 // @Param object body new_order_request true "请求参数"
 // @Security ApiKeyAuth
-// @Success 200 {object} _response
+// @Success 200 {object} response
 // @Router /api/v1/order/new [post]
 func order_new(c *gin.Context) {
 

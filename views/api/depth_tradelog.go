@@ -13,7 +13,7 @@ import (
 // @Produce application/json
 // @Param symbol query string true "eg: ethusd"
 // @Param limit  query int false "默认100，最大5000"
-// @Success 200 {object} _response
+// @Success 200 {object} response
 // @Router /api/v1/depth [get]
 func depth(c *gin.Context) {
 	symbol := strings.ToLower(c.Query("symbol"))

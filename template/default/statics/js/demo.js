@@ -81,9 +81,9 @@
         //   layer.msg('Hello World');
 
         $(".opt").on("click", function () {
-            var type = $(this).hasClass("sell") ? "ask" : "bid";
-            var price_type = $("select[name='price_type_"+ type +"']").val();
-            var mtype = $("input[name='mtype_"+ type +"']:checked").val();
+            var side = $(this).hasClass("sell") ? "sell" : "buy";
+            var order_type = $("select[name='order_type_"+ side +"']").val();
+            var mtype = $("input[name='mtype_"+ side +"']:checked").val();
 
             $.ajax({
                 url: "/api/v1/order/new",
@@ -92,20 +92,20 @@
                 contentType: "application/json",
                 data: function () {
                     var data = {
-                        price_type: price_type,
-                        order_type: type,
+                        "order_type": order_type,
+                        "side": side,
                         "symbol": symbol,
                     };
 
-                    if (price_type == "market") {
+                    if (order_type == "market") {
                         if (mtype == "q") {
-                            data.quantity = $("input[name='quantity_"+ type +"']").val();
+                            data.quantity = $("input[name='quantity_"+ side +"']").val();
                         } else {
-                            data.amount = $("input[name='amount_"+ type +"']").val();
+                            data.amount = $("input[name='amount_"+ side +"']").val();
                         }
                     } else {
-                        data.price = $("input[name='price_"+ type +"']").val();
-                        data.quantity = $("input[name='quantity_"+ type +"']").val();
+                        data.price = $("input[name='price_"+ side +"']").val();
+                        data.quantity = $("input[name='quantity_"+ side +"']").val();
                     }
 
                     console.log(data);
@@ -161,7 +161,7 @@
         });
 
 
-        form.on('select(price_type)', function (data) {
+        form.on('select(order_type)', function (data) {
             var tt = $(data.elem).attr("data");
             if (data.value == "limit") {
                 $(".item-price-"+tt).show();

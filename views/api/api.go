@@ -7,7 +7,11 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type _response struct {
+var (
+	USERID int64 = 101
+)
+
+type response struct {
 	Ok     int         `json:"ok"`
 	Reason string      `json:"reason,omitempty"`
 	Data   interface{} `json:"data,omitempty"`
@@ -35,8 +39,8 @@ func SetupRouter(router *gin.Engine) {
 	}
 }
 
-func response(c *gin.Context, ok int, reason string, data interface{}) {
-	res := _response{
+func responseJson(c *gin.Context, ok int, reason string, data interface{}) {
+	res := response{
 		Ok:     ok,
 		Reason: reason,
 		Data:   data,
@@ -45,11 +49,11 @@ func response(c *gin.Context, ok int, reason string, data interface{}) {
 }
 
 func success(c *gin.Context, data interface{}) {
-	response(c, 1, "", data)
+	responseJson(c, 1, "", data)
 }
 
 func fail(c *gin.Context, reason string) {
-	response(c, 0, reason, nil)
+	responseJson(c, 0, reason, nil)
 }
 
 func d(ss string) decimal.Decimal {

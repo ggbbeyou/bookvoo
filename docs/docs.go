@@ -44,7 +44,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api._response"
+                            "$ref": "#/definitions/api.response"
                         }
                     }
                 }
@@ -89,7 +89,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api._response"
+                            "$ref": "#/definitions/api.response"
                         }
                     }
                 }
@@ -134,7 +134,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api._response"
+                            "$ref": "#/definitions/api.response"
                         }
                     }
                 }
@@ -142,18 +142,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "api._response": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "ok": {
-                    "type": "integer"
-                },
-                "reason": {
-                    "type": "string"
-                }
-            }
-        },
         "api.cancel_order_request": {
             "type": "object",
             "properties": {
@@ -193,6 +181,18 @@ const docTemplate = `{
                 "symbol": {
                     "type": "string",
                     "example": "ethusd"
+                }
+            }
+        },
+        "api.response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "ok": {
+                    "type": "integer"
+                },
+                "reason": {
+                    "type": "string"
                 }
             }
         }

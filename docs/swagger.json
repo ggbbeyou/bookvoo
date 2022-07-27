@@ -32,7 +32,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api._response"
+                            "$ref": "#/definitions/api.response"
                         }
                     }
                 }
@@ -77,7 +77,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api._response"
+                            "$ref": "#/definitions/api.response"
                         }
                     }
                 }
@@ -122,7 +122,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api._response"
+                            "$ref": "#/definitions/api.response"
                         }
                     }
                 }
@@ -130,18 +130,6 @@
         }
     },
     "definitions": {
-        "api._response": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "ok": {
-                    "type": "integer"
-                },
-                "reason": {
-                    "type": "string"
-                }
-            }
-        },
         "api.cancel_order_request": {
             "type": "object",
             "properties": {
@@ -181,6 +169,18 @@
                 "symbol": {
                     "type": "string",
                     "example": "ethusd"
+                }
+            }
+        },
+        "api.response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "ok": {
+                    "type": "integer"
+                },
+                "reason": {
+                    "type": "string"
                 }
             }
         }

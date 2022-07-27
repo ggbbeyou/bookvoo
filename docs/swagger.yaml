@@ -1,12 +1,4 @@
 definitions:
-  api._response:
-    properties:
-      data: {}
-      ok:
-        type: integer
-      reason:
-        type: string
-    type: object
   api.cancel_order_request:
     properties:
       order_id:
@@ -37,6 +29,14 @@ definitions:
     - side
     - symbol
     type: object
+  api.response:
+    properties:
+      data: {}
+      ok:
+        type: integer
+      reason:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -58,7 +58,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api._response'
+            $ref: '#/definitions/api.response'
       summary: 深度信息
       tags:
       - 交易相关
@@ -84,7 +84,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api._response'
+            $ref: '#/definitions/api.response'
       security:
       - ApiKeyAuth: []
       summary: 取消一个委托订单
@@ -117,7 +117,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api._response'
+            $ref: '#/definitions/api.response'
       security:
       - ApiKeyAuth: []
       summary: 创建一个新委托订单
