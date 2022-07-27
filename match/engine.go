@@ -27,16 +27,18 @@ func RunMatching() {
 	db.Table(new(base.TradePairOpt)).Where("status=?", base.StatusEnable).Find(&rows)
 
 	for _, row := range rows {
+
 		Engine[row.Symbol] = te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
-		go func() {
+
+		go func(item base.TradePairOpt) {
 			for {
 				select {
-				case result := <-Engine[row.Symbol].ChTradeResult:
+				case result := <-Engine[item.Symbol].ChTradeResult:
 					logrus.Error(result)
-				case cancel := <-Engine[row.Symbol].ChCancelResult:
+				case cancel := <-Engine[item.Symbol].ChCancelResult:
 					logrus.Error(cancel)
 				}
 			}
-		}()
+		}(row)
 	}
 }
