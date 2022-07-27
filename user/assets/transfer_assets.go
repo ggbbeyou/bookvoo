@@ -7,11 +7,11 @@ import (
 	"xorm.io/xorm"
 )
 
-func Transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_id int, amount string, business_id string, info OpBehavior) (success bool, err error) {
-	return transfer(db, enable_transaction, from, to, symbol_id, amount, business_id, info)
+func Transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_id int, amount string, business_id string, behavior OpBehavior) (success bool, err error) {
+	return transfer(db, enable_transaction, from, to, symbol_id, amount, business_id, behavior)
 }
 
-func transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_id int, amount string, business_id string, info OpBehavior) (success bool, err error) {
+func transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_id int, amount string, business_id string, behavior OpBehavior) (success bool, err error) {
 	if enable_transaction {
 		db.Begin()
 		defer func() {
@@ -69,12 +69,14 @@ func transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_
 
 	//双方日志
 	from_log := assetsLog{
-		UserId:   from,
-		SymbolId: symbol_id,
-		Before:   from_before,
-		Amount:   "-" + amount,
-		After:    from_user.Total,
-		Info:     fmt.Sprintf("id: %s to: %d info: %s", business_id, to, info),
+		UserId:     from,
+		SymbolId:   symbol_id,
+		Before:     from_before,
+		Amount:     "-" + amount,
+		After:      from_user.Total,
+		BusinessId: business_id,
+		Behavior:   behavior,
+		Info:       fmt.Sprintf("to: %d", to),
 	}
 	_, err = db.Table(new(assetsLog)).Insert(&from_log)
 	if err != nil {
@@ -82,12 +84,14 @@ func transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_
 	}
 
 	to_log := assetsLog{
-		UserId:   to,
-		SymbolId: symbol_id,
-		Before:   to_before,
-		Amount:   amount,
-		After:    to_user.Total,
-		Info:     fmt.Sprintf("id: %s from: %d info: %s", business_id, from, info),
+		UserId:     to,
+		SymbolId:   symbol_id,
+		Before:     to_before,
+		Amount:     amount,
+		After:      to_user.Total,
+		BusinessId: business_id,
+		Behavior:   behavior,
+		Info:       fmt.Sprintf("from: %d", from),
 	}
 	_, err = db.Table(new(assetsLog)).Insert(&to_log)
 	if err != nil {
