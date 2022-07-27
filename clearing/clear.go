@@ -112,7 +112,7 @@ func (c *clearing) tradeRecord() error {
 		}(),
 
 		AskUid:   c.ask.UserId,
-		Biduid:   c.bid.UserId,
+		BidUid:   c.bid.UserId,
 		Price:    c.trade_price.String(),
 		Quantity: c.trade_qty.String(),
 		Amount:   c.trade_price.Mul(c.trade_qty).String(),

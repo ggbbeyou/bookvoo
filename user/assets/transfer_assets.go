@@ -72,7 +72,7 @@ func transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_
 		UserId:   from,
 		SymbolId: symbol_id,
 		Before:   from_before,
-		Amount:   amount,
+		Amount:   "-" + amount,
 		After:    from_user.Total,
 		Info:     fmt.Sprintf("id: %s to: %d info: %s", business_id, to, info),
 	}
