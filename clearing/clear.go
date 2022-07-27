@@ -68,21 +68,28 @@ func (c *clearing) updateOrder(side orders.OrderSide) error {
 		order.Fee = d(order.Fee).Add(d(c.record.BidFee)).String()
 	}
 
-	order.FinishedQty = d(order.FinishedQty).Add(c.trade_qty).String()
 	order.Symbol = c.symbol
-
+	order.FinishedQty = d(order.FinishedQty).Add(c.trade_qty).String()
+	order.TradeAmount = d(order.TradeAmount).Add(c.trade_amount).String()
+	order.AvgPrice = d(order.TradeAmount).Div(d(order.FinishedQty)).String()
 	//todo 一些必要的边界值检查
 
-	// if d(c.ask.FinishedQty).Cmp(d(c.ask.Quantity)) <= 0 {
-	// }
-	_, err := c.db.Table(order.TableName()).Where("order_id=?", order.OrderId).AllCols().Update(order)
-	if err != nil {
-		return err
-	}
-
 	if order.OrderType == orders.OrderTypeLimit {
+		be := d(order.FinishedQty).Cmp(d(order.Quantity))
+		if be > 0 {
+			return fmt.Errorf("finished quantity must be  <= order.Quantity")
+		}
+		if be == 0 {
+			order.Status = orders.OrderStatusDone
+		}
+
+		_, err := c.db.Table(order.TableName()).Where("order_id=?", order.OrderId).AllCols().Update(order)
+		if err != nil {
+			return err
+		}
+
 		if order.Status == orders.OrderStatusNew {
-			_, err := c.db.Table(new(orders.UnfinishedOrder)).Where("order_id=?", order.OrderId).Update(order)
+			_, err := c.db.Table(new(orders.UnfinishedOrder)).Where("order_id=?", order.OrderId).AllCols().Update(order)
 			if err != nil {
 				return err
 			}

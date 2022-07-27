@@ -33,8 +33,11 @@ func init() {
 	db_engine.ShowSQL(true)
 
 	table1 := orders.TradeRecord{Symbol: test_symbol}
+	table2 := orders.GetOrderTableName(test_symbol)
 	db_engine.DropTables(
 		table1,
+		table2,
+		new(orders.UnfinishedOrder),
 	)
 
 	SetDbEngine(db_engine)
@@ -53,7 +56,7 @@ func Test_Main(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(sell.OrderId, ShouldStartWith, "A")
 
-		// err = NewClearing(test_symbol, sell.OrderId, buy.OrderId, "1", "2")
-		// So(err, ShouldBeNil)
+		err = NewClearing(test_symbol, sell.OrderId, buy.OrderId, "1", "2")
+		So(err, ShouldBeNil)
 	})
 }
