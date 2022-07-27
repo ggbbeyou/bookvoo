@@ -10,10 +10,6 @@ var (
 	db_engine *xorm.Engine
 )
 
-const (
-	ROOTUSERID = 0
-)
-
 func SetDbEngine(db *xorm.Engine) {
 	db_engine = db
 

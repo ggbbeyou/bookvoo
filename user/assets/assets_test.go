@@ -71,7 +71,7 @@ func Test_main(t *testing.T) {
 	defer db.Close()
 
 	var (
-		user1      int64 = 1
+		user1      int64 = 100
 		symbol_usd int   = 1
 		symbol_eth int   = 2
 	)

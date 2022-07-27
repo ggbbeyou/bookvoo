@@ -18,14 +18,17 @@ const (
 type TradeRecord struct {
 	Id     int64  `xorm:"pk autoincr bigint"`
 	Symbol string `xorm:"-"`
-	Ask    string `xorm:"varchar(30) unique(trade)"`
-	Bid    string `xorm:"varchar(30) unique(trade)"`
-	// TradeId     string `xorm:"varchar(30) unique(trade)"`
+
+	TradeId string `xorm:"varchar(30) unique(trade_id)"`
+	Ask     string `xorm:"varchar(30) unique(trade)"`
+	Bid     string `xorm:"varchar(30) unique(trade)"`
+
 	TradeBy  TradeBy `xorm:"tinyint(1)"`
 	AskUid   int64   `xorm:"bigint notnull"`
 	Biduid   int64   `xorm:"bigint notnull"`
 	Price    string  `xorm:"decimal(40,20) notnull default(0)"`
 	Quantity string  `xorm:"decimal(40,20) notnull default(0)"`
+	Amount   string  `xorm:"decimal(40,20) notnull default(0)"`
 
 	AskFeeRate string `xorm:"decimal(40,20) notnull default(0)"`
 	AskFee     string `xorm:"decimal(40,20) notnull default(0)"`

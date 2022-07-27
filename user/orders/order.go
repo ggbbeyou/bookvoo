@@ -42,7 +42,7 @@ type TradeOrder struct {
 	TradeAmount string      `xorm:"decimal(40,20) notnull default(0)" json:"trade_amount"`
 	TotalAmount string      `xorm:"decimal(40,20) notnull default(0)" json:"-"` //包含手续费
 	Status      orderStatus `xorm:"tinyint(1)" json:"status"`
-	CreateTime  int64       `xorm:"bigint" json:"create_time"`
+	CreateTime  int64       `xorm:"bigint" json:"create_time"` //时间戳 精确到纳秒
 	UpdateTime  time.Time   `xorm:"timestamp updated" json:"-"`
 }
 

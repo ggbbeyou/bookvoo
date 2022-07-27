@@ -1,6 +1,9 @@
 package clearing
 
-import "xorm.io/xorm"
+import (
+	"github.com/yzimhao/bookvoo/core/base"
+	"xorm.io/xorm"
+)
 
 var (
 	db_engine *xorm.Engine
@@ -12,6 +15,11 @@ func SetDbEngine(db *xorm.Engine) {
 
 //结算一条成交记录
 func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err error) {
+	tradeInfo, err := base.GetTradePairBySymbol(symbol)
+	if err != nil {
+		return err
+	}
+
 	db := db_engine.NewSession()
 	defer db.Close()
 
@@ -30,6 +38,9 @@ func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err e
 	cl := clearing{
 		db:     db,
 		symbol: symbol,
+
+		symbol_id:          tradeInfo.SymbolId,
+		standard_symbol_id: tradeInfo.StandardSymbolId,
 
 		ask_order_id: ask_id,
 		bid_order_id: bid_id,
@@ -60,6 +71,9 @@ func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err e
 	}
 
 	//结算三方资产
-
+	err = cl.transfer()
+	if err != nil {
+		return err
+	}
 	return nil
 }

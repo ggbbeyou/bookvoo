@@ -1,24 +1,29 @@
 package clearing
 
 import (
+	"crypto/sha256"
 	"fmt"
+	"time"
 
 	"github.com/shopspring/decimal"
+	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
 	"xorm.io/xorm"
 )
 
 type clearing struct {
-	db           *xorm.Session
-	symbol       string
-	ask_order_id string
-	bid_order_id string
-	trade_price  decimal.Decimal
-	trade_qty    decimal.Decimal
-	trade_amount decimal.Decimal
-	record       *orders.TradeRecord
-	ask          *orders.TradeOrder
-	bid          *orders.TradeOrder
+	db                 *xorm.Session
+	symbol             string
+	symbol_id          int
+	standard_symbol_id int
+	ask_order_id       string
+	bid_order_id       string
+	trade_price        decimal.Decimal
+	trade_qty          decimal.Decimal
+	trade_amount       decimal.Decimal
+	record             *orders.TradeRecord
+	ask                *orders.TradeOrder
+	bid                *orders.TradeOrder
 }
 
 func (c *clearing) check() error {
@@ -93,9 +98,10 @@ func (c *clearing) updateOrder(side orders.OrderSide) error {
 func (c *clearing) tradeRecord() error {
 
 	trade := orders.TradeRecord{
-		Symbol: c.symbol,
-		Ask:    c.ask_order_id,
-		Bid:    c.bid_order_id,
+		Symbol:  c.symbol,
+		TradeId: trade_id(c.ask_order_id, c.bid_order_id),
+		Ask:     c.ask_order_id,
+		Bid:     c.bid_order_id,
 		TradeBy: func() orders.TradeBy {
 			if c.ask.CreateTime > c.bid.CreateTime {
 				return orders.TradeBySell
@@ -108,6 +114,7 @@ func (c *clearing) tradeRecord() error {
 		Biduid:   c.bid.UserId,
 		Price:    c.trade_price.String(),
 		Quantity: c.trade_qty.String(),
+		Amount:   c.trade_price.Mul(c.trade_qty).String(),
 
 		AskFeeRate: c.ask.FeeRate,
 		AskFee:     c.trade_amount.Mul(d(c.ask.FeeRate)).String(),
@@ -123,7 +130,53 @@ func (c *clearing) tradeRecord() error {
 	return nil
 }
 
+func (c *clearing) transfer() error {
+	//给买家结算交易物品
+	_, err := assets.UnfreezeAssets(c.db, false, c.ask.UserId, c.symbol_id, c.ask_order_id, c.trade_qty.String())
+	if err != nil {
+		return err
+	}
+	_, err = assets.Transfer(c.db, false, c.ask.UserId, c.bid.UserId, c.symbol_id, c.trade_qty.String(), c.record.TradeId, assets.Behavior_Trade)
+	if err != nil {
+		return err
+	}
+
+	//卖家结算本位币
+	amount := d(c.record.Amount).Add(d(c.record.BidFee))
+	_, err = assets.UnfreezeAssets(c.db, false, c.bid.UserId, c.standard_symbol_id, c.bid_order_id, amount.String())
+	if err != nil {
+		return err
+	}
+	//卖家收到的本位币需要扣除fee
+
+	fee := d(c.record.BidFee).Add(d(c.record.AskFee))
+	_, err = assets.Transfer(c.db, false, c.bid.UserId, c.ask.UserId, c.standard_symbol_id, amount.Sub(fee).String(), c.record.TradeId, assets.Behavior_Trade)
+	if err != nil {
+		return err
+	}
+
+	//手续费收入到一个全局的账号里
+	_, err = assets.Transfer(c.db, false, c.bid.UserId, assets.SystemFeeUserID, c.standard_symbol_id, fee.String(), c.record.TradeId, assets.Behavior_Trade)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func d(s string) decimal.Decimal {
 	dd, _ := decimal.NewFromString(s)
 	return dd
+}
+
+func trade_id(ask_id, bid_id string) string {
+	times := time.Now().Format("060102")
+	hash := hash256(fmt.Sprintf("%s%s", ask_id, bid_id))
+	return fmt.Sprintf("T%s%s", times, hash[0:17])
+}
+
+func hash256(data interface{}) string {
+	hash := sha256.New()
+	hash.Write([]byte(fmt.Sprintf("%v", data)))
+	hashed := fmt.Sprintf("%x", hash.Sum(nil))
+	return hashed
 }

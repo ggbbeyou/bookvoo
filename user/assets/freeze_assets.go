@@ -21,7 +21,6 @@ func QueryFreeze(db *xorm.Session, bid string) (*assetFreezeRecord, error) {
 }
 
 func FreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symbol_id int, freeze_amount, business_id string, behavior OpBehavior) (success bool, err error) {
-
 	return freezeAssets(db, enable_transaction, user_id, symbol_id, freeze_amount, business_id, behavior)
 }
 
@@ -53,7 +52,7 @@ func freezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symb
 	}
 
 	if d(freeze_amount).Equal(d("0")) {
-		freeze_amount = item.Available
+		freeze_amount = d(item.Available).String()
 	}
 
 	item.Available = number_sub(item.Available, freeze_amount)
@@ -83,6 +82,7 @@ func freezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symb
 		Status:       FreezeStatusNew,
 		Info:         string(behavior),
 	}
+
 	_, err = db.Table(new(assetFreezeRecord)).Insert(&lg)
 	if err != nil {
 		return false, err

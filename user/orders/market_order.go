@@ -114,7 +114,6 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 
 	err = db.Begin()
 	if err != nil {
-		logrus.Error(err, " 22")
 		return nil, err
 	}
 
