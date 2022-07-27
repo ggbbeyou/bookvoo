@@ -6,5 +6,5 @@ type UnfinishedOrder struct {
 }
 
 func (u *UnfinishedOrder) TableName() string {
-	return "unfinished_order"
+	return "order_unfinished"
 }

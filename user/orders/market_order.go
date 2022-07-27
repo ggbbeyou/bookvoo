@@ -26,6 +26,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		OrderType:   OrderTypeMarket,
 		UserId:      user_id,
 		Price:       "-1",
+		AvgPrice:    "0",
 		Quantity:    qty,
 		FinishedQty: "0",
 		FeeRate:     tp.FeeRate,
@@ -70,7 +71,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		}
 
 		neworder.Fee = "0"
-		neworder.TradeAmount = d(freeze.FreezeAmount).Mul(d("1").Sub(d(neworder.FeeRate))).String()
+		neworder.TradeAmount = "0"
 		neworder.TotalAmount = freeze.FreezeAmount
 	}
 
@@ -103,6 +104,7 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 		OrderType:   OrderTypeMarket,
 		UserId:      user_id,
 		Price:       "-1",
+		AvgPrice:    "0",
 		Quantity:    "0",
 		FinishedQty: "0",
 		FeeRate:     tp.FeeRate,
@@ -132,7 +134,7 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 		}
 
 		neworder.Fee = "0"
-		neworder.TradeAmount = d(amount).Mul(d("1").Sub(d(neworder.FeeRate))).String()
+		neworder.TradeAmount = "0"
 		neworder.TotalAmount = amount
 	} else if neworder.OrderSide == OrderSideBuy {
 		_, err = assets.FreezeAssets(db, false, user_id, tp.StandardSymbolId, amount, neworder.OrderId, assets.Behavior_Trade)
@@ -140,7 +142,7 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 			return nil, err
 		}
 		neworder.Fee = "0"
-		neworder.TradeAmount = d(amount).Mul(d("1").Sub(d(neworder.FeeRate))).String()
+		neworder.TradeAmount = "0"
 		neworder.TotalAmount = amount
 	}
 

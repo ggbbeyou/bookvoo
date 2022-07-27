@@ -61,16 +61,17 @@ func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err e
 		return err
 	}
 
-	//修改卖方订单信息
-	err = cl.updateAsk()
-	if err != nil {
-		logrus.Error("b")
-		return err
-	}
 	//修改买方订单信息
 	err = cl.updateBid()
 	if err != nil {
 		logrus.Error("c")
+		return err
+	}
+
+	//修改卖方订单信息
+	err = cl.updateAsk()
+	if err != nil {
+		logrus.Error("b")
 		return err
 	}
 	//写成交日志

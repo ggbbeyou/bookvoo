@@ -58,23 +58,24 @@ func (c *clearing) updateBid() error {
 }
 
 func (c *clearing) updateOrder(side orders.OrderSide) error {
-	var order orders.TradeOrder
+	var order *orders.TradeOrder
 	if side == orders.OrderSideSell {
-		order = *c.ask
+		order = c.ask
 		order.Fee = d(order.Fee).Add(d(c.record.AskFee)).String()
+
 	} else {
-		order = *c.bid
+		order = c.bid
 		order.Fee = d(order.Fee).Add(d(c.record.BidFee)).String()
 	}
+
 	order.FinishedQty = d(order.FinishedQty).Add(c.trade_qty).String()
-	order.TradeAmount = d(order.TradeAmount).Add(c.trade_amount).String()
 	order.Symbol = c.symbol
 
 	//todo 一些必要的边界值检查
 
 	// if d(c.ask.FinishedQty).Cmp(d(c.ask.Quantity)) <= 0 {
 	// }
-	_, err := c.db.Table(order.TableName()).Where("order_id=?", order.OrderId).Update(order)
+	_, err := c.db.Table(order.TableName()).Where("order_id=?", order.OrderId).AllCols().Update(order)
 	if err != nil {
 		return err
 	}
