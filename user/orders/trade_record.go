@@ -25,7 +25,7 @@ type TradeRecord struct {
 
 	TradeBy  TradeBy `xorm:"tinyint(1)"`
 	AskUid   int64   `xorm:"bigint notnull"`
-	Biduid   int64   `xorm:"bigint notnull"`
+	BidUid   int64   `xorm:"bigint notnull"`
 	Price    string  `xorm:"decimal(40,20) notnull default(0)"`
 	Quantity string  `xorm:"decimal(40,20) notnull default(0)"`
 	Amount   string  `xorm:"decimal(40,20) notnull default(0)"`
@@ -74,8 +74,8 @@ func (to *TradeRecord) Save(db *xorm.Session) error {
 }
 
 func (to *TradeRecord) TableName() string {
-	return fmt.Sprintf("order_trade_%s", to.Symbol)
+	return GetTradeRecordTableName(to.Symbol)
 }
 func GetTradeRecordTableName(symbol string) string {
-	return fmt.Sprintf("order_trade_%s", symbol)
+	return fmt.Sprintf("order_%s_traderecord", symbol)
 }
