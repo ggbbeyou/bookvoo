@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 )
 
 type _response struct {
@@ -49,4 +50,9 @@ func success(c *gin.Context, data interface{}) {
 
 func fail(c *gin.Context, reason string) {
 	response(c, 0, reason, nil)
+}
+
+func d(ss string) decimal.Decimal {
+	s, _ := decimal.NewFromString(ss)
+	return s
 }

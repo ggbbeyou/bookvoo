@@ -29,6 +29,9 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		AvgPrice:    "0",
 		Quantity:    qty,
 		FinishedQty: "0",
+		Fee:         "0",
+		FreezeQty:   "0",
+		TradeAmount: "0",
 		FeeRate:     tp.FeeRate,
 		Status:      OrderStatusNew,
 	}
@@ -55,9 +58,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		if err != nil {
 			return nil, err
 		}
-		neworder.Fee = "0"
-		neworder.TradeAmount = "0"
-		neworder.TotalAmount = "0"
+		neworder.FreezeQty = qty
 	} else if neworder.OrderSide == OrderSideBuy {
 		//冻结所有可用
 		_, err = assets.FreezeTotalAssets(db, false, user_id, tp.StandardSymbolId, neworder.OrderId, assets.Behavior_Trade)
@@ -69,10 +70,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		if err != nil {
 			return nil, err
 		}
-
-		neworder.Fee = "0"
-		neworder.TradeAmount = "0"
-		neworder.TotalAmount = freeze.FreezeAmount
+		neworder.FreezeQty = freeze.FreezeAmount
 	}
 
 	if err = neworder.Save(db); err != nil {
@@ -107,6 +105,9 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 		AvgPrice:    "0",
 		Quantity:    "0",
 		FinishedQty: "0",
+		Fee:         "0",
+		TradeAmount: "0",
+		FreezeQty:   "0",
 		FeeRate:     tp.FeeRate,
 		Status:      OrderStatusNew,
 	}
@@ -133,17 +134,18 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 			return nil, err
 		}
 
-		neworder.Fee = "0"
-		neworder.TradeAmount = "0"
-		neworder.TotalAmount = amount
+		freeze, err := assets.QueryFreeze(db, neworder.OrderId)
+		if err != nil {
+			return nil, err
+		}
+		neworder.FreezeQty = freeze.FreezeAmount
+
 	} else if neworder.OrderSide == OrderSideBuy {
 		_, err = assets.FreezeAssets(db, false, user_id, tp.StandardSymbolId, amount, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return nil, err
 		}
-		neworder.Fee = "0"
-		neworder.TradeAmount = "0"
-		neworder.TotalAmount = amount
+		neworder.FreezeQty = amount
 	}
 
 	if err = neworder.Save(db); err != nil {

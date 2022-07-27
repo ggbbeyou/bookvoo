@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/yzimhao/bookvoo/core/base"
+	"github.com/yzimhao/bookvoo/match"
 )
 
 // @Summary 深度信息
@@ -23,13 +23,13 @@ func depth(c *gin.Context) {
 		limitInt = 100
 	}
 
-	if _, ok := base.Engine[symbol]; !ok {
+	if _, ok := match.Engine[symbol]; !ok {
 		fail(c, "invalid symbol")
 		return
 	}
 
-	a := base.Engine[symbol].GetAskDepth(limitInt)
-	b := base.Engine[symbol].GetBidDepth(limitInt)
+	a := match.Engine[symbol].GetAskDepth(limitInt)
+	b := match.Engine[symbol].GetBidDepth(limitInt)
 	success(c, gin.H{
 		"ask": a,
 		"bid": b,
@@ -42,7 +42,7 @@ func tradelog(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"ok": true,
 		"data": gin.H{
-			"latest_price": base.Engine[symbol].Price2String(base.Engine[symbol].LatestPrice()),
+			"latest_price": match.Engine[symbol].Price2String(match.Engine[symbol].LatestPrice()),
 			"trade_log":    "", //recentTrade,
 		},
 	})

@@ -37,7 +37,9 @@ type TradeOrder struct {
 	Price       string    `xorm:"decimal(40,20) notnull default(0)" json:"price"`
 	Quantity    string    `xorm:"decimal(40,20) notnull default(0)" json:"quantity"`
 	FeeRate     string    `xorm:"decimal(40,20) notnull default(0)" json:"-"`
-	TotalAmount string    `xorm:"decimal(40,20) notnull default(0)" json:"-"` //包含手续费
+	Amount      string    `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	//根据订单类型的不同，冻结的资产也不同
+	FreezeQty string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 
 	//订单撮合成功 结算逻辑写入的字段
 	AvgPrice    string `xorm:"decimal(40,20) notnull default(0)" json:"-"`

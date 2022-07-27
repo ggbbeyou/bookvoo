@@ -27,8 +27,11 @@ func limit_order(user_id int64, trade_symbol string, side OrderSide, price, qty 
 		Price:       price,
 		AvgPrice:    "0",
 		Quantity:    qty,
+		Amount:      "0",
 		FinishedQty: "0",
 		FeeRate:     tp.FeeRate,
+		Fee:         "0",
+		TradeAmount: "0",
 		Status:      OrderStatusNew,
 	}
 
@@ -55,10 +58,7 @@ func limit_order(user_id int64, trade_symbol string, side OrderSide, price, qty 
 		if err != nil {
 			return nil, err
 		}
-		neworder.Fee = "0"
-		neworder.TradeAmount = "0"
-
-		neworder.TotalAmount = "0"
+		neworder.FreezeQty = qty
 	} else if neworder.OrderSide == OrderSideBuy {
 		//买单的冻结金额加上手续费，这里预估全部成交所需要的手续费，
 		amount := d(price).Mul(d(qty))
@@ -66,10 +66,8 @@ func limit_order(user_id int64, trade_symbol string, side OrderSide, price, qty 
 		freeze_amount := amount.Add(fee).String()
 
 		//fee、tradeamount字段在结算程序中修改
-		neworder.Fee = "0"
-		neworder.TradeAmount = "0"
 
-		neworder.TotalAmount = freeze_amount
+		neworder.FreezeQty = freeze_amount
 		_, err = assets.FreezeAssets(db, false, user_id, tp.StandardSymbolId, freeze_amount, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return nil, err

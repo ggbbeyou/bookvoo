@@ -4,7 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"github.com/yzimhao/bookvoo/core"
-	"github.com/yzimhao/bookvoo/core/base"
+	"github.com/yzimhao/bookvoo/match"
+	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
 	te "github.com/yzimhao/trading_engine"
 )
@@ -69,9 +70,9 @@ func limit_order(c *gin.Context, req new_order_request) {
 		return
 	}
 	if req.Side == orders.OrderSideSell {
-		base.Engine[req.Symbol].ChNewOrder <- te.NewAskLimitItem(order.OrderId, core.D(order.Price), core.D(order.Quantity), order.CreateTime)
+		match.Engine[req.Symbol].ChNewOrder <- te.NewAskLimitItem(order.OrderId, d(order.Price), d(order.Quantity), order.CreateTime)
 	} else if req.Side == orders.OrderSideBuy {
-		base.Engine[req.Symbol].ChNewOrder <- te.NewBidLimitItem(order.OrderId, core.D(order.Price), core.D(order.Quantity), order.CreateTime)
+		match.Engine[req.Symbol].ChNewOrder <- te.NewBidLimitItem(order.OrderId, d(order.Price), d(order.Quantity), order.CreateTime)
 	}
 	success(c, gin.H{"order_id": order.OrderId})
 }
@@ -85,9 +86,9 @@ func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, q
 	}
 
 	if side == orders.OrderSideSell {
-		base.Engine[symbol].ChNewOrder <- te.NewAskMarketQtyItem(order.OrderId, core.D(order.Quantity), order.CreateTime)
+		match.Engine[symbol].ChNewOrder <- te.NewAskMarketQtyItem(order.OrderId, d(order.Quantity), order.CreateTime)
 	} else if side == orders.OrderSideBuy {
-		base.Engine[symbol].ChNewOrder <- te.NewBidMarketQtyItem(order.OrderId, core.D(order.Quantity), core.D(order.TradeAmount), order.CreateTime)
+		match.Engine[symbol].ChNewOrder <- te.NewBidMarketQtyItem(order.OrderId, d(order.Quantity), d(order.TradeAmount), order.CreateTime)
 	}
 	success(c, gin.H{"order_id": order.OrderId})
 }
@@ -101,9 +102,10 @@ func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide
 	}
 
 	if side == orders.OrderSideSell {
-		base.Engine[symbol].ChNewOrder <- te.NewAskMarketAmountItem(order.OrderId, core.D(amount), core.D(order.UnfinishedQty), order.CreateTime)
+        totalQty := assets.
+		match.Engine[symbol].ChNewOrder <- te.NewAskMarketAmountItem(order.OrderId, d(amount), , order.CreateTime)
 	} else if side == orders.OrderSideBuy {
-		base.Engine[symbol].ChNewOrder <- te.NewBidMarketAmountItem(order.OrderId, core.D(order.TradeAmount), order.CreateTime)
+		match.Engine[symbol].ChNewOrder <- te.NewBidMarketAmountItem(order.OrderId, d(order.TradeAmount), order.CreateTime)
 	}
 	success(c, gin.H{"order_id": order.OrderId})
 }
