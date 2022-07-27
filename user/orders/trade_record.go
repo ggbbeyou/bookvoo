@@ -40,14 +40,42 @@ type TradeRecord struct {
 	UpdateTime time.Time `xorm:"timestamp updated"`
 }
 
-func (t *TradeRecord) TableName() string {
-	return fmt.Sprintf("order_trade_record_%s", t.Symbol)
-}
+func (to *TradeRecord) Save(db *xorm.Session) error {
+	if to.Symbol == "" {
+		return fmt.Errorf("symbol not set")
+	}
+	//todo 频繁查询表是否存在，后面考虑缓存一下
+	exist, err := db.IsTableExist(to.TableName())
+	if err != nil {
+		return err
+	}
+	if !exist {
+		err := db.CreateTable(to)
+		if err != nil {
+			return err
+		}
 
-func (t *TradeRecord) Save(db *xorm.Session) error {
-	_, err := db.Table(new(TradeRecord)).Insert(t)
+		err = db.CreateIndexes(to)
+		if err != nil {
+			return err
+		}
+
+		err = db.CreateUniques(to)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = db.Table(to).Insert(to)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (to *TradeRecord) TableName() string {
+	return fmt.Sprintf("order_trade_%s", to.Symbol)
+}
+func GetTradeRecordTableName(symbol string) string {
+	return fmt.Sprintf("order_trade_%s", symbol)
 }

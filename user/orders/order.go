@@ -28,7 +28,7 @@ const (
 // 委托记录表
 type TradeOrder struct {
 	Id          int64       `xorm:"pk autoincr bigint" json:"-"`
-	TradeSymbol string      `xorm:"-" json:"symbol"`
+	Symbol      string      `xorm:"-" json:"symbol"`
 	TradingPair int         `xorm:"notnull index(pair_id) index(oa)" json:"-"`
 	OrderId     string      `xorm:"varchar(30) unique(order_id) notnull" json:"order_id"`
 	OrderSide   OrderSide   `xorm:"varchar(10) index(order_side) index(oa)" json:"order_side"`
@@ -78,5 +78,9 @@ func (to *TradeOrder) Save(db *xorm.Session) error {
 }
 
 func (to *TradeOrder) TableName() string {
-	return fmt.Sprintf("order_%s", to.TradeSymbol)
+	return fmt.Sprintf("order_%s", to.Symbol)
+}
+
+func GetOrderTableName(symbol string) string {
+	return fmt.Sprintf("order_%s", symbol)
 }

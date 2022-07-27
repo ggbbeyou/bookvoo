@@ -71,9 +71,11 @@ func Test_main(t *testing.T) {
 	defer db.Close()
 
 	var (
-		user1      int64 = 100
-		symbol_usd int   = 1
-		symbol_eth int   = 2
+		user1 int64 = 101
+		user2 int64 = 102
+
+		symbol_usd int = 1
+		symbol_eth int = 2
 	)
 
 	initAssets := func(uid int64, sid int, amount string) {
@@ -196,4 +198,7 @@ func Test_main(t *testing.T) {
 	cleanUserAssets(ROOTUSERID)
 	initAssets(user1, symbol_usd, "1000")
 	initAssets(user1, symbol_eth, "1000")
+
+	initAssets(user2, symbol_usd, "1000")
+	initAssets(user2, symbol_eth, "1000")
 }
