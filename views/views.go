@@ -1,16 +1,19 @@
 package views
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"github.com/yzimhao/bookvoo/base"
+	"github.com/yzimhao/bookvoo/match"
 	"github.com/yzimhao/bookvoo/views/api"
 	"github.com/yzimhao/bookvoo/views/pages"
 	"github.com/yzimhao/gowss"
 )
 
 var (
-	socket *gowss.Hub
-	rdc    *redis.Client
+	rdc *redis.Client
 )
 
 func Init(r *redis.Client) {
@@ -19,7 +22,7 @@ func Init(r *redis.Client) {
 
 func Run(r *gin.Engine) {
 	setupRouter(r)
-	go message()
+	pushDepth()
 }
 
 func setupRouter(router *gin.Engine) {
@@ -29,21 +32,20 @@ func setupRouter(router *gin.Engine) {
 	api.SetupRouter(router)
 	//websocket
 	{
-		socket = gowss.NewHub()
 		router.GET("/ws", func(ctx *gin.Context) {
-			socket.ServeWs(ctx.Writer, ctx.Request)
+			base.WsHandler(ctx)
 		})
 	}
 }
 
-func message() {
-	for {
-		socket.Broadcast <- gowss.MsgBody{
-			To:   tag,
-			Body: data,
-		}
-	}
-}
+// func message() {
+// 	for {
+// 		socket.Broadcast <- gowss.MsgBody{
+// 			To:   tag,
+// 			Body: data,
+// 		}
+// 	}
+// }
 
 // func pubTradeLog(log trading_engine.TradeResult) {
 // 	ctx := context.Background()
@@ -98,20 +100,28 @@ func message() {
 // 	}
 // }
 
-// func pushDepth() {
-// 	for {
+func pushDepth() {
+	go func() {
+		for {
+			time.Sleep(time.Duration(100) * time.Millisecond)
 
-// 		time.Sleep(time.Duration(150) * time.Millisecond)
+			for symbol, obj := range match.Engine {
+				ask := obj.GetAskDepth(10)
+				bid := obj.GetBidDepth(10)
 
-// 		ask := base.Engine["ethusd"].GetAskDepth(10)
-// 		bid := base.Engine["ethusd"].GetBidDepth(10)
+				base.Wss.Broadcast <- gowss.MsgBody{
+					To: "depth." + symbol,
+					Body: gin.H{
+						"ask": ask,
+						"bid": bid,
+					},
+				}
+			}
 
-// 		sendMessage("depth.ethusd", gin.H{
-// 			"ask": ask,
-// 			"bid": bid,
-// 		})
-// 	}
-// }
+		}
+	}()
+
+}
 
 // func testOrder(c *gin.Context) {
 // 	op := strings.ToLower(c.Query("op_type"))
