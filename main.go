@@ -10,12 +10,10 @@ import (
 	cli "github.com/urfave/cli/v2"
 	"github.com/yzimhao/bookvoo/clearings"
 	"github.com/yzimhao/bookvoo/core"
-	"github.com/yzimhao/bookvoo/market"
 	"github.com/yzimhao/bookvoo/match"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
 
-	"github.com/yzimhao/bookvoo/user"
 	"github.com/yzimhao/bookvoo/views"
 	"xorm.io/xorm"
 
@@ -73,12 +71,11 @@ func appStart(configPath string) {
 	initModule()
 
 	go match.RunMatching()
-	router := gin.Default()
-	go user.Run(configPath, router)
-	go market.RunWithGinRouter(configPath, router)
 	go clearings.Run()
-	//pages
-	views.Run(configPath, router)
+
+	router := gin.Default()
+	// go market.RunWithGinRouter(configPath, router)
+	views.Run(router)
 
 	viper.SetDefault("main.host", ":8080")
 	router.Run(viper.GetString("main.host"))

@@ -3,37 +3,30 @@ package views
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	"github.com/spf13/viper"
 	"github.com/yzimhao/bookvoo/views/api"
 	"github.com/yzimhao/bookvoo/views/pages"
 	"github.com/yzimhao/gowss"
-	"github.com/yzimhao/utilgo"
 )
 
 var (
 	socket *gowss.Hub
-
-	rdc  *redis.Client
-	conf *viper.Viper
+	rdc    *redis.Client
 )
 
-func Run(config string, r *gin.Engine) {
+func Init(r *redis.Client) {
+	rdc = r
+}
 
-	conf = utilgo.ViperInit(config)
-	rdc = redis.NewClient(&redis.Options{
-		Addr:     conf.GetString("main.redis.host"),
-		DB:       conf.GetInt("main.redis.db"),
-		Password: conf.GetString("main.redis.password"),
-	})
+func Run(r *gin.Engine) {
 	setupRouter(r)
-
+	go message()
 }
 
 func setupRouter(router *gin.Engine) {
 	//pages
 	pages.SetupRouter(router)
+	//api
 	api.SetupRouter(router)
-
 	//websocket
 	{
 		socket = gowss.NewHub()
@@ -43,11 +36,12 @@ func setupRouter(router *gin.Engine) {
 	}
 }
 
-func sendMessage(tag string, data interface{}) {
-
-	socket.Broadcast <- gowss.MsgBody{
-		To:   tag,
-		Body: data,
+func message() {
+	for {
+		socket.Broadcast <- gowss.MsgBody{
+			To:   tag,
+			Body: data,
+		}
 	}
 }
 

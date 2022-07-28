@@ -12,10 +12,12 @@ import (
 var (
 	db_engine *xorm.Engine
 	Notify    chan te.TradeResult
+	rdc       *redis.Client
 )
 
-func Init(db *xorm.Engine, rdc *redis.Client) {
+func Init(db *xorm.Engine, r *redis.Client) {
 	db_engine = db
+	rdc = r
 }
 
 func Run() {
