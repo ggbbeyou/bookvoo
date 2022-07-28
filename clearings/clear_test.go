@@ -48,16 +48,29 @@ func init() {
 }
 
 func Test_Main(t *testing.T) {
-	Convey("限价单的结算", t, func() {
-		buy, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideBuy, "1.00", "2")
+	// Convey("不同账号交易 限价单的结算", t, func() {
+	// 	buy, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideBuy, "1.00", "10")
+	// 	So(err, ShouldBeNil)
+	// 	So(buy.OrderId, ShouldStartWith, "B")
+
+	// 	sell, err := orders.NewLimitOrder(test_user2, test_symbol, orders.OrderSideSell, "1.00", "10")
+	// 	So(err, ShouldBeNil)
+	// 	So(sell.OrderId, ShouldStartWith, "A")
+
+	// 	err = NewClearing(test_symbol, sell.OrderId, buy.OrderId, "1", "10")
+	// 	So(err, ShouldBeNil)
+	// })
+
+	Convey("同账号交易 限价单的结算", t, func() {
+		buy, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideBuy, "1.00", "10")
 		So(err, ShouldBeNil)
 		So(buy.OrderId, ShouldStartWith, "B")
 
-		sell, err := orders.NewLimitOrder(test_user2, test_symbol, orders.OrderSideSell, "1.00", "2")
+		sell, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideSell, "1.00", "10")
 		So(err, ShouldBeNil)
 		So(sell.OrderId, ShouldStartWith, "A")
 
-		err = NewClearing(test_symbol, sell.OrderId, buy.OrderId, "1", "2")
+		err = NewClearing(test_symbol, sell.OrderId, buy.OrderId, "1", "10")
 		So(err, ShouldBeNil)
 	})
 }
