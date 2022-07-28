@@ -22,14 +22,16 @@ var (
 )
 
 func init() {
+
 	driver := "mysql"
 	dsn := "root:root@tcp(localhost:13306)/test?charset=utf8&loc=Local"
-
 	conn, err := xorm.NewEngine(driver, dsn)
 	if err != nil {
 		logrus.Panic(err)
 	}
 	db_engine = conn
+
+	Init(db_engine, nil)
 	db_engine.ShowSQL(true)
 
 	table1 := orders.TradeRecord{Symbol: test_symbol}
@@ -40,10 +42,9 @@ func init() {
 		new(orders.UnfinishedOrder),
 	)
 
-	SetDbEngine(db_engine)
 	base.SetDbEngine(db_engine)
-	assets.SetDbEngine(db_engine)
-	orders.SetDbEngine(db_engine)
+	assets.Init(db_engine, nil)
+	orders.Init(db_engine, nil)
 }
 
 func Test_Main(t *testing.T) {

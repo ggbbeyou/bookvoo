@@ -31,7 +31,7 @@ func init() {
 		new(assetFreezeRecord),
 	)
 
-	SetDbEngine(db_engine)
+	Init(db_engine, nil)
 }
 
 func cleanUserAssets(user_id int64) (err error) {

@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	cli "github.com/urfave/cli/v2"
@@ -69,7 +70,8 @@ func appStart(configPath string) {
 	level, _ := logrus.ParseLevel(viper.GetString("main.log_level"))
 	logrus.SetLevel(level)
 
-	initModuleDb()
+	initModule()
+
 	go match.RunMatching()
 	router := gin.Default()
 	go user.Run(configPath, router)
@@ -83,7 +85,7 @@ func appStart(configPath string) {
 }
 
 //初始化各模块的数据库
-func initModuleDb() {
+func initModule() {
 	//后面可以根据不同模块拆分到不同的数据库
 	default_db := func() *xorm.Engine {
 		dsn := viper.GetString("db.dsn")
@@ -95,14 +97,22 @@ func initModuleDb() {
 		return conn
 	}()
 
-	//各模块数据库设置
-	core.SetDbEngine(default_db)
+	default_rdc := func() *redis.Client {
+		rdc := redis.NewClient(&redis.Options{
+			Addr:     viper.GetString("redis.host"),
+			DB:       viper.GetInt("redis.db"),
+			Password: viper.GetString("redis.password"),
+		})
+		return rdc
+	}()
+
+	core.Init(default_db, default_rdc)
 	//资产
-	assets.SetDbEngine(default_db)
+	assets.Init(default_db, default_rdc)
 	//订单
-	orders.SetDbEngine(default_db)
+	orders.Init(default_db, default_rdc)
 	//撮合
-	match.SetDbEngine(default_db)
+	match.Init(default_db, default_rdc)
 	//结算
-	clearings.SetDbEngine(default_db)
+	clearings.Init(default_db, default_rdc)
 }

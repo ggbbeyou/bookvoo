@@ -27,7 +27,8 @@ func init() {
 	if err != nil {
 		logrus.Panic(err)
 	}
-	db_engine = conn
+
+	Init(conn, nil)
 	db_engine.ShowSQL(true)
 
 	table := TradeOrder{Symbol: test_symbol}
@@ -37,9 +38,8 @@ func init() {
 		table,
 	)
 
-	SetDbEngine(db_engine)
 	base.SetDbEngine(db_engine)
-	assets.SetDbEngine(db_engine)
+	assets.Init(db_engine, nil)
 }
 
 func Test_main(t *testing.T) {

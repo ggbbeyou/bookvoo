@@ -1,6 +1,7 @@
 package assets
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 	"xorm.io/xorm"
@@ -10,7 +11,7 @@ var (
 	db_engine *xorm.Engine
 )
 
-func SetDbEngine(db *xorm.Engine) {
+func Init(db *xorm.Engine, rdc *redis.Client) {
 	db_engine = db
 
 	//同步表结构

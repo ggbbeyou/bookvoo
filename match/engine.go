@@ -1,6 +1,7 @@
 package match
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/clearings"
 	"github.com/yzimhao/bookvoo/core/base"
@@ -13,7 +14,7 @@ var (
 	db_engine *xorm.Engine
 )
 
-func SetDbEngine(db *xorm.Engine) {
+func Init(db *xorm.Engine, rdc *redis.Client) {
 	db_engine = db
 	base.SetDbEngine(db)
 }

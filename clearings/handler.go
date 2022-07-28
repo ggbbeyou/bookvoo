@@ -1,6 +1,7 @@
 package clearings
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/core/base"
 	"github.com/yzimhao/bookvoo/user/orders"
@@ -13,7 +14,7 @@ var (
 	Notify    chan te.TradeResult
 )
 
-func SetDbEngine(db *xorm.Engine) {
+func Init(db *xorm.Engine, rdc *redis.Client) {
 	db_engine = db
 }
 
