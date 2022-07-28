@@ -2,6 +2,7 @@ package match
 
 import (
 	"github.com/sirupsen/logrus"
+	"github.com/yzimhao/bookvoo/clearings"
 	"github.com/yzimhao/bookvoo/core/base"
 	te "github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
@@ -27,16 +28,15 @@ func RunMatching() {
 	db.Table(new(base.TradePairOpt)).Where("status=?", base.StatusEnable).Find(&rows)
 
 	for _, row := range rows {
-
 		Engine[row.Symbol] = te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
-
 		go func(item base.TradePairOpt) {
 			for {
 				select {
 				case result := <-Engine[item.Symbol].ChTradeResult:
-					logrus.Error(result)
+					logrus.Debugf("[tradeResult] %v", result)
+					clearings.Notify <- result
 				case cancel := <-Engine[item.Symbol].ChCancelResult:
-					logrus.Error(cancel)
+					logrus.Debugf("[cancelOrder] %v", cancel)
 				}
 			}
 		}(row)

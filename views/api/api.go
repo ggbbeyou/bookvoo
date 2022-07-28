@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -57,6 +58,7 @@ func success(c *gin.Context, data interface{}) {
 }
 
 func fail(c *gin.Context, reason string) {
+	logrus.Debugf("[fail] %s, %s", c.Request.RequestURI, reason)
 	responseJson(c, 0, reason, nil)
 }
 

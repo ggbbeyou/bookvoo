@@ -1,23 +1,35 @@
 package clearings
 
 import (
+	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/core/base"
 	"github.com/yzimhao/bookvoo/user/orders"
-	"github.com/yzimhao/trading_engine"
+	te "github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
 )
 
 var (
 	db_engine *xorm.Engine
-	Notify    chan trading_engine.TradeResult
+	Notify    chan te.TradeResult
 )
 
 func SetDbEngine(db *xorm.Engine) {
 	db_engine = db
 }
 
+func Run() {
+	Notify = make(chan te.TradeResult, 1000)
+	for {
+		if data, ok := <-Notify; ok {
+			go NewClearing(data.Symbol, data.AskOrderId, data.BidOrderId, data.TradePrice.String(), data.TradeQuantity.String())
+		}
+	}
+}
+
 //结算一条成交记录
 func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err error) {
+	logrus.Infof("[clearings] %s %s %s %s %s", symbol, ask_id, bid_id, price, qty)
+
 	tradeInfo, err := base.GetTradePairBySymbol(symbol)
 	if err != nil {
 		return err
@@ -30,6 +42,9 @@ func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err e
 	if err != nil {
 		return err
 	}
+
+	//todo lock 双方订单
+
 	defer func() {
 		if err != nil {
 			db.Rollback()

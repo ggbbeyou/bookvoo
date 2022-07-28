@@ -13,9 +13,8 @@ import (
 var (
 	socket *gowss.Hub
 
-	recentTrade []interface{}
-	rdc         *redis.Client
-	conf        *viper.Viper
+	rdc  *redis.Client
+	conf *viper.Viper
 )
 
 func Run(config string, r *gin.Engine) {
@@ -44,13 +43,13 @@ func setupRouter(router *gin.Engine) {
 	}
 }
 
-// func sendMessage(tag string, data interface{}) {
+func sendMessage(tag string, data interface{}) {
 
-// 	socket.Broadcast <- gowss.MsgBody{
-// 		To:   tag,
-// 		Body: data,
-// 	}
-// }
+	socket.Broadcast <- gowss.MsgBody{
+		To:   tag,
+		Body: data,
+	}
+}
 
 // func pubTradeLog(log trading_engine.TradeResult) {
 // 	ctx := context.Background()
@@ -118,97 +117,6 @@ func setupRouter(router *gin.Engine) {
 // 			"bid": bid,
 // 		})
 // 	}
-// }
-
-// func newOrder(c *gin.Context) {
-// 	// symbol := "ethusd"
-
-// 	// amount := string2decimal(param.Amount)
-// 	// price := string2decimal(param.Price)
-// 	// quantity := string2decimal(param.Quantity)
-// 	// param.CreateTime = time.Now()
-
-// 	// // var pt trading_engine.PriceType
-// 	// if param.PriceType == "market" {
-// 	// 	param.Price = "0"
-// 	// 	// pt = trading_engine.PriceTypeMarket
-// 	// 	if param.Amount != "" {
-// 	// 		// pt = trading_engine.PriceTypeMarketAmount
-// 	// 		//市价按成交金额卖出时，默认持有该资产1000个
-// 	// 		param.Quantity = "100"
-// 	// 		if amount.Cmp(decimal.NewFromFloat(100000000)) > 0 || amount.Cmp(decimal.Zero) <= 0 {
-// 	// 			c.JSON(200, gin.H{
-// 	// 				"ok":    false,
-// 	// 				"error": "金额必须大于0，且不能超过 100000000",
-// 	// 			})
-// 	// 			return
-// 	// 		}
-
-// 	// 	} else if param.Quantity != "" {
-// 	// 		// pt = trading_engine.PriceTypeMarketQuantity
-// 	// 		//市价按数量买入资产时，需要用户账户所有可用资产数量，测试默认100块
-// 	// 		param.Amount = "100"
-// 	// 		if quantity.Cmp(decimal.NewFromFloat(100000000)) > 0 || quantity.Cmp(decimal.Zero) <= 0 {
-// 	// 			c.JSON(200, gin.H{
-// 	// 				"ok":    false,
-// 	// 				"error": "数量必须大于0，且不能超过 100000000",
-// 	// 			})
-// 	// 			return
-// 	// 		}
-// 	// 	}
-// 	// } else {
-// 	// 	// pt = trading_engine.PriceTypeLimit
-// 	// 	param.Amount = "0"
-// 	// 	if price.Cmp(decimal.NewFromFloat(100000000)) > 0 || price.Cmp(decimal.Zero) < 0 {
-// 	// 		c.JSON(200, gin.H{
-// 	// 			"ok":    false,
-// 	// 			"error": "价格必须大于等于0，且不能超过 100000000",
-// 	// 		})
-// 	// 		return
-// 	// 	}
-// 	// 	if quantity.Cmp(decimal.NewFromFloat(100000000)) > 0 || quantity.Cmp(decimal.Zero) <= 0 {
-// 	// 		c.JSON(200, gin.H{
-// 	// 			"ok":    false,
-// 	// 			"error": "数量必须大于0，且不能超过 100000000",
-// 	// 		})
-// 	// 		return
-// 	// 	}
-// 	// }
-
-// 	// if strings.ToLower(param.OrderType) == "ask" {
-// 	// 	order, err := orders.NewLimitOrder(1, symbol, orders.OrderSideAsk, param.Price, param.Quantity)
-// 	// 	if err != nil {
-// 	// 		c.JSON(200, gin.H{
-// 	// 			"ok":    false,
-// 	// 			"error": err.Error(),
-// 	// 		})
-// 	// 		return
-// 	// 	}
-// 	// 	item := trading_engine.NewAskLimitItem(order.OrderId, string2decimal(order.Price), string2decimal(order.Quantity), order.CreateTime)
-// 	// 	base.Engine[symbol].ChNewOrder <- item
-
-// 	// } else {
-// 	// 	order, err := orders.NewLimitOrder(1, symbol, orders.OrderSideBid, param.Price, param.Quantity)
-// 	// 	if err != nil {
-// 	// 		c.JSON(200, gin.H{
-// 	// 			"ok":    false,
-// 	// 			"error": err.Error(),
-// 	// 		})
-// 	// 		return
-// 	// 	}
-// 	// 	item := trading_engine.NewAskLimitItem(order.OrderId, string2decimal(order.Price), string2decimal(order.Quantity), order.CreateTime)
-// 	// 	base.Engine[symbol].ChNewOrder <- item
-// 	// }
-
-// 	// go sendMessage(fmt.Sprintf("new_order.%s", symbol), param)
-
-// 	// c.JSON(200, gin.H{
-// 	// 	"ok": true,
-// 	// 	"data": gin.H{
-// 	// 		"ask_len": base.Engine[symbol].AskLen(),
-// 	// 		"bid_len": base.Engine[symbol].BidLen(),
-// 	// 	},
-// 	// })
 // }
 
 // func testOrder(c *gin.Context) {

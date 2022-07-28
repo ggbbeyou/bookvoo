@@ -5,11 +5,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	cli "github.com/urfave/cli/v2"
 	"github.com/yzimhao/bookvoo/clearings"
 	"github.com/yzimhao/bookvoo/core"
 	"github.com/yzimhao/bookvoo/market"
 	"github.com/yzimhao/bookvoo/match"
+	"github.com/yzimhao/bookvoo/user/assets"
+	"github.com/yzimhao/bookvoo/user/orders"
 
 	"github.com/yzimhao/bookvoo/user"
 	"github.com/yzimhao/bookvoo/views"
@@ -30,7 +33,7 @@ func main() {
 			&cli.StringFlag{Name: "config", Aliases: []string{"c"}, Value: "./config.toml", Usage: "config file"},
 		},
 		Action: func(c *cli.Context) error {
-			start(c.String("config"))
+			appStart(c.String("config"))
 			return nil
 		},
 		Commands: []*cli.Command{
@@ -48,7 +51,6 @@ func main() {
 				Aliases: []string{"cl"},
 				Usage:   "clean database",
 				Action: func(ctx *cli.Context) error {
-					pack.ShowVersion()
 					return nil
 				},
 			},
@@ -60,13 +62,32 @@ func main() {
 	}
 }
 
-func start(config string) {
-	c := utilgo.ViperInit(config)
-	router := gin.Default()
+func appStart(configPath string) {
+	utilgo.ViperInit(configPath)
 
+	//log level
+	level, _ := logrus.ParseLevel(viper.GetString("main.log_level"))
+	logrus.SetLevel(level)
+
+	initModuleDb()
+	go match.RunMatching()
+	router := gin.Default()
+	go user.Run(configPath, router)
+	go market.RunWithGinRouter(configPath, router)
+	go clearings.Run()
+	//pages
+	views.Run(configPath, router)
+
+	viper.SetDefault("main.host", ":8080")
+	router.Run(viper.GetString("main.host"))
+}
+
+//初始化各模块的数据库
+func initModuleDb() {
+	//后面可以根据不同模块拆分到不同的数据库
 	default_db := func() *xorm.Engine {
-		dsn := c.GetString("db.dsn")
-		driver := c.GetString("db.driver")
+		dsn := viper.GetString("db.dsn")
+		driver := viper.GetString("db.driver")
 		conn, err := xorm.NewEngine(driver, dsn)
 		if err != nil {
 			logrus.Panic(err)
@@ -76,20 +97,12 @@ func start(config string) {
 
 	//各模块数据库设置
 	core.SetDbEngine(default_db)
-	user.SetDbEngine(default_db)
+	//资产
+	assets.SetDbEngine(default_db)
+	//订单
+	orders.SetDbEngine(default_db)
+	//撮合
 	match.SetDbEngine(default_db)
+	//结算
 	clearings.SetDbEngine(default_db)
-
-	go match.RunMatching()
-	go user.Run(config, router)
-	go market.RunWithGinRouter(config, router)
-	//pages
-	views.Run(config, router)
-
-	c.SetDefault("main.host", ":8080")
-	router.Run(c.GetString("main.host"))
-}
-
-func clean(config string) {
-	//todo
 }

@@ -1,5 +1,6 @@
 [main]
 host="0.0.0.0:8082"
+log_level="trace"
 
 [db]
 # driver = "postgres" 
@@ -14,7 +15,10 @@ show_sql = true
 host = "127.0.0.1:6379"
 db = 0
 password = ""
-trade_log_subscribe_key="list:trade_log"
+
+# 成交记录给结算系统
+trade_record="trade_record:{symbol}"
+# trade_log_subscribe_key="list:trade_log"
 
 
 
@@ -23,5 +27,16 @@ trade_log_subscribe_key="list:trade_log"
 
 [kline]
 interval=["m1", "d1", "mn"]
+
+
+
+[test]
+user1=101
+user2=102
+trade_symbol = "ethusd"
+symbol = "eth"
+standard= "usd"
+initAmount = 10000
+
 
 
