@@ -62,6 +62,7 @@ func Test_Main(t *testing.T) {
 	// })
 
 	Convey("同账号交易 限价单的结算", t, func() {
+		//todo 买卖双方为同一个用户时，结算数据会出现脏数据
 		buy, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideBuy, "1.00", "10")
 		So(err, ShouldBeNil)
 		So(buy.OrderId, ShouldStartWith, "B")
