@@ -1,6 +1,7 @@
 package orders
 
 import (
+	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/user/assets"
 )
@@ -15,6 +16,7 @@ func limit_order(user_id int64, trade_symbol string, side OrderSide, price, qty 
 		return nil, err
 	}
 
+	logrus.Errorf("%+v", tp)
 	//todo 检查交易对限制
 
 	neworder := TradeOrder{

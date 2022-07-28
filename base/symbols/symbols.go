@@ -1,6 +1,7 @@
 package symbols
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -55,15 +56,6 @@ func (t *TradePairOpt) TableName() string {
 	return "trade_pair_option"
 }
 
-func GetTradePairById(pair_id int) (*TradePairOpt, error) {
-	db := db_engine.NewSession()
-	defer db.Close()
-
-	item := TradePairOpt{}
-	_, err := db.Table(new(TradePairOpt)).Where("id=?", pair_id).Get(&item)
-	return &item, err
-}
-
 func GetTradePairBySymbol(symbol string) (*TradePairOpt, error) {
 	db := db_engine.NewSession()
 	defer db.Close()
@@ -74,7 +66,7 @@ func GetTradePairBySymbol(symbol string) (*TradePairOpt, error) {
 		return nil, err
 	}
 	if !has {
-		return nil, err
+		return nil, fmt.Errorf("not found trade pair %s", symbol)
 	}
 	return &item, err
 }
