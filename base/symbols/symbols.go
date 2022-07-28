@@ -1,8 +1,9 @@
-package base
+package symbols
 
 import (
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"xorm.io/xorm"
 )
 
@@ -78,7 +79,7 @@ func GetTradePairBySymbol(symbol string) (*TradePairOpt, error) {
 	return &item, err
 }
 
-func SetDbEngine(db *xorm.Engine) {
+func Init(db *xorm.Engine, rdc *redis.Client) {
 	db_engine = db
 
 	db_engine.Sync2(

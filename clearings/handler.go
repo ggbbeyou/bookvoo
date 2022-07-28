@@ -3,7 +3,7 @@ package clearings
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
-	"github.com/yzimhao/bookvoo/core/base"
+	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/user/orders"
 	te "github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
@@ -33,7 +33,7 @@ func Run() {
 func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err error) {
 	logrus.Infof("[clearings] %s %s %s %s %s", symbol, ask_id, bid_id, price, qty)
 
-	tradeInfo, err := base.GetTradePairBySymbol(symbol)
+	tradeInfo, err := symbols.GetTradePairBySymbol(symbol)
 	if err != nil {
 		return err
 	}

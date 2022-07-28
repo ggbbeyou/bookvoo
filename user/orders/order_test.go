@@ -5,7 +5,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	"github.com/yzimhao/bookvoo/core/base"
+	"github.com/yzimhao/bookvoo/base"
 	"github.com/yzimhao/bookvoo/user/assets"
 
 	"github.com/sirupsen/logrus"
@@ -38,7 +38,7 @@ func init() {
 		table,
 	)
 
-	base.SetDbEngine(db_engine)
+	base.Init(db_engine, nil)
 	assets.Init(db_engine, nil)
 }
 

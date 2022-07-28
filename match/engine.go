@@ -3,8 +3,8 @@ package match
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
+	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/clearings"
-	"github.com/yzimhao/bookvoo/core/base"
 	te "github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
 )
@@ -16,7 +16,6 @@ var (
 
 func Init(db *xorm.Engine, rdc *redis.Client) {
 	db_engine = db
-	base.SetDbEngine(db)
 }
 
 func RunMatching() {
@@ -25,12 +24,12 @@ func RunMatching() {
 	db := db_engine.NewSession()
 	defer db.Close()
 
-	rows := []base.TradePairOpt{}
-	db.Table(new(base.TradePairOpt)).Where("status=?", base.StatusEnable).Find(&rows)
+	rows := []symbols.TradePairOpt{}
+	db.Table(new(symbols.TradePairOpt)).Where("status=?", symbols.StatusEnable).Find(&rows)
 
 	for _, row := range rows {
 		Engine[row.Symbol] = te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
-		go func(item base.TradePairOpt) {
+		go func(item symbols.TradePairOpt) {
 			for {
 				select {
 				case result := <-Engine[item.Symbol].ChTradeResult:

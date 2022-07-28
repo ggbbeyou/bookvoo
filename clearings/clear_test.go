@@ -7,7 +7,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/sirupsen/logrus"
-	"github.com/yzimhao/bookvoo/core/base"
+	"github.com/yzimhao/bookvoo/base"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
 	"xorm.io/xorm"
@@ -42,7 +42,7 @@ func init() {
 		new(orders.UnfinishedOrder),
 	)
 
-	base.SetDbEngine(db_engine)
+	base.Init(db_engine, nil)
 	assets.Init(db_engine, nil)
 	orders.Init(db_engine, nil)
 }

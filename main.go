@@ -8,8 +8,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	cli "github.com/urfave/cli/v2"
+	"github.com/yzimhao/bookvoo/base"
 	"github.com/yzimhao/bookvoo/clearings"
-	"github.com/yzimhao/bookvoo/core"
 	"github.com/yzimhao/bookvoo/match"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
@@ -103,7 +103,7 @@ func initModule() {
 		return rdc
 	}()
 
-	core.Init(default_db, default_rdc)
+	base.Init(default_db, default_rdc)
 	//资产
 	assets.Init(default_db, default_rdc)
 	//订单

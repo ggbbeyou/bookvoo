@@ -1,7 +1,7 @@
 package orders
 
 import (
-	"github.com/yzimhao/bookvoo/core/base"
+	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/user/assets"
 )
 
@@ -10,7 +10,7 @@ func NewLimitOrder(user_id int64, trade_symbol string, side OrderSide, price, qt
 }
 
 func limit_order(user_id int64, trade_symbol string, side OrderSide, price, qty string) (order *TradeOrder, err error) {
-	tp, err := base.GetTradePairBySymbol(trade_symbol)
+	tp, err := symbols.GetTradePairBySymbol(trade_symbol)
 	if err != nil {
 		return nil, err
 	}

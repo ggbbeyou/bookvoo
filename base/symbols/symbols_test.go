@@ -1,4 +1,4 @@
-package base
+package symbols
 
 import (
 	"testing"
@@ -26,7 +26,7 @@ func init() {
 		new(SymbolInfo),
 		new(TradePairOpt),
 	)
-	SetDbEngine(db_engine)
+	Init(db_engine, nil)
 }
 
 func Test_main(t *testing.T) {
