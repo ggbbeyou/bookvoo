@@ -12,7 +12,7 @@ show_sql = true
 
 
 [redis]
-host = "127.0.0.1:6379"
+host = "127.0.0.1:16379"
 db = 0
 password = ""
 

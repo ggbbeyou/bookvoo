@@ -3,8 +3,11 @@ package clearings
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
+	"github.com/yzimhao/bookvoo/base"
 	"github.com/yzimhao/bookvoo/base/symbols"
+	"github.com/yzimhao/bookvoo/common/types"
 	"github.com/yzimhao/bookvoo/user/orders"
+	"github.com/yzimhao/gowss"
 	te "github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
 )
@@ -24,16 +27,21 @@ func Run() {
 	Notify = make(chan te.TradeResult, 1000)
 	for {
 		if data, ok := <-Notify; ok {
-			go NewClearing(data.Symbol, data.AskOrderId, data.BidOrderId, data.TradePrice.String(), data.TradeQuantity.String())
+			go func(res te.TradeResult) {
+				err := NewClearing(res)
+				if err != nil {
+					logrus.Errorf("[clearings] %s", err)
+				}
+			}(data)
 		}
 	}
 }
 
 //结算一条成交记录
-func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err error) {
-	logrus.Infof("[clearings] %s %s %s %s %s", symbol, ask_id, bid_id, price, qty)
+func NewClearing(data te.TradeResult) (err error) {
+	logrus.Infof("[clearings] %#v", data)
 
-	tradeInfo, err := symbols.GetTradePairBySymbol(symbol)
+	tradeInfo, err := symbols.GetTradePairBySymbol(data.Symbol)
 	if err != nil {
 		return err
 	}
@@ -58,16 +66,16 @@ func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err e
 
 	cl := clearing{
 		db:     db,
-		symbol: symbol,
+		symbol: data.Symbol,
 
 		symbol_id:          tradeInfo.SymbolId,
 		standard_symbol_id: tradeInfo.StandardSymbolId,
 
-		ask_order_id: ask_id,
-		bid_order_id: bid_id,
-		trade_price:  d(price),
-		trade_qty:    d(qty),
-		trade_amount: d(price).Mul(d(qty)),
+		ask_order_id: data.AskOrderId,
+		bid_order_id: data.BidOrderId,
+		trade_price:  data.TradePrice,
+		trade_qty:    data.TradeQuantity,
+		trade_amount: data.TradePrice.Mul(data.TradeQuantity),
 
 		ask:    new(orders.TradeOrder),
 		bid:    new(orders.TradeOrder),
@@ -102,5 +110,18 @@ func NewClearing(symbol string, ask_id, bid_id string, price, qty string) (err e
 	if err != nil {
 		return err
 	}
+
+	//成交记录通知
+
+	base.TradeResultPush(rdc, gowss.MsgBody{
+		To: types.SubscribeTradeRecord.Format(map[string]string{"symbol": data.Symbol}),
+		Body: map[string]interface{}{
+			"trade_pirce":  cl.trade_price.String(),
+			"trade_qty":    cl.trade_qty.String(),
+			"trade_amount": cl.trade_amount.String(),
+			"trade_at":     data.TradeTime,
+		},
+	})
+
 	return nil
 }

@@ -19,7 +19,7 @@ func Test_RedisKey(t *testing.T) {
 
 	Convey("成交结果 redis key的格式化", t, func() {
 		key := TradeResult.Format(map[string]string{"symbol": "ethusd"})
-		So(key, ShouldEqual, "order.trade.result.ethusd")
+		So(key, ShouldEqual, "trade.result.ethusd")
 	})
 
 }

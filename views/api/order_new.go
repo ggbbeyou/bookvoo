@@ -39,6 +39,13 @@ func order_new(c *gin.Context) {
 		return
 	}
 
+	//测试代码，买卖不同账户 避免结算时出问题
+	if req.Side == orders.OrderSideBuy {
+		c.Set("user_id", int64(101))
+	} else {
+		c.Set("user_id", int64(102))
+	}
+
 	if req.OrderType == orders.OrderTypeLimit {
 		limit_order(c, req)
 		return

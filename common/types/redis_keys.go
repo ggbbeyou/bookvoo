@@ -28,5 +28,5 @@ func (r RedisKey) Format(kvs map[string]string) string {
 const (
 	Message     RedisKey = "message"
 	NewOrder    RedisKey = "order.new.{symbol}"
-	TradeResult RedisKey = "order.trade.result.{symbol}"
+	TradeResult RedisKey = "trade.result.{symbol}"
 )
