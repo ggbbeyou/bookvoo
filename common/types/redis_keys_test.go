@@ -7,14 +7,19 @@ import (
 )
 
 func Test_RedisKey(t *testing.T) {
+	Convey("key中无参数", t, func() {
+		key := Message.Format(nil)
+		So(key, ShouldEqual, "message")
+	})
+
 	Convey("新订单消息队列 redis key的格式化", t, func() {
-		key := NewOrder.Symbol("ethusd")
-		So(key, ShouldEqual, "new_order_ethusd")
+		key := NewOrder.Format(map[string]string{"symbol": "ethusd"})
+		So(key, ShouldEqual, "order.new.ethusd")
 	})
 
 	Convey("成交结果 redis key的格式化", t, func() {
-		key := TradeResult.Symbol("ethusd")
-		So(key, ShouldEqual, "trade_result_ethusd")
+		key := TradeResult.Format(map[string]string{"symbol": "ethusd"})
+		So(key, ShouldEqual, "order.trade.result.ethusd")
 	})
 
 }
