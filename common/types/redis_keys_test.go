@@ -8,7 +8,7 @@ import (
 
 func Test_RedisKey(t *testing.T) {
 	Convey("key中无参数", t, func() {
-		key := Message.Format(nil)
+		key := WsMessage.Format(nil)
 		So(key, ShouldEqual, "message")
 	})
 
