@@ -24,6 +24,10 @@ func transfer(db *xorm.Session, enable_transaction bool, from, to int64, symbol_
 		}()
 	}
 
+	if from == to {
+		return false, fmt.Errorf("invalid to")
+	}
+
 	from_user := Assets{UserId: from, SymbolId: symbol_id}
 	has_from, err := db.Table(new(Assets)).Where("user_id=? and symbol_id=?", from, symbol_id).ForUpdate().Get(&from_user)
 	if err != nil {

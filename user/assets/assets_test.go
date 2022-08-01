@@ -93,6 +93,16 @@ func Test_main(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 
+	Convey("自己给自己转账", t, func() {
+		before := UserAssets(user1, symbol_usd)
+		_, err := transfer(db, true, user1, user1, symbol_usd, "10.00", "t_10", Behavior_Transfer)
+		So(err, ShouldBeError, fmt.Errorf("invalid to"))
+
+		after := UserAssets(user1, symbol_usd)
+		So(before.Total, ShouldEqual, after.Total)
+
+	})
+
 	Convey("冻结用户资产", t, func() {
 		initAssets(user1, symbol_usd, "100")
 		f, err := freezeAssets(db, true, user1, symbol_usd, "10", "a001", Behavior_Trade)
