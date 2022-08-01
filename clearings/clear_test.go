@@ -2,14 +2,17 @@ package clearings
 
 import (
 	"testing"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
+	"github.com/shopspring/decimal"
 
 	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/base"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
+	"github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -57,7 +60,15 @@ func Test_Main(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(sell.OrderId, ShouldStartWith, "A")
 
-		err = NewClearing(test_symbol, sell.OrderId, buy.OrderId, "1", "10")
+		tr := trading_engine.TradeResult{
+			Symbol:        test_symbol,
+			AskOrderId:    sell.OrderId,
+			BidOrderId:    buy.OrderId,
+			TradePrice:    decimal.NewFromFloat(1.00),
+			TradeQuantity: decimal.NewFromFloat(10),
+			TradeTime:     time.Now().Unix(),
+		}
+		err = NewClearing(tr)
 		So(err, ShouldBeNil)
 	})
 
