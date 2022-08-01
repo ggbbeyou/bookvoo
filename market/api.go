@@ -16,11 +16,17 @@ func setupRouter(router *gin.Engine) *gin.Engine {
 		apiV1.GET("/ping", ping)
 		apiV1.GET("/klines", apiKlines)
 		apiV1.GET("/trade_log", nil)
-		apiV1.GET("/latest/price", nil)
 	}
 	return router
 }
 
+// @Summary 行情k线数据
+// @Description 行情k线数据接口
+// @Tags 行情接口
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {object} common.Response
+// @Router /api/v1/market/klines [get]
 func apiKlines(c *gin.Context) {
 	symbol := c.Query("symbol")
 	period := c.Query("period")

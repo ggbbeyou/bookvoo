@@ -16,7 +16,7 @@ type cancel_order_request struct {
 // @Param Authorization header string false "Bearer 用户令牌"
 // @Param object body cancel_order_request true "请求参数"
 // @Security ApiKeyAuth
-// @Success 200 {object} response
+// @Success 200 {object} common.Response
 // @Router /api/v1/order/cancel [post]
 func order_cancel(c *gin.Context) {
 	//todo

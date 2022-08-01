@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/yzimhao/bookvoo/common"
 	"github.com/yzimhao/bookvoo/match"
 )
 
@@ -13,7 +14,7 @@ import (
 // @Produce application/json
 // @Param symbol query string true "eg: ethusd"
 // @Param limit  query int false "默认100，最大5000"
-// @Success 200 {object} response
+// @Success 200 {object} common.Response
 // @Router /api/v1/depth [get]
 func depth(c *gin.Context) {
 	symbol := strings.ToLower(c.Query("symbol"))
@@ -24,13 +25,13 @@ func depth(c *gin.Context) {
 	}
 
 	if _, ok := match.Engine[symbol]; !ok {
-		fail(c, "invalid symbol")
+		common.Fail(c, "invalid symbol")
 		return
 	}
 
 	a := match.Engine[symbol].GetAskDepth(limitInt)
 	b := match.Engine[symbol].GetBidDepth(limitInt)
-	success(c, gin.H{
+	common.Success(c, gin.H{
 		"ask": a,
 		"bid": b,
 	})

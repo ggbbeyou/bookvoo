@@ -44,7 +44,30 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.response"
+                            "$ref": "#/definitions/common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/market/klines": {
+            "get": {
+                "description": "行情k线数据接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "行情接口"
+                ],
+                "summary": "行情k线数据",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.Response"
                         }
                     }
                 }
@@ -89,7 +112,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.response"
+                            "$ref": "#/definitions/common.Response"
                         }
                     }
                 }
@@ -134,7 +157,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.response"
+                            "$ref": "#/definitions/common.Response"
                         }
                     }
                 }
@@ -184,7 +207,7 @@ const docTemplate = `{
                 }
             }
         },
-        "api.response": {
+        "common.Response": {
             "type": "object",
             "properties": {
                 "data": {},

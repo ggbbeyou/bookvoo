@@ -29,7 +29,7 @@ definitions:
     - side
     - symbol
     type: object
-  api.response:
+  common.Response:
     properties:
       data: {}
       ok:
@@ -58,10 +58,25 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.response'
+            $ref: '#/definitions/common.Response'
       summary: 深度信息
       tags:
       - 交易相关
+  /api/v1/market/klines:
+    get:
+      consumes:
+      - application/json
+      description: 行情k线数据接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: 行情k线数据
+      tags:
+      - 行情接口
   /api/v1/order/cancel:
     post:
       consumes:
@@ -84,7 +99,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.response'
+            $ref: '#/definitions/common.Response'
       security:
       - ApiKeyAuth: []
       summary: 取消一个委托订单
@@ -117,7 +132,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.response'
+            $ref: '#/definitions/common.Response'
       security:
       - ApiKeyAuth: []
       summary: 创建一个新委托订单

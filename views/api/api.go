@@ -1,22 +1,13 @@
 package api
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
-	"github.com/sirupsen/logrus"
 )
 
 var (
 	USERID int64 = 101
 )
-
-type response struct {
-	Ok     int         `json:"ok"`
-	Reason string      `json:"reason,omitempty"`
-	Data   interface{} `json:"data,omitempty"`
-}
 
 func SetupRouter(router *gin.Engine) {
 	apiV1 := router.Group("/api/v1")
@@ -42,24 +33,6 @@ func SetupRouter(router *gin.Engine) {
 		//查询所有订单 获取所有帐户订单； 有效，已取消或已完成。 带有symbol
 		order.GET("/all", nil)
 	}
-}
-
-func responseJson(c *gin.Context, ok int, reason string, data interface{}) {
-	res := response{
-		Ok:     ok,
-		Reason: reason,
-		Data:   data,
-	}
-	c.JSON(http.StatusOK, res)
-}
-
-func success(c *gin.Context, data interface{}) {
-	responseJson(c, 1, "", data)
-}
-
-func fail(c *gin.Context, reason string) {
-	logrus.Debugf("[fail] %s, %s", c.Request.RequestURI, reason)
-	responseJson(c, 0, reason, nil)
 }
 
 func getUserId(c *gin.Context) int64 {
