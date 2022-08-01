@@ -2,17 +2,14 @@ package clearings
 
 import (
 	"testing"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	"github.com/shopspring/decimal"
 
 	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/base"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
-	"github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -51,38 +48,38 @@ func init() {
 }
 
 func Test_Main(t *testing.T) {
-	// Convey("不同账号交易 限价单的结算", t, func() {
-	// 	buy, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideBuy, "1.00", "10")
-	// 	So(err, ShouldBeNil)
-	// 	So(buy.OrderId, ShouldStartWith, "B")
-
-	// 	sell, err := orders.NewLimitOrder(test_user2, test_symbol, orders.OrderSideSell, "1.00", "10")
-	// 	So(err, ShouldBeNil)
-	// 	So(sell.OrderId, ShouldStartWith, "A")
-
-	// 	err = NewClearing(test_symbol, sell.OrderId, buy.OrderId, "1", "10")
-	// 	So(err, ShouldBeNil)
-	// })
-
-	Convey("同账号交易 限价单的结算", t, func() {
-		//todo 买卖双方为同一个用户时，结算数据会出现脏数据
+	Convey("不同账号交易 限价单的结算", t, func() {
 		buy, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideBuy, "1.00", "10")
 		So(err, ShouldBeNil)
 		So(buy.OrderId, ShouldStartWith, "B")
 
-		sell, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideSell, "1.00", "10")
+		sell, err := orders.NewLimitOrder(test_user2, test_symbol, orders.OrderSideSell, "1.00", "10")
 		So(err, ShouldBeNil)
 		So(sell.OrderId, ShouldStartWith, "A")
 
-		tr := trading_engine.TradeResult{
-			Symbol:        test_symbol,
-			AskOrderId:    sell.OrderId,
-			BidOrderId:    buy.OrderId,
-			TradePrice:    decimal.NewFromFloat(1.00),
-			TradeQuantity: decimal.NewFromFloat(10),
-			TradeTime:     time.Now().Unix(),
-		}
-		err = NewClearing(tr)
+		err = NewClearing(test_symbol, sell.OrderId, buy.OrderId, "1", "10")
 		So(err, ShouldBeNil)
 	})
+
+	// Convey("同账号交易 限价单的结算", t, func() {
+	// 	//todo 买卖双方为同一个用户时，结算数据会出现脏数据
+	// 	buy, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideBuy, "1.00", "10")
+	// 	So(err, ShouldBeNil)
+	// 	So(buy.OrderId, ShouldStartWith, "B")
+
+	// 	sell, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideSell, "1.00", "10")
+	// 	So(err, ShouldBeNil)
+	// 	So(sell.OrderId, ShouldStartWith, "A")
+
+	// 	tr := trading_engine.TradeResult{
+	// 		Symbol:        test_symbol,
+	// 		AskOrderId:    sell.OrderId,
+	// 		BidOrderId:    buy.OrderId,
+	// 		TradePrice:    decimal.NewFromFloat(1.00),
+	// 		TradeQuantity: decimal.NewFromFloat(10),
+	// 		TradeTime:     time.Now().Unix(),
+	// 	}
+	// 	err = NewClearing(tr)
+	// 	So(err, ShouldBeNil)
+	// })
 }
