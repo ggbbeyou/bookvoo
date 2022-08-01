@@ -44,7 +44,7 @@
                         sub: [
                             "depth."+cur_symbol,
                             "kline.m1."+cur_symbol,
-                            "trade.result."+cur_symbol,
+                            "trade.record."+cur_symbol,
                         ]
                     };
                     conn.send(JSON.stringify(subs));
