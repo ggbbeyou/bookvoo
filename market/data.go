@@ -3,23 +3,18 @@ package market
 import (
 	"context"
 	"encoding/json"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"github.com/yzimhao/bookvoo/common/types"
 	"github.com/yzimhao/bookvoo/market/models"
 	te "github.com/yzimhao/trading_engine"
-	"github.com/yzimhao/utilgo"
 )
 
 var (
-	rdc    *redis.Client
-	config *viper.Viper
-	kdh    *kdataHandler
-
+	kdh        *kdataHandler
 	ChNewKline chan Klinetips
 )
 
@@ -38,48 +33,33 @@ type Klinetips struct {
 
 }
 
-func Run(config_path string) {
-	initConfig(config_path)
-	go handleKLDataService()
-	startWeb()
-}
-
-func RunWithGinRouter(config_path string, router *gin.Engine) {
-	initConfig(config_path)
+func Run(router *gin.Engine) {
+	initConfig()
 	setupRouter(router)
-	handleKLDataService()
+	go handleKLDataService()
 }
 
-func initConfig(config_path string) {
-	config = utilgo.ViperInit(config_path)
-	rdc = redis.NewClient(&redis.Options{
-		Addr:     config.GetString("kline.redis.host"),
-		DB:       config.GetInt("kline.redis.db"),
-		Password: config.GetString("kline.redis.password"),
-	})
-	models.InitDbEngine(config)
+func initConfig() {
+	models.SetDbEngine(db_engine)
 	ChNewKline = make(chan Klinetips, 1000)
 }
 
 func handleKLDataService() {
-	config.SetDefault("kline.redis.trade_log_subscribe_key", "list:trade_log")
-	kdh = NewKdataHandler(rdc, config.GetStringSlice("kline.interval"))
+	kdh = NewKdataHandler(rdc, viper.GetStringSlice("kline.interval"))
 	//todo 初始化kline的最新缓存
 	kdh.RebuildCache()
 
-	// 通过pub/sub方式获取成交记录
-	// subTradeLog()
 	//通过list获取成交记录
 	popTradeLog()
 }
 
 func popTradeLog() {
-	subcribeKey := config.GetString("kline.redis.trade_log_subscribe_key")
+	subcribeKey := types.MarketSubscribe
 	ctx := context.Background()
-	logrus.Infof("subscribe key=%s...", subcribeKey)
+	logrus.Infof("subscribe key=%s", subcribeKey)
 
 	for {
-		msg := rdc.BRPop(ctx, time.Duration(30)*time.Second, subcribeKey).Val()
+		msg := rdc.BRPop(ctx, time.Duration(30)*time.Second, subcribeKey.String()).Val()
 		if len(msg) > 1 {
 			kdh.WaitGroupAdd(len(kdh.NeedPeriods()) * 1)
 			handleData(msg[1])
@@ -97,7 +77,7 @@ func handleData(msg string) error {
 	}
 
 	tl := models.TradeLog{
-		Symbol:   strings.ToLower(tr.Symbol),
+		Symbol:   tr.Symbol,
 		At:       time.Unix(tr.TradeTime/1e9, 0),
 		Price:    tr.TradePrice.String(),
 		Quantity: tr.TradeQuantity.String(),

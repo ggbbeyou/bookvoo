@@ -25,8 +25,17 @@ func (r RedisKey) Format(kvs map[string]string) string {
 	return format(string(r), kvs)
 }
 
+func (r RedisKey) String() string {
+	return string(r)
+}
+
 const (
-	WsMessage   RedisKey = "message"
-	NewOrder    RedisKey = "order.new.{symbol}"
+	//消息推送队列
+	WsMessage RedisKey = "message"
+	//新订单通知到撮合系统的队列
+	NewOrder RedisKey = "order.new.{symbol}"
+	//结算成功推送
 	TradeResult RedisKey = "trade.result.{symbol}"
+	//推送到行情系统的队列
+	MarketSubscribe RedisKey = "trade.result"
 )

@@ -3,23 +3,8 @@ package market
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
-	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/market/models"
 )
-
-func startWeb() {
-	router := gin.Default()
-	r := setupRouter(router)
-	config.SetDefault("kline.api_host", "localhost:8081")
-	host := config.GetString("kline.api_host")
-	logrus.Infof("kline api host: %s", host)
-	if config.GetBool("kline.api_debug") {
-		gin.SetMode(gin.DebugMode)
-	} else {
-		gin.SetMode(gin.ReleaseMode)
-	}
-	r.Run(host)
-}
 
 func GetRouter(r *gin.Engine) *gin.Engine {
 	return setupRouter(r)

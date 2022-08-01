@@ -15,8 +15,7 @@
                 logTpl = $("#trade-log-tpl").html();
         
             
-            
-            data['trade_at'] = formatTime(data.trade_at);
+            data['trade_at'] = formatTs2Time(parseInt(data.trade_at/1e9));
             
 
             laytpl(logTpl).render(data, function (html) {

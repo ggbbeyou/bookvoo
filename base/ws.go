@@ -11,7 +11,6 @@ func WsHandler(ctx *gin.Context) {
 }
 
 func TradeResultPush(rdc *redis.Client, msg gowss.MsgBody) {
-	// ctx := context.Background()
-	// rdc.LPush(ctx, types.WsMessage.Format(nil), string(msg.GetBody()))
+	//除了广播到前端外，还需要推送一份到k线计算
 	Wss.Broadcast <- msg
 }

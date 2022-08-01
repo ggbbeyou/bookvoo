@@ -4,14 +4,24 @@ import (
 	"testing"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
+
+	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/yzimhao/utilgo"
+	"xorm.io/xorm"
 )
 
 var symbol = "eurusdtest"
 
 func init() {
-	InitDbEngine(utilgo.ViperInit("../config.toml"))
+	driver := "mysql"
+	dsn := "root:root@tcp(localhost:13306)/test?charset=utf8&loc=Local"
+	conn, err := xorm.NewEngine(driver, dsn)
+	if err != nil {
+		logrus.Panic(err)
+	}
+	SetDbEngine(conn)
 }
 
 func Test_ParseAt(t *testing.T) {

@@ -6,8 +6,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"xorm.io/xorm"
 )
 
@@ -17,23 +15,8 @@ var (
 	tradeLogTableMap sync.Map
 )
 
-func InitDbEngine(opt *viper.Viper) {
-	opt.SetDefault("kline.db.driver", "mysql")
-	opt.SetDefault("kline.db.dsn", "root:root@tcp(localhost:3306)/test?charset=utf8&loc=Local")
-	opt.SetDefault("kline.db.show_sql", false)
-
-	dsn := opt.GetString("kline.db.dsn")
-	driver := opt.GetString("kline.db.driver")
-
-	conn, err := xorm.NewEngine(driver, dsn)
-	if err != nil {
-		logrus.Panic(err)
-	}
-	engine = conn
-
-	if opt.GetBool("kline.db.show_sql") {
-		engine.ShowSQL(true)
-	}
+func SetDbEngine(db *xorm.Engine) {
+	engine = db
 }
 
 func DbEngine() *xorm.Engine {

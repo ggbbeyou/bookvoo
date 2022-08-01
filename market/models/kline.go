@@ -68,6 +68,10 @@ func (k *Kline) Save() error {
 }
 
 func (k *Kline) autoCreateTable() error {
+	if k.symbol == "" || k.period == "" {
+		return fmt.Errorf("symbol or period is null")
+	}
+
 	if v, ok := klineTableMap.Load(k.TableName()); ok && v != nil {
 		return nil
 	}

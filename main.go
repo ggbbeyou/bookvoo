@@ -10,6 +10,7 @@ import (
 	cli "github.com/urfave/cli/v2"
 	"github.com/yzimhao/bookvoo/base"
 	"github.com/yzimhao/bookvoo/clearings"
+	"github.com/yzimhao/bookvoo/market"
 	"github.com/yzimhao/bookvoo/match"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
@@ -70,13 +71,12 @@ func appStart(configPath string) {
 
 	initModule()
 
-	go match.RunMatching()
-	go clearings.Run()
+	match.Run()
+	clearings.Run()
 
 	router := gin.Default()
-	// go market.RunWithGinRouter(configPath, router)
+	market.Run(router)
 	views.Run(router)
-
 	viper.SetDefault("main.host", ":8080")
 	router.Run(viper.GetString("main.host"))
 }
@@ -112,4 +112,6 @@ func initModule() {
 	match.Init(default_db, default_rdc)
 	//结算
 	clearings.Init(default_db, default_rdc)
+	//k线行情系统
+	market.Init(default_db, default_rdc)
 }

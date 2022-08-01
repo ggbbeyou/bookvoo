@@ -18,27 +18,29 @@ func Init(db *xorm.Engine, rdc *redis.Client) {
 	db_engine = db
 }
 
-func RunMatching() {
+func Run() {
 	Engine = make(map[string]*te.TradePair)
 
-	db := db_engine.NewSession()
-	defer db.Close()
+	go func() {
+		db := db_engine.NewSession()
+		defer db.Close()
 
-	rows := []symbols.TradePairOpt{}
-	db.Table(new(symbols.TradePairOpt)).Where("status=?", symbols.StatusEnable).Find(&rows)
+		rows := []symbols.TradePairOpt{}
+		db.Table(new(symbols.TradePairOpt)).Where("status=?", symbols.StatusEnable).Find(&rows)
 
-	for _, row := range rows {
-		Engine[row.Symbol] = te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
-		go func(item symbols.TradePairOpt) {
-			for {
-				select {
-				case result := <-Engine[item.Symbol].ChTradeResult:
-					logrus.Debugf("[tradeResult] %v", result)
-					clearings.Notify <- result
-				case cancel := <-Engine[item.Symbol].ChCancelResult:
-					logrus.Debugf("[cancelOrder] %v", cancel)
+		for _, row := range rows {
+			Engine[row.Symbol] = te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
+			go func(item symbols.TradePairOpt) {
+				for {
+					select {
+					case result := <-Engine[item.Symbol].ChTradeResult:
+						logrus.Debugf("[tradeResult] %v", result)
+						clearings.Notify <- result
+					case cancel := <-Engine[item.Symbol].ChCancelResult:
+						logrus.Debugf("[cancelOrder] %v", cancel)
+					}
 				}
-			}
-		}(row)
-	}
+			}(row)
+		}
+	}()
 }
