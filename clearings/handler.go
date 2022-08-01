@@ -116,7 +116,7 @@ func NewClearing(data te.TradeResult) (err error) {
 	base.TradeResultPush(rdc, gowss.MsgBody{
 		To: types.SubscribeTradeRecord.Format(map[string]string{"symbol": data.Symbol}),
 		Body: map[string]interface{}{
-			"trade_pirce":  cl.trade_price.String(),
+			"trade_price":  cl.trade_price.String(),
 			"trade_qty":    cl.trade_qty.String(),
 			"trade_amount": cl.trade_amount.String(),
 			"trade_at":     data.TradeTime,

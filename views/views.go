@@ -42,8 +42,6 @@ func setupRouter(router *gin.Engine) {
 func pushDepth() {
 	go func() {
 		for {
-			time.Sleep(time.Duration(100) * time.Millisecond)
-
 			for symbol, obj := range match.Engine {
 				ask := obj.GetAskDepth(10)
 				bid := obj.GetBidDepth(10)
@@ -56,7 +54,7 @@ func pushDepth() {
 					},
 				}
 			}
-
+			time.Sleep(time.Duration(100) * time.Millisecond)
 		}
 	}()
 

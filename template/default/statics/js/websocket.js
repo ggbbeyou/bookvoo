@@ -14,16 +14,16 @@
             var logView = $(".trade-log .log"),
                 logTpl = $("#trade-log-tpl").html();
         
-            data['TradeTime'] = formatTime(data.TradeTime);
+            
+            
+            data['trade_at'] = formatTime(data.trade_at);
+            
+
             laytpl(logTpl).render(data, function (html) {
                 if ($(".log-item").length > 10) {
                     $(".log-item").last().remove();
                 }
                 logView.after(html);
-        
-                //remove myorder
-                $("tr[order-id='" + data.AskOrderId + "']").remove();
-                $("tr[order-id='" + data.BidOrderId + "']").remove();
             });
         }
 
@@ -70,7 +70,7 @@
                                 bidView.html(html);
                             });
 
-                        } else if (msg.type == "trade."+cur_symbol) {
+                        } else if (msg.type == "trade.record."+cur_symbol) {
                             rendertradelog(msg.body);
                             
                         } else if (msg.type == "new_order."+cur_symbol) {
