@@ -117,20 +117,21 @@ func NewClearing(data te.TradeResult) (err error) {
 	}
 
 	//成交记录推送到下游
-	base.TradeResultPush(rdc, gowss.MsgBody{
-		To: types.SubscribeTradeRecord.Format(map[string]string{"symbol": data.Symbol}),
-		Body: map[string]interface{}{
-			"trade_price":  cl.trade_price.String(),
-			"trade_qty":    cl.trade_qty.String(),
-			"trade_amount": cl.trade_amount.String(),
-			"trade_at":     data.TradeTime,
-		},
-	})
+	if rdc != nil {
+		base.TradeResultPush(rdc, gowss.MsgBody{
+			To: types.SubscribeTradeRecord.Format(map[string]string{"symbol": data.Symbol}),
+			Body: map[string]interface{}{
+				"trade_price":  cl.trade_price.String(),
+				"trade_qty":    cl.trade_qty.String(),
+				"trade_amount": cl.trade_amount.String(),
+				"trade_at":     data.TradeTime,
+			},
+		})
 
-	//这份数据传输到k线计算
-	ctx := context.Background()
-	s, _ := json.Marshal(data)
-	rdc.LPush(ctx, types.MarketSubscribe.String(), string(s))
-
+		//这份数据传输到k线计算
+		ctx := context.Background()
+		s, _ := json.Marshal(data)
+		rdc.LPush(ctx, types.MarketSubscribe.String(), string(s))
+	}
 	return nil
 }

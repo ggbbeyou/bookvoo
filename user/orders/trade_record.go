@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/yzimhao/bookvoo/common/types"
 	"xorm.io/xorm"
 )
 
@@ -36,8 +37,8 @@ type TradeRecord struct {
 	BidFeeRate string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 	BidFee     string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 
-	CreateTime time.Time `xorm:"timestamp created" json:"create_time"`
-	UpdateTime time.Time `xorm:"timestamp updated" json:"-"`
+	CreateTime types.Time `xorm:"timestamp created" json:"create_time"`
+	UpdateTime time.Time  `xorm:"timestamp updated" json:"-"`
 }
 
 func (tr *TradeRecord) Save(db *xorm.Session) error {
