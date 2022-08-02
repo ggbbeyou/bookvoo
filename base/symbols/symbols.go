@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/shopspring/decimal"
 	"xorm.io/xorm"
 )
 
@@ -54,6 +55,16 @@ type TradePairOpt struct {
 
 func (t *TradePairOpt) TableName() string {
 	return "trade_pair_option"
+}
+
+func (t *TradePairOpt) FormatAmount(a string) string {
+	q, _ := decimal.NewFromString(a)
+	return q.StringFixedBank(int32(t.PricePrec))
+}
+
+func (t *TradePairOpt) FormatQty(qty string) string {
+	q, _ := decimal.NewFromString(qty)
+	return q.StringFixedBank(int32(t.QtyPrec))
 }
 
 func GetTradePairBySymbol(symbol string) (*TradePairOpt, error) {

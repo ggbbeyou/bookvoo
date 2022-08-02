@@ -16,6 +16,10 @@ var (
 	db_engine *xorm.Engine
 )
 
+func Db() *xorm.Engine {
+	return db_engine
+}
+
 func Init(db *xorm.Engine, rdc *redis.Client) {
 	db_engine = db
 
