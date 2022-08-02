@@ -13,7 +13,7 @@ func SetupRouter(router *gin.Engine) {
 	apiV1 := router.Group("/api/v1")
 
 	apiV1.GET("/depth", depth)
-	apiV1.GET("/trade/log", tradelog)
+	apiV1.GET("/trade/record", trade_record)
 
 	//todo 验证登录状态
 	order := apiV1.Group("/order")

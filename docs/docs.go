@@ -162,6 +162,43 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/trade/record": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "交易相关"
+                ],
+                "summary": "成交记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "eg: ethusd",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "默认10，最大100",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/orders.TradeRecord"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -215,6 +252,35 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "orders.TradeRecord": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "ask": {
+                    "type": "string"
+                },
+                "bid": {
+                    "type": "string"
+                },
+                "create_time": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "string"
+                },
+                "trade_by": {
+                    "type": "integer"
+                },
+                "trade_id": {
                     "type": "string"
                 }
             }

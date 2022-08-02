@@ -36,16 +36,3 @@ func depth(c *gin.Context) {
 		"bid": b,
 	})
 }
-
-func tradelog(c *gin.Context) {
-	symbol := strings.ToLower(c.Param("symbol"))
-
-	c.JSON(200, gin.H{
-		"ok": true,
-		"data": gin.H{
-			"latest_price": match.Engine[symbol].Price2String(match.Engine[symbol].LatestPrice()),
-			"trade_log":    "", //recentTrade,
-		},
-	})
-
-}

@@ -37,6 +37,25 @@ definitions:
       reason:
         type: string
     type: object
+  orders.TradeRecord:
+    properties:
+      amount:
+        type: string
+      ask:
+        type: string
+      bid:
+        type: string
+      create_time:
+        type: string
+      price:
+        type: string
+      quantity:
+        type: string
+      trade_by:
+        type: integer
+      trade_id:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -136,6 +155,30 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 创建一个新委托订单
+      tags:
+      - 交易相关
+  /api/v1/trade/record:
+    get:
+      parameters:
+      - description: 'eg: ethusd'
+        in: query
+        name: symbol
+        required: true
+        type: string
+      - description: 默认10，最大100
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/orders.TradeRecord'
+            type: array
+      summary: 成交记录
       tags:
       - 交易相关
 swagger: "2.0"

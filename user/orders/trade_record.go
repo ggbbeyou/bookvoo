@@ -16,66 +16,66 @@ const (
 
 // 成交记录表
 type TradeRecord struct {
-	Id     int64  `xorm:"pk autoincr bigint"`
-	Symbol string `xorm:"-"`
+	Id     int64  `xorm:"pk autoincr bigint" json:"-"`
+	Symbol string `xorm:"-" json:"-"`
 
-	TradeId string `xorm:"varchar(30) unique(trade_id)"`
-	Ask     string `xorm:"varchar(30) unique(trade)"`
-	Bid     string `xorm:"varchar(30) unique(trade)"`
+	TradeId string `xorm:"varchar(30) unique(trade_id)" json:"trade_id"`
+	Ask     string `xorm:"varchar(30) unique(trade)" json:"ask"`
+	Bid     string `xorm:"varchar(30) unique(trade)" json:"bid"`
 
-	TradeBy  TradeBy `xorm:"tinyint(1)"`
-	AskUid   int64   `xorm:"bigint notnull"`
-	BidUid   int64   `xorm:"bigint notnull"`
-	Price    string  `xorm:"decimal(40,20) notnull default(0)"`
-	Quantity string  `xorm:"decimal(40,20) notnull default(0)"`
-	Amount   string  `xorm:"decimal(40,20) notnull default(0)"`
+	TradeBy  TradeBy `xorm:"tinyint(1)" json:"trade_by"`
+	AskUid   int64   `xorm:"bigint notnull" json:"-"`
+	BidUid   int64   `xorm:"bigint notnull" json:"-"`
+	Price    string  `xorm:"decimal(40,20) notnull default(0)" json:"price"`
+	Quantity string  `xorm:"decimal(40,20) notnull default(0)" json:"quantity"`
+	Amount   string  `xorm:"decimal(40,20) notnull default(0)" json:"amount"`
 
-	AskFeeRate string `xorm:"decimal(40,20) notnull default(0)"`
-	AskFee     string `xorm:"decimal(40,20) notnull default(0)"`
+	AskFeeRate string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	AskFee     string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 
-	BidFeeRate string `xorm:"decimal(40,20) notnull default(0)"`
-	BidFee     string `xorm:"decimal(40,20) notnull default(0)"`
+	BidFeeRate string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	BidFee     string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 
-	CreateTime time.Time `xorm:"timestamp created"`
-	UpdateTime time.Time `xorm:"timestamp updated"`
+	CreateTime time.Time `xorm:"timestamp created" json:"create_time"`
+	UpdateTime time.Time `xorm:"timestamp updated" json:"-"`
 }
 
-func (to *TradeRecord) Save(db *xorm.Session) error {
-	if to.Symbol == "" {
+func (tr *TradeRecord) Save(db *xorm.Session) error {
+	if tr.Symbol == "" {
 		return fmt.Errorf("symbol not set")
 	}
 	//todo 频繁查询表是否存在，后面考虑缓存一下
-	exist, err := db.IsTableExist(to.TableName())
+	exist, err := db.IsTableExist(tr.TableName())
 	if err != nil {
 		return err
 	}
 	if !exist {
-		err := db.CreateTable(to)
+		err := db.CreateTable(tr)
 		if err != nil {
 			return err
 		}
 
-		err = db.CreateIndexes(to)
+		err = db.CreateIndexes(tr)
 		if err != nil {
 			return err
 		}
 
-		err = db.CreateUniques(to)
+		err = db.CreateUniques(tr)
 		if err != nil {
 			return err
 		}
 	}
 
-	_, err = db.Table(to).Insert(to)
+	_, err = db.Table(tr).Insert(tr)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (to *TradeRecord) TableName() string {
-	return GetTradeRecordTableName(to.Symbol)
+func (tr *TradeRecord) TableName() string {
+	return tr.GetTableName(tr.Symbol)
 }
-func GetTradeRecordTableName(symbol string) string {
+func (tr *TradeRecord) GetTableName(symbol string) string {
 	return fmt.Sprintf("order_%s_traderecord", symbol)
 }
