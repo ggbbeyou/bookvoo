@@ -86,6 +86,21 @@ paths:
       consumes:
       - application/json
       description: 行情k线数据接口
+      parameters:
+      - description: 'eg: ethusd'
+        in: query
+        name: symbol
+        required: true
+        type: string
+      - description: m1,m3,m5...
+        in: query
+        name: period
+        required: true
+        type: string
+      - description: 'default: 10'
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:

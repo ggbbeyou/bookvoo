@@ -25,21 +25,31 @@ func setupRouter(router *gin.Engine) *gin.Engine {
 // @Tags 行情接口
 // @Accept application/json
 // @Produce application/json
+// @Param symbol query string true "eg: ethusd"
+// @Param period query string true "m1,m3,m5..."
+// @Param limit query int false "default: 10"
 // @Success 200 {object} common.Response
 // @Router /api/v1/market/klines [get]
 func apiKlines(c *gin.Context) {
 	symbol := c.Query("symbol")
 	period := c.Query("period")
 
-	// startTime := c.Query("start_time")
-	// endTime := c.Query("end_time")
-	// limit := c.GetInt("limit") //default: 500, max: 1000
+	limit := func() int {
+		l := c.GetInt("limit")
+		if l <= 0 {
+			l = 10
+		}
+		if l > 100 {
+			l = 100
+		}
+		return l
+	}()
 
 	intv := models.Period(period)
 	kk := models.NewKline(symbol, intv)
 
 	kks := []models.Kline{}
-	models.DbEngine().Table(kk.TableName()).OrderBy("open_at desc").Limit(500).Find(&kks)
+	models.DbEngine().Table(kk.TableName()).OrderBy("open_at desc").Limit(limit).Find(&kks)
 
 	data := []interface{}{}
 	for _, item := range kks {

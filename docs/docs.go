@@ -63,6 +63,28 @@ const docTemplate = `{
                     "行情接口"
                 ],
                 "summary": "行情k线数据",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "eg: ethusd",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "m1,m3,m5...",
+                        "name": "period",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "default: 10",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
