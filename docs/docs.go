@@ -21,9 +21,6 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "交易相关"
-                ],
                 "summary": "深度信息",
                 "parameters": [
                     {
@@ -95,6 +92,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/order": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/order/all": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/order/cancel": {
             "post": {
                 "security": [
@@ -110,15 +141,16 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "交易相关"
+                    "订单相关"
                 ],
-                "summary": "取消一个委托订单",
+                "summary": "取消委托",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Bearer 用户令牌",
                         "name": "Authorization",
-                        "in": "header"
+                        "in": "header",
+                        "required": true
                     },
                     {
                         "description": "请求参数",
@@ -155,15 +187,16 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "交易相关"
+                    "订单相关"
                 ],
-                "summary": "创建一个新委托订单",
+                "summary": "委托订单",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Bearer 用户令牌",
                         "name": "Authorization",
-                        "in": "header"
+                        "in": "header",
+                        "required": true
                     },
                     {
                         "description": "请求参数",
@@ -185,13 +218,27 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/order/open": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/trade/record": {
             "get": {
                 "produces": [
                     "application/json"
-                ],
-                "tags": [
-                    "交易相关"
                 ],
                 "summary": "成交记录",
                 "parameters": [

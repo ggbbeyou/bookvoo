@@ -11,7 +11,6 @@ import (
 )
 
 // @Summary 成交记录
-// @Tags 交易相关
 // @Produce application/json
 // @Param symbol query string true "eg: ethusd"
 // @Param limit  query int false "默认10，最大100"

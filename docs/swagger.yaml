@@ -109,8 +109,6 @@ paths:
           schema:
             $ref: '#/definitions/common.Response'
       summary: 深度信息
-      tags:
-      - 交易相关
   /api/v1/market/klines:
     get:
       consumes:
@@ -141,6 +139,24 @@ paths:
       summary: 行情k线数据
       tags:
       - 行情接口
+  /api/v1/order:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Response'
+      security:
+      - ApiKeyAuth: []
+  /api/v1/order/all:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Response'
+      security:
+      - ApiKeyAuth: []
   /api/v1/order/cancel:
     post:
       consumes:
@@ -150,6 +166,7 @@ paths:
       - description: Bearer 用户令牌
         in: header
         name: Authorization
+        required: true
         type: string
       - description: 请求参数
         in: body
@@ -166,9 +183,9 @@ paths:
             $ref: '#/definitions/common.Response'
       security:
       - ApiKeyAuth: []
-      summary: 取消一个委托订单
+      summary: 取消委托
       tags:
-      - 交易相关
+      - 订单相关
   /api/v1/order/new:
     post:
       consumes:
@@ -183,6 +200,7 @@ paths:
       - description: Bearer 用户令牌
         in: header
         name: Authorization
+        required: true
         type: string
       - description: 请求参数
         in: body
@@ -199,9 +217,18 @@ paths:
             $ref: '#/definitions/common.Response'
       security:
       - ApiKeyAuth: []
-      summary: 创建一个新委托订单
+      summary: 委托订单
       tags:
-      - 交易相关
+      - 订单相关
+  /api/v1/order/open:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Response'
+      security:
+      - ApiKeyAuth: []
   /api/v1/trade/record:
     get:
       parameters:
@@ -224,6 +251,4 @@ paths:
               $ref: '#/definitions/orders.TradeRecord'
             type: array
       summary: 成交记录
-      tags:
-      - 交易相关
 swagger: "2.0"

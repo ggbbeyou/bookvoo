@@ -8,12 +8,12 @@ type cancel_order_request struct {
 	OrderId string `json:"order_id"`
 }
 
-// @Summary 取消一个委托订单
+// @Summary 取消委托
 // @Description 取消还未完成的订单
-// @Tags 交易相关
+// @Tags 订单相关
 // @Accept application/json
 // @Produce application/json
-// @Param Authorization header string false "Bearer 用户令牌"
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param object body cancel_order_request true "请求参数"
 // @Security ApiKeyAuth
 // @Success 200 {object} common.Response

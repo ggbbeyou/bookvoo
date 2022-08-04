@@ -23,15 +23,15 @@ func SetupRouter(router *gin.Engine) {
 			ctx.Set("user_id", USERID)
 		})
 		//查询订单
-		order.GET("/", nil)
+		order.GET("/", order_query)
 		//创建订单
 		order.POST("/new", order_new)
 		//取消订单
 		order.POST("/cancel", order_cancel)
 		//当前挂单
-		order.GET("/open", nil)
+		order.GET("/open", order_open)
 		//查询所有订单 获取所有帐户订单； 有效，已取消或已完成。 带有symbol
-		order.GET("/all", nil)
+		order.GET("/all", order_all)
 	}
 }
 

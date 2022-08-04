@@ -18,17 +18,16 @@ type new_order_request struct {
 	Amount    string           `json:"amount" example:"100.00"`
 }
 
-// 新委托订单
-// @Summary 创建一个新委托订单
+// @Summary 委托订单
+// @Tags 订单相关
 // @Description 新订单，支持限价单、市价单
 // @Description 不同订单类型的参数要求：
 // @Description 限价单: {"symbol": "ethusd", "order_type": "limit", "side": "sell", "price": "1.00", "quantity": "100"}
 // @Description 市价-按数量: {"symbol": "ethusd", "order_type": "market", "side": "sell", "quantity": "100"}
 // @Description 市价-按金额: {"symbol": "ethusd", "order_type": "market", "side": "sell", "amount": "1000.00"}
-// @Tags 交易相关
 // @Accept application/json
 // @Produce application/json
-// @Param Authorization header string false "Bearer 用户令牌"
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param object body new_order_request true "请求参数"
 // @Security ApiKeyAuth
 // @Success 200 {object} common.Response
