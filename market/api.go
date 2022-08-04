@@ -2,7 +2,6 @@ package market
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/shopspring/decimal"
 	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/common"
 	"github.com/yzimhao/bookvoo/market/models"
@@ -62,7 +61,7 @@ func apiKlines(c *gin.Context) {
 
 	data := []interface{}{}
 	for _, item := range kks {
-		//todo 小数点位数处理
+
 		a := []interface{}{
 			item.OpenAt.Unix(),
 			tp.FormatAmount(item.Open),
@@ -81,9 +80,4 @@ func apiKlines(c *gin.Context) {
 
 func ping(c *gin.Context) {
 	c.String(200, "pong")
-}
-
-func fmtStringDigit(a string, digit int) string {
-	d, _ := decimal.NewFromString(a)
-	return d.StringFixedBank(int32(digit))
 }
