@@ -59,8 +59,10 @@ func order_new(c *gin.Context) {
 			market_order_by_qty(c, req.Symbol, req.Side, req.Quantity)
 		}
 		return
+	} else {
+		common.Fail(c, "invalid side")
+		return
 	}
-
 }
 
 func limit_order(c *gin.Context, req new_order_request) {
