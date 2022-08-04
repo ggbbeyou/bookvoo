@@ -3,6 +3,8 @@ package market
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"github.com/yzimhao/bookvoo/base/symbols"
+	"github.com/yzimhao/bookvoo/common"
 	"github.com/yzimhao/bookvoo/market/models"
 )
 
@@ -29,6 +31,7 @@ func setupRouter(router *gin.Engine) *gin.Engine {
 // @Param period query string true "m1,m3,m5..."
 // @Param limit query int false "default: 10"
 // @Success 200 {object} common.Response
+// @Success 200 {object} models.Kline
 // @Router /api/v1/market/klines [get]
 func apiKlines(c *gin.Context) {
 	symbol := c.Query("symbol")
@@ -45,6 +48,12 @@ func apiKlines(c *gin.Context) {
 		return l
 	}()
 
+	tp, err := symbols.GetTradePairBySymbol(symbol)
+	if err != nil {
+		common.Fail(c, err.Error())
+		return
+	}
+
 	intv := models.Period(period)
 	kk := models.NewKline(symbol, intv)
 
@@ -56,12 +65,12 @@ func apiKlines(c *gin.Context) {
 		//todo 小数点位数处理
 		a := []interface{}{
 			item.OpenAt.Unix(),
-			fmtStringDigit(item.Open, 2),
-			fmtStringDigit(item.High, 2),
-			fmtStringDigit(item.Low, 2),
-			fmtStringDigit(item.Close, 2),
-			fmtStringDigit(item.Volume, 0),
-			fmtStringDigit(item.Amount, 2),
+			tp.FormatAmount(item.Open),
+			tp.FormatAmount(item.High),
+			tp.FormatAmount(item.Low),
+			tp.FormatAmount(item.Close),
+			tp.FormatQty(item.Volume),
+			tp.FormatAmount(item.Amount),
 			item.CloseAt.Unix(),
 		}
 		data = append(data, a)

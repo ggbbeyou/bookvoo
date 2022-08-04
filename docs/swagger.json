@@ -77,7 +77,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/models.Kline"
                         }
                     }
                 }
@@ -262,6 +262,47 @@
                     "type": "integer"
                 },
                 "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Kline": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "成交额",
+                    "type": "string"
+                },
+                "close": {
+                    "description": "收盘价(当前K线未结束的即为最新价)",
+                    "type": "string"
+                },
+                "close_at": {
+                    "description": "收盘时间",
+                    "type": "string"
+                },
+                "high": {
+                    "description": "最高价",
+                    "type": "string"
+                },
+                "low": {
+                    "description": "最低价",
+                    "type": "string"
+                },
+                "open": {
+                    "description": "开盘价",
+                    "type": "string"
+                },
+                "open_at": {
+                    "description": "开盘时间",
+                    "type": "string"
+                },
+                "trade_count": {
+                    "description": "成交笔数",
+                    "type": "integer"
+                },
+                "volume": {
+                    "description": "成交量",
                     "type": "string"
                 }
             }
