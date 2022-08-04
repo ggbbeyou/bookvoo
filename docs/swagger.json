@@ -167,7 +167,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "新订单，支持限价单、市价单\n不同订单类型的参数要求：\n限价单: {\"symbol\": \"ethusd\", \"order_type\": \"limit\", \"side\": \"sell\", \"price\": \"1.00\", \"quantity\": \"100\"}\n市价-按数量: {\"symbol\": \"ethusd\", \"order_type\": \"market\", \"side\": \"sell\", \"quantity\": \"100\"}\n市价-按金额: {\"symbol\": \"ethusd\", \"order_type\": \"market\", \"side\": \"sell\", \"amount\": \"1000.00\"}",
+                "description": "新订单，支持限价单、市价单\n不同订单类型的参数要求：\n限价单: {\"symbol\": \"ethusd\", \"order_type\": \"limit\", \"side\": \"sell/buy\", \"price\": \"1.00\", \"quantity\": \"100\"}\n市价-按数量: {\"symbol\": \"ethusd\", \"order_type\": \"market\", \"side\": \"sell/buy\", \"quantity\": \"100\"}\n市价-按金额: {\"symbol\": \"ethusd\", \"order_type\": \"market\", \"side\": \"sell/buy\", \"amount\": \"1000.00\"}",
                 "consumes": [
                     "application/json"
                 ],
