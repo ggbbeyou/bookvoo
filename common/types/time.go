@@ -12,3 +12,7 @@ func (t Time) MarshalJSON() ([]byte, error) {
 	stamp := fmt.Sprintf("%d", time.Time(t).Unix())
 	return []byte(stamp), nil
 }
+
+func (t Time) Unix() int64 {
+	return time.Time(t).Unix()
+}

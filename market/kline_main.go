@@ -80,8 +80,8 @@ func (ks *kdataHandler) updateKline(tl models.TradeLog, period models.Period) {
 	ok := json.Unmarshal([]byte(raw), &lastK)
 
 	newK := models.NewKline(tl.Symbol, period)
-	newK.OpenAt = st
-	newK.CloseAt = et
+	newK.OpenAt = types.Time(st)
+	newK.CloseAt = types.Time(et)
 
 	if ok != nil {
 		lastK.Open = tl.Price
@@ -122,13 +122,13 @@ func (ks *kdataHandler) updateKline(tl models.TradeLog, period models.Period) {
 			Symbol: tl.Symbol,
 			Period: string(period),
 
-			OpenAt:  newK.OpenAt.Unix(),
+			OpenAt:  time.Time(newK.OpenAt).Unix(),
 			Open:    newK.Open,
 			High:    newK.High,
 			Low:     newK.Low,
 			Close:   newK.Close,
 			Volume:  newK.Volume,
-			CloseAt: newK.CloseAt.Unix(),
+			CloseAt: time.Time(newK.CloseAt).Unix(),
 			Amount:  newK.Amount,
 		}
 	}()
