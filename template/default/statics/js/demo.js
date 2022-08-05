@@ -52,33 +52,15 @@
             var logView = $(".trade-log .log"),
                 logTpl = $("#trade-log-tpl").html();
         
-            data['TradeTime'] = formatTime(data.TradeTime);
+            data['trade_at'] = formatTs2Time(data.trade_at);
             laytpl(logTpl).render(data, function (html) {
                 if ($(".log-item").length > 10) {
                     $(".log-item").last().remove();
                 }
                 logView.after(html);
-        
-                //remove myorder
-                $("tr[order-id='" + data.AskOrderId + "']").remove();
-                $("tr[order-id='" + data.BidOrderId + "']").remove();
             });
         }
 
-
-
-        function createUUID() {
-            var dt = new Date().getTime();
-            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                var r = (dt + Math.random() * 16) % 16 | 0;
-                dt = Math.floor(dt / 16);
-                return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-            });
-            return uuid;
-        }
-
-        /*layer弹出一个示例*/
-        //   layer.msg('Hello World');
 
         $(".opt").on("click", function () {
             var side = $(this).hasClass("sell") ? "sell" : "buy";
@@ -190,15 +172,12 @@
 
 
         $().ready(function(){
-            $.get("/api/trade_log?symbol="+symbol, function (d) {
+            $.get("/api/v1/trade/record?symbol="+symbol, function (d) {
                 if (d.ok) {
-                    $(".latest-price").html(d.data.latest_price);
-
-                    var recent_log = d.data.trade_log;
+                    var recent_log = d.data.reverse();
                     for(var i=0; i<recent_log.length; i++){
                         rendertradelog(recent_log[i]);
                     }
-
                 }
             });
         });

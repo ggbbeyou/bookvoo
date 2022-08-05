@@ -378,13 +378,13 @@ const docTemplate = `{
                 "bid": {
                     "type": "string"
                 },
-                "create_time": {
-                    "type": "string"
-                },
                 "price": {
                     "type": "string"
                 },
                 "quantity": {
+                    "type": "string"
+                },
+                "trade_at": {
                     "type": "string"
                 },
                 "trade_by": {

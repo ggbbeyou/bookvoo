@@ -49,7 +49,6 @@ func trade_record(c *gin.Context) {
 		rows[i].Price = tp.FormatAmount(row.Price)
 		rows[i].Quantity = tp.FormatQty(row.Quantity)
 		rows[i].Amount = tp.FormatAmount(row.Amount)
-		// rows[i].CreateTime = row.CreateTime.Unix()
 	}
 
 	common.Success(c, rows)

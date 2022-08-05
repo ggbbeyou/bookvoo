@@ -37,7 +37,7 @@ type TradeRecord struct {
 	BidFeeRate string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 	BidFee     string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 
-	CreateTime types.Time `xorm:"timestamp created" json:"create_time"`
+	CreateTime types.Time `xorm:"timestamp created" json:"trade_at"`
 	UpdateTime time.Time  `xorm:"timestamp updated" json:"-"`
 }
 

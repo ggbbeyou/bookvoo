@@ -14,7 +14,7 @@
     #生成一遍文档
     make docs
     #启动主程序 
-    go run main.go
+    make run
     # 访问 http://127.0.0.1:8082/t/ethusd
     # 访问文档 http://127.0.0.1:8082/docs/index.html
 ```
