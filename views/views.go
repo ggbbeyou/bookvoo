@@ -42,7 +42,7 @@ func setupRouter(router *gin.Engine) {
 func pushDepth() {
 	go func() {
 		for {
-			for symbol, obj := range match.Engine {
+			for symbol, obj := range match.Engine.Symbols {
 				ask := obj.GetAskDepth(10)
 				bid := obj.GetBidDepth(10)
 

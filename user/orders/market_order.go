@@ -21,7 +21,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 	neworder := TradeOrder{
 		OrderId:     order_id_by_side(side),
 		Symbol:      trade_symbol,
-		TradingPair: tp.Id,
+		PairId:      tp.Id,
 		OrderSide:   side,
 		OrderType:   OrderTypeMarket,
 		UserId:      user_id,
@@ -97,7 +97,7 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 	neworder := TradeOrder{
 		OrderId:     order_id_by_side(side),
 		Symbol:      trade_symbol,
-		TradingPair: tp.Id,
+		PairId:      tp.Id,
 		OrderSide:   side,
 		OrderType:   OrderTypeMarket,
 		UserId:      user_id,

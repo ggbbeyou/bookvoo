@@ -13,7 +13,7 @@ import "github.com/gin-gonic/gin"
 // @Param order_id query string true "eg: A22080117295286970700066"
 
 // @Security ApiKeyAuth
-// @Success 200 {object} common.Response
+// @Success 200 {object} orders.TradeOrder
 // @Router /api/v1/order [get]
 func order_query(c *gin.Context) {
 

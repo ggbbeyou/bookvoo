@@ -23,13 +23,14 @@ func depth(c *gin.Context) {
 		limitInt = 100
 	}
 
-	if _, ok := match.Engine[symbol]; !ok {
-		common.Fail(c, "invalid symbol")
+	te, err := match.Engine.Get(symbol)
+	if err != nil {
+		common.Fail(c, err.Error())
 		return
 	}
 
-	a := match.Engine[symbol].GetAskDepth(limitInt)
-	b := match.Engine[symbol].GetBidDepth(limitInt)
+	a := te.GetAskDepth(limitInt)
+	b := te.GetBidDepth(limitInt)
 	common.Success(c, gin.H{
 		"ask": a,
 		"bid": b,

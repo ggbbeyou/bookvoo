@@ -91,7 +91,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/orders.TradeOrder"
                         }
                     }
                 }
@@ -350,6 +350,43 @@
                 },
                 "volume": {
                     "description": "成交量",
+                    "type": "string"
+                }
+            }
+        },
+        "orders.TradeOrder": {
+            "type": "object",
+            "properties": {
+                "create_time": {
+                    "description": "时间戳 精确到纳秒",
+                    "type": "integer"
+                },
+                "finished_qty": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "string"
+                },
+                "order_side": {
+                    "type": "string"
+                },
+                "order_type": {
+                    "description": "价格策略，市价单，限价单",
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "trade_amount": {
                     "type": "string"
                 }
             }

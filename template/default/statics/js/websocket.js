@@ -70,6 +70,7 @@
                             });
 
                         } else if (msg.type == "trade.record."+cur_symbol) {
+                            $(".latest-price").html(msg.body.price);
                             rendertradelog(msg.body);
                             
                         } else if (msg.type == "new_order."+cur_symbol) {

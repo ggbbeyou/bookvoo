@@ -174,6 +174,9 @@
         $().ready(function(){
             $.get("/api/v1/trade/record?symbol="+symbol, function (d) {
                 if (d.ok) {
+                    var latest_price = d.data[0].price;
+                    $(".latest-price").html(latest_price);
+
                     var recent_log = d.data.reverse();
                     for(var i=0; i<recent_log.length; i++){
                         rendertradelog(recent_log[i]);

@@ -1,46 +1,124 @@
 package match
 
 import (
+	"fmt"
+	"sync"
+
 	"github.com/go-redis/redis/v8"
+	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/clearings"
+	"github.com/yzimhao/bookvoo/user/orders"
 	te "github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
 )
 
 var (
-	Engine    map[string]*te.TradePair
+	Send chan *orders.TradeOrder
+
 	db_engine *xorm.Engine
+	Engine    *engine
 )
+
+type engine struct {
+	Symbols map[string]*te.TradePair
+	sync.Mutex
+}
 
 func Init(db *xorm.Engine, rdc *redis.Client) {
 	db_engine = db
+	Send = make(chan *orders.TradeOrder)
+	Engine = new(engine)
 }
 
 func Run() {
-	Engine = make(map[string]*te.TradePair)
+	Engine.init()
+	Engine.service()
+	Engine.handler()
+}
 
-	go func() {
-		db := db_engine.NewSession()
-		defer db.Close()
+func (e *engine) rebuild(symbol string, pair_id int) {
+	db := orders.Db().NewSession()
+	defer db.Close()
 
-		rows := []symbols.TradePairOpt{}
-		db.Table(new(symbols.TradePairOpt)).Where("status=?", symbols.StatusEnable).Find(&rows)
+	rows := []orders.TradeOrder{}
+	db.Table(new(orders.UnfinishedOrder)).Where("pair_id=?", pair_id).OrderBy("create_time asc").Find(&rows)
 
-		for _, row := range rows {
-			Engine[row.Symbol] = te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
-			go func(item symbols.TradePairOpt) {
-				for {
-					select {
-					case result := <-Engine[item.Symbol].ChTradeResult:
-						logrus.Debugf("[tradeResult] %v", result)
-						clearings.Notify <- result
-					case cancel := <-Engine[item.Symbol].ChCancelResult:
-						logrus.Debugf("[cancelOrder] %v", cancel)
-					}
+	for _, row := range rows {
+		row.Symbol = symbol
+		Send <- &row
+	}
+}
+
+func (e *engine) init() {
+	e.Lock()
+	defer e.Unlock()
+
+	e.Symbols = make(map[string]*te.TradePair)
+
+	db := db_engine.NewSession()
+	defer db.Close()
+
+	rows := []symbols.TradePairOpt{}
+	db.Table(new(symbols.TradePairOpt)).Where("status=?", symbols.StatusEnable).Find(&rows)
+	for _, row := range rows {
+		e.Symbols[row.Symbol] = te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
+		e.rebuild(row.Symbol, row.Id)
+	}
+}
+
+func (e *engine) service() {
+	for symbol, item := range e.Symbols {
+		go func(symbol string, obj *te.TradePair) {
+			for {
+				select {
+				case result := <-obj.ChTradeResult:
+					logrus.Debugf("[tradeResult] %s %v", symbol, result)
+					clearings.Notify <- result
+				case cancel := <-obj.ChCancelResult:
+					logrus.Debugf("[cancelOrder] %s %v", symbol, cancel)
 				}
-			}(row)
+			}
+		}(symbol, item)
+	}
+}
+
+func (e *engine) handler() {
+	go func() {
+		for {
+			select {
+			case data := <-Send:
+				func() {
+					e.Lock()
+					defer e.Unlock()
+
+					if data.OrderType == orders.OrderTypeLimit {
+						if data.OrderSide == orders.OrderSideSell {
+							e.Symbols[data.Symbol].ChNewOrder <- te.NewAskLimitItem(data.OrderId, d(data.Price), d(data.Quantity), data.CreateTime)
+						} else if data.OrderSide == orders.OrderSideBuy {
+							e.Symbols[data.Symbol].ChNewOrder <- te.NewBidLimitItem(data.OrderId, d(data.Price), d(data.Quantity), data.CreateTime)
+						}
+					}
+
+				}()
+			}
+
 		}
 	}()
+}
+
+func (e *engine) Get(symbol string) (*te.TradePair, error) {
+	e.Lock()
+	defer e.Unlock()
+
+	if _, ok := e.Symbols[symbol]; !ok {
+		return nil, fmt.Errorf("invalid symbol")
+	}
+	return e.Symbols[symbol], nil
+}
+
+func d(ss string) decimal.Decimal {
+	s, _ := decimal.NewFromString(ss)
+	return s
 }

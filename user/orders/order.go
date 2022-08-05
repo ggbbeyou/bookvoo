@@ -27,17 +27,17 @@ const (
 
 // 委托记录表
 type TradeOrder struct {
-	Id          int64     `xorm:"pk autoincr bigint" json:"-"`
-	Symbol      string    `xorm:"-" json:"symbol"`
-	TradingPair int       `xorm:"notnull index(pair_id)" json:"-"`
-	OrderId     string    `xorm:"varchar(30) unique(order_id) notnull" json:"order_id"`
-	OrderSide   OrderSide `xorm:"varchar(10) index(order_side)" json:"order_side"`
-	OrderType   OrderType `xorm:"varchar(10)" json:"order_type"` //价格策略，市价单，限价单
-	UserId      int64     `xorm:"bigint index(userid) notnull" json:"-"`
-	Price       string    `xorm:"decimal(40,20) notnull default(0)" json:"price"`
-	Quantity    string    `xorm:"decimal(40,20) notnull default(0)" json:"quantity"`
-	FeeRate     string    `xorm:"decimal(40,20) notnull default(0)" json:"-"`
-	Amount      string    `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	Id        int64     `xorm:"pk autoincr bigint" json:"-"`
+	Symbol    string    `xorm:"-" json:"symbol"`
+	PairId    int       `xorm:"notnull index(pair_id)" json:"-"`
+	OrderId   string    `xorm:"varchar(30) unique(order_id) notnull" json:"order_id"`
+	OrderSide OrderSide `xorm:"varchar(10) index(order_side)" json:"order_side"`
+	OrderType OrderType `xorm:"varchar(10)" json:"order_type"` //价格策略，市价单，限价单
+	UserId    int64     `xorm:"bigint index(userid) notnull" json:"-"`
+	Price     string    `xorm:"decimal(40,20) notnull default(0)" json:"price"`
+	Quantity  string    `xorm:"decimal(40,20) notnull default(0)" json:"quantity"`
+	FeeRate   string    `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	Amount    string    `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 	//根据订单类型的不同，冻结的资产也不同
 	FreezeQty string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 

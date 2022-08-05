@@ -22,7 +22,7 @@ func limit_order(user_id int64, trade_symbol string, side OrderSide, price, qty 
 	neworder := TradeOrder{
 		OrderId:     order_id_by_side(side),
 		Symbol:      trade_symbol,
-		TradingPair: tp.Id,
+		PairId:      tp.Id,
 		OrderSide:   side,
 		OrderType:   OrderTypeLimit,
 		UserId:      user_id,
