@@ -1,4 +1,8 @@
 
+run:
+	@swag init
+	@go run main.go
+
 test:
 	go clean -testcache
 	cd common && go test -v ./...
