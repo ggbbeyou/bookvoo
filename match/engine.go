@@ -36,18 +36,22 @@ func Run() {
 	Engine.init()
 	Engine.service()
 	Engine.handler()
+	Engine.rebuild()
 }
 
-func (e *engine) rebuild(symbol string, pair_id int) {
+func (e *engine) rebuild() {
 	db := orders.Db().NewSession()
 	defer db.Close()
 
-	rows := []orders.TradeOrder{}
-	db.Table(new(orders.UnfinishedOrder)).Where("pair_id=?", pair_id).OrderBy("create_time asc").Find(&rows)
+	for symbol, _ := range e.Symbols {
 
-	for _, row := range rows {
-		row.Symbol = symbol
-		Send <- &row
+		tp, _ := symbols.GetTradePairBySymbol(symbol)
+		rows := []orders.TradeOrder{}
+		db.Table(new(orders.UnfinishedOrder)).Where("pair_id=?", tp.Id).OrderBy("create_time asc").Find(&rows)
+		for _, row := range rows {
+			row.Symbol = symbol
+			Send <- &row
+		}
 	}
 }
 
@@ -64,7 +68,6 @@ func (e *engine) init() {
 	db.Table(new(symbols.TradePairOpt)).Where("status=?", symbols.StatusEnable).Find(&rows)
 	for _, row := range rows {
 		e.Symbols[row.Symbol] = te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
-		e.rebuild(row.Symbol, row.Id)
 	}
 }
 

@@ -10,7 +10,10 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
+	"github.com/yzimhao/bookvoo/base"
+	"github.com/yzimhao/bookvoo/common/types"
 	"github.com/yzimhao/bookvoo/market/models"
+	"github.com/yzimhao/gowss"
 	"github.com/yzimhao/utilgo"
 )
 
@@ -38,6 +41,7 @@ func NewKdataHandler(r *redis.Client, needPeriod []string) *kdataHandler {
 						continue
 					}
 					ks.updateKline(tradeLog, period)
+
 				}
 			}
 		}
@@ -128,6 +132,15 @@ func (ks *kdataHandler) updateKline(tl models.TradeLog, period models.Period) {
 			Amount:  newK.Amount,
 		}
 	}()
+
+	base.WssPush(rdc, gowss.MsgBody{
+		To: types.SubscribeKline.Format(map[string]string{
+			"symbol": tl.Symbol,
+			"period": string(period),
+		}),
+		Body: newK,
+	})
+
 	//todo 异步入库
 	err := newK.Save()
 

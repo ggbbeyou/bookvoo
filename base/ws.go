@@ -10,7 +10,7 @@ func WsHandler(ctx *gin.Context) {
 	Wss.ServeWs(ctx.Writer, ctx.Request)
 }
 
-func TradeResultPush(rdc *redis.Client, msg gowss.MsgBody) {
+func WssPush(rdc *redis.Client, msg gowss.MsgBody) {
 	//除了广播到前端外，还需要推送一份到k线计算
 	Wss.Broadcast <- msg
 }
