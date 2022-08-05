@@ -95,9 +95,9 @@
                 }(),
                 success: function (d) {
                     if(d.ok){
-                        layer.msg("下单" + d.ok + " askLen:" + d.data.ask_len + " bidLen:" + d.data.bid_len);
+                        layer.msg("order_id: " + d.data.order_id);
                     }else{
-                        layer.msg(d.error);
+                        layer.msg(d.reason);
                     }
                 }
             });
