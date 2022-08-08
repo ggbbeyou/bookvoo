@@ -61,7 +61,7 @@ func deleteTestTable() {
 	rows := []tables{}
 	db.Table("information_schema.tables").Find(&rows)
 	for _, a := range rows {
-		if strings.Contains(a.TableName, test_symbol) {
+		if strings.Contains(a.TableName, "kline_"+test_symbol) {
 			db.DropIndexes(a.TableName)
 			db.DropTable(a.TableName)
 			models.DeleteTableMapCache()

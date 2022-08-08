@@ -206,9 +206,9 @@ func Test_main(t *testing.T) {
 
 	//上面测试做完后，生成一点测试数据
 	cleanUserAssets(ROOTUSERID)
-	initAssets(user1, symbol_usd, "1000")
-	initAssets(user1, symbol_eth, "1000")
+	initAssets(user1, symbol_usd, "1000000")
+	initAssets(user1, symbol_eth, "1000000")
 
-	initAssets(user2, symbol_usd, "1000")
-	initAssets(user2, symbol_eth, "1000")
+	initAssets(user2, symbol_usd, "1000000")
+	initAssets(user2, symbol_eth, "1000000")
 }
