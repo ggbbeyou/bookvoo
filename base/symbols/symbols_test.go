@@ -51,7 +51,7 @@ func Test_main(t *testing.T) {
 			Symbol:       "eth",
 			Name:         "以太坊",
 			MinPrecision: 18,
-			ShowPrec:     8,
+			ShowPrec:     4,
 			Status:       StatusEnable,
 		}
 		_, err = db.Insert(&ethInfo)
