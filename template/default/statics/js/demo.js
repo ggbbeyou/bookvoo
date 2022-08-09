@@ -170,8 +170,7 @@
             }
         });
 
-
-        $().ready(function(){
+        var load_trade_log = function(){
             $.get("/api/v1/trade/record?symbol="+symbol, function (d) {
                 if (d.ok) {
                     var latest_price = d.data[0].price;
@@ -183,6 +182,24 @@
                     }
                 }
             });
+        };
+
+        var load_assets = function(){
+            var symbols = [$(".symbol").attr("data"), $(".stand_symbol").attr("data")];
+            $.get("/api/v1/assets/query?symbols=" + symbols.join(","), function(d){
+                if(d.ok) {
+                    for(var k in d.data){
+                        $(".symbol_balance_"+ k).html(d.data[k].available);
+                    }
+                }else{
+                    layer.msg(d.reason);
+                }
+            });
+        };
+
+        $().ready(function(){
+            load_trade_log();
+            load_assets();
         });
 
 

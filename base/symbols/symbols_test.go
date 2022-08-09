@@ -64,7 +64,7 @@ func Test_main(t *testing.T) {
 		id, err := db.Insert(&TradePairOpt{
 			Symbol:           "ethusd",
 			Name:             "ETHUSD",
-			SymbolId:         int(eth_id),
+			TargetSymbolId:   int(eth_id),
 			StandardSymbolId: int(usd_id),
 			PricePrec:        2,
 			QtyPrec:          4,

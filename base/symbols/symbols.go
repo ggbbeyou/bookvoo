@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/shopspring/decimal"
+	"github.com/yzimhao/bookvoo/common/types"
 	"xorm.io/xorm"
 )
 
@@ -21,36 +22,39 @@ const (
 )
 
 type SymbolInfo struct {
-	Id           int       `xorm:"pk autoincr int"`
-	Symbol       string    `xorm:"varchar(100) notnull unique(symbol)"`
-	Name         string    `xorm:"varchar(250) notnull"`
-	ShowPrec     int       `xorm:"default(0)"`
-	MinPrecision int       `xorm:"default(0)"`
-	Standard     bool      `xorm:"default(0)"` //是否为本位币
-	Status       status    `xorm:"default(0) notnull"`
-	CreateTime   time.Time `xorm:"timestamp created"`
-	UpdateTime   time.Time `xorm:"timestamp updated"`
+	Id           int       `xorm:"pk autoincr int" json:"id"`
+	Symbol       string    `xorm:"varchar(100) notnull unique(symbol)" json:"symbol"`
+	Name         string    `xorm:"varchar(250) notnull" json:"name"`
+	ShowPrec     int       `xorm:"default(0)" json:"show_prec"`
+	MinPrecision int       `xorm:"default(0)" json:"min_precision"`
+	Standard     bool      `xorm:"default(0)" json:"standard"` //是否为本位币
+	Status       status    `xorm:"default(0) notnull" json:"-"`
+	CreateTime   time.Time `xorm:"timestamp created" json:"-"`
+	UpdateTime   time.Time `xorm:"timestamp updated" json:"-"`
 }
 
 type TradePairOpt struct {
-	Id     int    `xorm:"pk autoincr int"`
-	Symbol string `xorm:"varchar(100) notnull unique(symbol)"`
-	Name   string `xorm:"varchar(250) notnull"`
+	Id     int    `xorm:"pk autoincr int" json:"-"`
+	Symbol string `xorm:"varchar(100) notnull unique(symbol)" json:"symbol"`
+	Name   string `xorm:"varchar(250) notnull" json:"name"`
 
-	SymbolId         int `xorm:"default(0) unique(symbol_base)"` //交易物品
-	StandardSymbolId int `xorm:"default(0) unique(symbol_base)"` //支付货币
+	TargetSymbolId   int `xorm:"default(0) unique(symbol_base)" json:"target_symbol_id"`   //交易物品
+	StandardSymbolId int `xorm:"default(0) unique(symbol_base)" json:"standard_symbol_id"` //支付货币
 
-	PricePrec      int    `xorm:"default(2)"`
-	QtyPrec        int    `xorm:"default(0)"`
-	AllowMinQty    string `xorm:"decimal(40,20) notnull"`
-	AllowMaxQty    string `xorm:"decimal(40,20) notnull"`
-	AllowMinAmount string `xorm:"decimal(40,20) notnull"`
-	AllowMaxAmount string `xorm:"decimal(40,20) notnull"`
-	FeeRate        string `xorm:"decimal(40,20) notnull default(0)"`
+	PricePrec      int             `xorm:"default(2)" json:"price_prec"`
+	QtyPrec        int             `xorm:"default(0)" json:"qty_prec"`
+	AllowMinQty    types.NumberStr `xorm:"decimal(40,20) notnull" json:"allow_min_qty"`
+	AllowMaxQty    types.NumberStr `xorm:"decimal(40,20) notnull" json:"allow_max_qty"`
+	AllowMinAmount types.NumberStr `xorm:"decimal(40,20) notnull" json:"allow_min_amount"`
+	AllowMaxAmount types.NumberStr `xorm:"decimal(40,20) notnull" json:"allow_max_amount"`
+	FeeRate        types.NumberStr `xorm:"decimal(40,20) notnull default(0)" json:"fee_rate"`
 
-	Status     status    `xorm:"default(0) notnull"`
-	CreateTime time.Time `xorm:"timestamp created"`
-	UpdateTime time.Time `xorm:"timestamp updated"`
+	Status     status    `xorm:"default(0) notnull" json:"-"`
+	CreateTime time.Time `xorm:"timestamp created" json:"-"`
+	UpdateTime time.Time `xorm:"timestamp updated" json:"-"`
+
+	Target   SymbolInfo `xorm:"-" json:"target"`
+	Standard SymbolInfo `xorm:"-" json:"standard"`
 }
 
 func (t *TradePairOpt) TableName() string {
@@ -79,7 +83,33 @@ func GetTradePairBySymbol(symbol string) (*TradePairOpt, error) {
 	if !has {
 		return nil, fmt.Errorf("not found trade pair %s", symbol)
 	}
+
+	item.Target = GetSymbolInfo(item.TargetSymbolId)
+	item.Standard = GetSymbolInfo(item.StandardSymbolId)
 	return &item, err
+}
+
+func GetSymbolInfo(id int) SymbolInfo {
+	var one SymbolInfo
+	db_engine.Table(new(SymbolInfo)).Where("id=?", id).Get(&one)
+	return one
+}
+
+func GetSymbolInfoBySymbol(symbol string) (*SymbolInfo, error) {
+	var one SymbolInfo
+	has, err := db_engine.Table(new(SymbolInfo)).Where("symbol=?", symbol).Get(&one)
+	if err != nil {
+		return nil, err
+	}
+	if !has {
+		return nil, fmt.Errorf("not found symbol %s", symbol)
+	}
+	return &one, nil
+}
+
+func (s *SymbolInfo) FormatNumber(n string) string {
+	q, _ := decimal.NewFromString(n)
+	return q.StringFixedBank(int32(s.ShowPrec))
 }
 
 func Init(db *xorm.Engine, rdc *redis.Client) {

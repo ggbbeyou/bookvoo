@@ -20,14 +20,14 @@ const (
 
 // 用户资产余额表
 type Assets struct {
-	Id         int64     `xorm:"pk autoincr bigint"`
-	UserId     int64     `xorm:"notnull unique(userid_symbol)"`
-	SymbolId   int       `xorm:"notnull unique(userid_symbol)"`
-	Total      string    `xorm:"decimal(40,20) default(0) notnull"`
-	Freeze     string    `xorm:"decimal(40,20) default(0) notnull"`
-	Available  string    `xorm:"decimal(40,20) default(0) notnull"`
-	CreateTime time.Time `xorm:"timestamp created"`
-	UpdateTime time.Time `xorm:"timestamp updated"`
+	Id         int64     `xorm:"pk autoincr bigint" json:"-"`
+	UserId     int64     `xorm:"notnull unique(userid_symbol)" json:"-"`
+	SymbolId   int       `xorm:"notnull unique(userid_symbol)" json:"-"`
+	Total      string    `xorm:"decimal(40,20) default(0) notnull" json:"total"`
+	Freeze     string    `xorm:"decimal(40,20) default(0) notnull" json:"freeze"`
+	Available  string    `xorm:"decimal(40,20) default(0) notnull" json:"available"`
+	CreateTime time.Time `xorm:"timestamp created" json:"-"`
+	UpdateTime time.Time `xorm:"timestamp updated" json:"update_time"`
 }
 
 // 用户资产变动记录

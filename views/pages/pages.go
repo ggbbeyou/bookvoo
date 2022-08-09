@@ -2,7 +2,9 @@ package pages
 
 import (
 	"net/http"
+	"strings"
 
+	"github.com/yzimhao/bookvoo/base/symbols"
 	_ "github.com/yzimhao/bookvoo/docs"
 
 	"github.com/gin-gonic/gin"
@@ -21,8 +23,16 @@ func SetupRouter(router *gin.Engine) {
 
 	//交易界面
 	router.GET("/t/:symbol", func(c *gin.Context) {
+		symbol := strings.ToLower(c.Param("symbol"))
+		tp, err := symbols.GetTradePairBySymbol(symbol)
+		if err != nil {
+			c.HTML(http.StatusNotFound, "", nil)
+			return
+		}
+
 		c.HTML(200, "demo.html", gin.H{
-			"symbol": c.Param("symbol"),
+			"symbol": symbol,
+			"tp":     tp,
 		})
 	})
 

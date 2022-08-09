@@ -12,16 +12,16 @@ var (
 func SetupRouter(router *gin.Engine) {
 	apiV1 := router.Group("/api/v1")
 
+	apiV1.GET("/info", symbol_info)
+	apiV1.GET("/assets/query", login(), assets_query)
+
 	apiV1.GET("/depth", depth)
 	apiV1.GET("/trade/record", trade_record)
 
 	//todo 验证登录状态
 	order := apiV1.Group("/order")
 	{
-		order.Use(func(ctx *gin.Context) {
-			//todo 登陆中间件
-			ctx.Set("user_id", USERID)
-		})
+		order.Use(login())
 		//查询订单
 		order.GET("/", order_query)
 		//创建订单

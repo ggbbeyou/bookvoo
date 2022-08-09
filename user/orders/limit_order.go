@@ -31,7 +31,7 @@ func limit_order(user_id int64, trade_symbol string, side OrderSide, price, qty 
 		Quantity:    qty,
 		Amount:      "0",
 		FinishedQty: "0",
-		FeeRate:     tp.FeeRate,
+		FeeRate:     string(tp.FeeRate),
 		Fee:         "0",
 		TradeAmount: "0",
 		Status:      OrderStatusNew,
@@ -56,7 +56,7 @@ func limit_order(user_id int64, trade_symbol string, side OrderSide, price, qty 
 	//冻结相应资产
 	if neworder.OrderSide == OrderSideSell {
 		//卖单部分fee在订单成交后结算的部分收取
-		_, err = assets.FreezeAssets(db, false, user_id, tp.SymbolId, qty, neworder.OrderId, assets.Behavior_Trade)
+		_, err = assets.FreezeAssets(db, false, user_id, tp.TargetSymbolId, qty, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return nil, err
 		}

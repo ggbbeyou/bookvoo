@@ -73,7 +73,7 @@ func NewClearing(data te.TradeResult) (err error) {
 		db:     db,
 		symbol: data.Symbol,
 
-		symbol_id:          tradeInfo.SymbolId,
+		symbol_id:          tradeInfo.TargetSymbolId,
 		standard_symbol_id: tradeInfo.StandardSymbolId,
 
 		ask_order_id: data.AskOrderId,

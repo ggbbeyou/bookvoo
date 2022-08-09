@@ -32,7 +32,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		Fee:         "0",
 		FreezeQty:   "0",
 		TradeAmount: "0",
-		FeeRate:     tp.FeeRate,
+		FeeRate:     string(tp.FeeRate),
 		Status:      OrderStatusNew,
 	}
 
@@ -54,7 +54,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 
 	//冻结资产
 	if neworder.OrderSide == OrderSideSell {
-		_, err = assets.FreezeAssets(db, false, user_id, tp.SymbolId, qty, neworder.OrderId, assets.Behavior_Trade)
+		_, err = assets.FreezeAssets(db, false, user_id, tp.TargetSymbolId, qty, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +108,7 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 		Fee:         "0",
 		TradeAmount: "0",
 		FreezeQty:   "0",
-		FeeRate:     tp.FeeRate,
+		FeeRate:     string(tp.FeeRate),
 		Status:      OrderStatusNew,
 	}
 
@@ -129,7 +129,7 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 	}()
 
 	if neworder.OrderSide == OrderSideSell {
-		_, err = assets.FreezeTotalAssets(db, false, user_id, tp.SymbolId, neworder.OrderId, assets.Behavior_Trade)
+		_, err = assets.FreezeTotalAssets(db, false, user_id, tp.TargetSymbolId, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return nil, err
 		}
