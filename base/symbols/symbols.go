@@ -33,7 +33,7 @@ type SymbolInfo struct {
 	UpdateTime   time.Time `xorm:"timestamp updated" json:"-"`
 }
 
-type TradePairOpt struct {
+type Exchange struct {
 	Id     int    `xorm:"pk autoincr int" json:"-"`
 	Symbol string `xorm:"varchar(100) notnull unique(symbol)" json:"symbol"`
 	Name   string `xorm:"varchar(250) notnull" json:"name"`
@@ -57,26 +57,26 @@ type TradePairOpt struct {
 	Standard SymbolInfo `xorm:"-" json:"standard"`
 }
 
-func (t *TradePairOpt) TableName() string {
-	return "trade_pair_option"
+func (t *Exchange) TableName() string {
+	return "exchange_option"
 }
 
-func (t *TradePairOpt) FormatAmount(a string) string {
+func (t *Exchange) FormatAmount(a string) string {
 	q, _ := decimal.NewFromString(a)
 	return q.StringFixedBank(int32(t.PricePrec))
 }
 
-func (t *TradePairOpt) FormatQty(qty string) string {
+func (t *Exchange) FormatQty(qty string) string {
 	q, _ := decimal.NewFromString(qty)
 	return q.StringFixedBank(int32(t.QtyPrec))
 }
 
-func GetTradePairBySymbol(symbol string) (*TradePairOpt, error) {
+func GetExchangeBySymbol(symbol string) (*Exchange, error) {
 	db := db_engine.NewSession()
 	defer db.Close()
 
-	item := TradePairOpt{}
-	has, err := db.Table(new(TradePairOpt)).Where("symbol=?", symbol).Get(&item)
+	item := Exchange{}
+	has, err := db.Table(new(Exchange)).Where("symbol=?", symbol).Get(&item)
 	if err != nil {
 		return nil, err
 	}
@@ -117,6 +117,6 @@ func Init(db *xorm.Engine, rdc *redis.Client) {
 
 	db_engine.Sync2(
 		new(SymbolInfo),
-		new(TradePairOpt),
+		new(Exchange),
 	)
 }

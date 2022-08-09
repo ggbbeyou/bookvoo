@@ -46,7 +46,7 @@ func Run() {
 func NewClearing(data te.TradeResult) (err error) {
 	logrus.Infof("[clearings] %#v", data)
 
-	tradeInfo, err := symbols.GetTradePairBySymbol(data.Symbol)
+	tradeInfo, err := symbols.GetExchangeBySymbol(data.Symbol)
 	if err != nil {
 		return err
 	}

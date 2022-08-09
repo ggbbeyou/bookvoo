@@ -45,7 +45,7 @@ func (e *engine) rebuild() {
 
 	for symbol, _ := range e.Symbols {
 
-		tp, _ := symbols.GetTradePairBySymbol(symbol)
+		tp, _ := symbols.GetExchangeBySymbol(symbol)
 		rows := []orders.TradeOrder{}
 		db.Table(new(orders.UnfinishedOrder)).Where("pair_id=?", tp.Id).OrderBy("create_time asc").Find(&rows)
 		for _, row := range rows {
@@ -64,8 +64,8 @@ func (e *engine) init() {
 	db := db_engine.NewSession()
 	defer db.Close()
 
-	rows := []symbols.TradePairOpt{}
-	db.Table(new(symbols.TradePairOpt)).Where("status=?", symbols.StatusEnable).Find(&rows)
+	rows := []symbols.Exchange{}
+	db.Table(new(symbols.Exchange)).Where("status=?", symbols.StatusEnable).Find(&rows)
 	for _, row := range rows {
 		e.Symbols[row.Symbol] = te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
 	}

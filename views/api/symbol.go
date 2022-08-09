@@ -11,7 +11,7 @@ import (
 
 func symbol_info(c *gin.Context) {
 	symbol := strings.ToLower(c.Query("symbol"))
-	tp, err := symbols.GetTradePairBySymbol(symbol)
+	tp, err := symbols.GetExchangeBySymbol(symbol)
 	if err != nil {
 		c.HTML(http.StatusNotFound, "", nil)
 		return

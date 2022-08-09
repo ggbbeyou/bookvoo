@@ -24,7 +24,7 @@ func init() {
 
 	db_engine.DropTables(
 		new(SymbolInfo),
-		new(TradePairOpt),
+		new(Exchange),
 	)
 	Init(db_engine, nil)
 }
@@ -61,7 +61,7 @@ func Test_main(t *testing.T) {
 	})
 
 	Convey("添加测试用交易对信息", t, func() {
-		id, err := db.Insert(&TradePairOpt{
+		id, err := db.Insert(&Exchange{
 			Symbol:           "ethusd",
 			Name:             "ETHUSD",
 			TargetSymbolId:   int(eth_id),

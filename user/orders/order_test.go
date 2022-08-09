@@ -32,10 +32,12 @@ func init() {
 	db_engine.ShowSQL(true)
 
 	table := TradeOrder{Symbol: test_symbol}
+	table1 := TradeRecord{Symbol: test_symbol}
 
 	db_engine.DropTables(
 		new(UnfinishedOrder),
 		table,
+		table1,
 	)
 
 	base.Init(db_engine, nil)
