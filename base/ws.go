@@ -12,5 +12,7 @@ func WsHandler(ctx *gin.Context) {
 
 func WssPush(rdc *redis.Client, msg gowss.MsgBody) {
 	//除了广播到前端外，还需要推送一份到k线计算
-	Wss.Broadcast <- msg
+	if Wss != nil {
+		Wss.Broadcast <- msg
+	}
 }

@@ -76,14 +76,13 @@ func (ks *kdataHandler) updateKline(tl models.TradeLog, period models.Period) {
 	ctx := context.Background()
 	raw := ks.rdc.Get(ctx, key).Val()
 
-	lastK := models.NewKline(tl.Symbol, period)
-	ok := json.Unmarshal([]byte(raw), &lastK)
-
 	newK := models.NewKline(tl.Symbol, period)
 	newK.OpenAt = types.Time(st)
 	newK.CloseAt = types.Time(et)
 
-	if ok != nil {
+	lastK := models.NewKline(tl.Symbol, period)
+	err := json.Unmarshal([]byte(raw), &lastK)
+	if err != nil {
 		lastK.Open = tl.Price
 		lastK.High = tl.Price
 		lastK.Low = tl.Price
@@ -96,13 +95,13 @@ func (ks *kdataHandler) updateKline(tl models.TradeLog, period models.Period) {
 	{
 		newK.Open = lastK.Open
 		newK.High = func() string {
-			d1 := str2decimal(tl.Price)
-			d2 := str2decimal(lastK.High)
+			d1 := d(tl.Price)
+			d2 := d(lastK.High)
 			return decimal.Max(d1, d2).String()
 		}()
 		newK.Low = func() string {
-			d1 := str2decimal(tl.Price)
-			d2 := str2decimal(lastK.Low)
+			d1 := d(tl.Price)
+			d2 := d(lastK.Low)
 			return decimal.Min(d1, d2).String()
 		}()
 		newK.Close = tl.Price
@@ -142,8 +141,7 @@ func (ks *kdataHandler) updateKline(tl models.TradeLog, period models.Period) {
 	})
 
 	//todo 异步入库
-	err := newK.Save()
-
+	err = newK.Save()
 	if err != nil {
 		logrus.Error(err)
 		return
@@ -157,13 +155,13 @@ func time2str(t time.Time, layout string) string {
 	return t.Format(layout)
 }
 
-func str2decimal(str string) decimal.Decimal {
+func d(str string) decimal.Decimal {
 	d, _ := decimal.NewFromString(str)
 	return d
 }
 
 func addStrNum(n1, n2 string) string {
-	d1 := str2decimal(n1)
-	d2 := str2decimal(n2)
+	d1 := d(n1)
+	d2 := d(n2)
 	return d1.Add(d2).String()
 }
