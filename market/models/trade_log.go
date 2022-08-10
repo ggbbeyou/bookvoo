@@ -20,7 +20,7 @@ type TradeLog struct {
 }
 
 func (t *TradeLog) SetTableName(symbol string) {
-	t.tableName = fmt.Sprintf("trade_log_%s", symbol)
+	t.tableName = fmt.Sprintf("kline_%s_trade_log", symbol)
 }
 
 func (t *TradeLog) TableName() string {

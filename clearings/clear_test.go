@@ -36,7 +36,14 @@ func init() {
 
 	Init(db_engine, nil)
 	db_engine.ShowSQL(true)
+	deleteTestTable()
 
+	base.Init(db_engine, nil)
+	assets.Init(db_engine, nil)
+	orders.Init(db_engine, nil)
+}
+
+func deleteTestTable() {
 	table1 := orders.TradeRecord{Symbol: test_symbol}
 	table2 := orders.GetOrderTableName(test_symbol)
 	db_engine.DropTables(
@@ -44,13 +51,12 @@ func init() {
 		table2,
 		new(orders.UnfinishedOrder),
 	)
-
-	base.Init(db_engine, nil)
-	assets.Init(db_engine, nil)
-	orders.Init(db_engine, nil)
 }
 
 func Test_Main(t *testing.T) {
+	defer func() {
+		deleteTestTable()
+	}()
 	Convey("不同账号交易 限价单的结算", t, func() {
 		buy, err := orders.NewLimitOrder(test_user1, test_symbol, orders.OrderSideBuy, "1.00", "10")
 		So(err, ShouldBeNil)
