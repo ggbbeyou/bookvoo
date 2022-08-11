@@ -27,7 +27,7 @@ func InitJwt() {
 	auth, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "test zone",
 		Key:         []byte(viper.GetString("main.jwt_key")),
-		Timeout:     time.Hour,
+		Timeout:     time.Hour * time.Duration(24),
 		MaxRefresh:  time.Hour,
 		IdentityKey: "user",
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
