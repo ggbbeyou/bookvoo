@@ -3,6 +3,7 @@ host="0.0.0.0:8082"
 log_level="trace"
 # 运行模式 demo/debug/prod
 mode="demo"
+time_zone="Asia/Shanghai"
 
 [db]
 # driver = "postgres" 

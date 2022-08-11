@@ -25,10 +25,11 @@ func InitJwt() {
 	viper.SetDefault("main.jwt_key", "e94dae72b1e14876")
 
 	auth, err := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "test zone",
-		Key:         []byte(viper.GetString("main.jwt_key")),
-		Timeout:     time.Hour * time.Duration(24),
-		MaxRefresh:  time.Hour,
+		Realm:      "test zone",
+		Key:        []byte(viper.GetString("main.jwt_key")),
+		Timeout:    time.Hour,
+		MaxRefresh: time.Hour,
+
 		IdentityKey: "user",
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*User); ok {
@@ -101,7 +102,8 @@ func InitJwt() {
 		},
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
 
-			c.SetCookie("jwt", token, 300, "/", "*", false, false)
+			exp := expire.Unix() - time.Now().Unix()
+			c.SetCookie("jwt", token, int(exp), "/", "*", false, false)
 
 			c.JSON(http.StatusOK, gin.H{
 				"ok": 1,

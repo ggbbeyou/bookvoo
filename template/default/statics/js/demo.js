@@ -17,9 +17,7 @@
         $(".header .login a").on("click", function(){
             layui.func.login(function(d){
                 if(d.ok){
-                    $(".header .login").hide();
-                    $(".header .userinfo").show();
-                    
+                    layui.func.user_query();
                     //登录完成后加载资产
                     layui.func.load_assets(symbols, null);
                 }

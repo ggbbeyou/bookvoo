@@ -83,6 +83,7 @@ func appStart(configPath string) {
 
 //初始化各模块的数据库
 func initModule() {
+
 	//后面可以根据不同模块拆分到不同的数据库
 	default_db := func() *xorm.Engine {
 		dsn := viper.GetString("db.dsn")
