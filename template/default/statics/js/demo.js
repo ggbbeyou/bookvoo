@@ -5,10 +5,11 @@
         close: '%}'
       }); 
 
-    layui.use(["func", "kline"], function(){
+    layui.use(["func", "kline", "wss"], function(){
         var $ = layui.$;
         
         layui.kline.init("kchart");
+        layui.wss.init(symbol);
 
         $(".header .login a").on("click", function(){
             layui.func.login(function(d){

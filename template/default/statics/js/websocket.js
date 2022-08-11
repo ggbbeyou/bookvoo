@@ -37,17 +37,7 @@
                     }, 5e3);
                 };
 
-                 //订阅一些推送消息
-                conn.onopen = function(){
-                    var subs = {
-                        sub: [
-                            "depth."+cur_symbol,
-                            "kline.m1."+cur_symbol,
-                            "trade.record."+cur_symbol,
-                        ]
-                    };
-                    conn.send(JSON.stringify(subs));
-                };
+                 
                 
 
                 conn.onmessage = function (evt) {
