@@ -7,9 +7,12 @@
 
     layui.use(["func", "kline", "wss"], function(){
         var $ = layui.$;
+        var symbols = [$(".symbol").attr("data"), $(".stand_symbol").attr("data")];
         
         layui.kline.init("kchart");
         layui.wss.init(symbol);
+        layui.func.user_query();
+        layui.func.load_assets(symbols, null);
 
         $(".header .login a").on("click", function(){
             layui.func.login(function(d){
@@ -18,15 +21,7 @@
                     $(".header .userinfo").show();
                     
                     //登录完成后加载资产
-                    layui.func.load_assets(["eth", "usd"], function(d){
-                        if(d.ok) {
-                            for(var k in d.data){
-                                $(".symbol_balance_"+ k).html(d.data[k].available);
-                            }
-                        }else{
-                            layer.msg(d.reason);
-                        }
-                    });
+                    layui.func.load_assets(symbols, null);
                 }
             });
         });

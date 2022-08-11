@@ -8,7 +8,11 @@ layui.define('layer', function(exports){
 
 
         login: function(callback){
-            $.get("/api/v1/login", callback);
+            $.get("/api/v1/user/login", callback);
+        },
+
+        logout: function(callback){
+            $.get("/api/v1/user/logout", callback);
         },
         
         load_assets: function(symbols, callback){
@@ -16,7 +20,34 @@ layui.define('layer', function(exports){
                 layer.msg("symbols is length 0");
                 return
             }
-            $.get("/api/v1/assets/query?symbols=" + symbols.join(","), callback);
+            $.get("/api/v1/assets/query?symbols=" + symbols.join(","), function(d){
+                if(d.ok) {
+                    for(var k in d.data){
+                        $(".symbol_balance_"+ k).html(d.data[k].available);
+                    }
+                }
+                
+                if(callback){
+                    callback(d);
+                }
+            });
+        },
+
+        user_query: function(callback){
+            $.get("/api/v1/user/query", function(d){
+                if(!d.ok){
+                    $(".header .login").show();
+                    $(".header .userinfo").hide();
+                }else{
+                    $(".header .login").hide();
+                    $(".header .userinfo").show();
+                    $(".userinfo .username").html(d.data.username);
+                }
+                
+                if(callback){
+                    callback(d);
+                }
+            });
         }
 
 

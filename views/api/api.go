@@ -29,7 +29,7 @@ func SetupRouter(router *gin.Engine) {
 	apiV1.Use(user.AuthMiddleware.MiddlewareFunc())
 	{
 		//用户信息查询
-		apiV1.GET("/user/query", nil)
+		apiV1.GET("/user/query", user_query)
 		//用户资产查询
 		apiV1.GET("/assets/query", assets_query)
 
