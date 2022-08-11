@@ -199,7 +199,7 @@
 
         $().ready(function(){
             load_trade_log();
-            load_assets();
+            load_assets();            
         });
 
 

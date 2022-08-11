@@ -9,6 +9,15 @@ import (
 	"github.com/yzimhao/bookvoo/user/assets"
 )
 
+// @Summary 用户资产查询
+// @Tags
+// @Description 获取交易规则、交易对信息
+// @Accept application/json
+// @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
+// @Param symbols query string true "资产symbols用逗号分隔 eg: eth,usd"
+// @Success 200 {object} common.Response
+// @Router /api/v1/assets/query [get]
 func assets_query(c *gin.Context) {
 	ss := strings.ToLower(c.Query("symbols"))
 	slice := strings.Split(ss, ",")

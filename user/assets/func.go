@@ -31,6 +31,18 @@ func UserAssets(user_id int64, symbol_id int) Assets {
 	return row
 }
 
+func InitAssetsForDemo(uid int64, sid int, amount string, busid string) {
+	db := db_engine.NewSession()
+	defer db.Close()
+
+	symbol := UserAssets(uid, sid)
+	if d(symbol.Total).Cmp(d("0")) > 0 {
+		return
+	}
+
+	transfer(db, true, ROOTUSERID, uid, sid, amount, busid, Behavior_DemoRecharge)
+}
+
 func d(s string) decimal.Decimal {
 	ss, _ := decimal.NewFromString(s)
 	return ss

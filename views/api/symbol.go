@@ -9,7 +9,15 @@ import (
 	"github.com/yzimhao/bookvoo/common"
 )
 
-func symbol_info(c *gin.Context) {
+// @Summary 交易对信息
+// @Tags
+// @Description 获取交易规则、交易对信息
+// @Accept application/json
+// @Produce application/json
+// @Param symbol query string true "交易对symbol"
+// @Success 200 {object} common.Response
+// @Router /api/v1/exchange/info [get]
+func exchange_info(c *gin.Context) {
 	symbol := strings.ToLower(c.Query("symbol"))
 	tp, err := symbols.GetExchangeBySymbol(symbol)
 	if err != nil {

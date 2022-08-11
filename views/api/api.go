@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"github.com/yzimhao/bookvoo/user"
 )
 
 var (
@@ -10,38 +11,45 @@ var (
 )
 
 func SetupRouter(router *gin.Engine) {
+	user.InitJwt()
+
 	apiV1 := router.Group("/api/v1")
+	apiV1.GET("/login", user.AuthMiddleware.LoginHandler)
+	apiV1.GET("/logout", user.AuthMiddleware.LogoutHandler)
+	apiV1.GET("/refresh", user.AuthMiddleware.RefreshHandler)
 
-	apiV1.GET("/info", symbol_info)
-	apiV1.GET("/assets/query", login(), assets_query)
-
+	//交易对信息查询
+	apiV1.GET("/exchange/info", exchange_info)
+	//深度
 	apiV1.GET("/depth", depth)
+	//成交记录
 	apiV1.GET("/trade/record", trade_record)
 
-	//todo 验证登录状态
-	order := apiV1.Group("/order")
+	//需要验证登录的接口
+	apiV1.Use(user.AuthMiddleware.MiddlewareFunc())
 	{
-		order.Use(login())
-		//查询订单
-		order.GET("/", order_query)
-		//创建订单
-		order.POST("/new", order_new)
-		//取消订单
-		order.POST("/cancel", order_cancel)
-		//当前挂单
-		order.GET("/open", order_open)
-		//查询所有订单 获取所有帐户订单； 有效，已取消或已完成。 带有symbol
-		order.GET("/all", order_all)
+		//用户资产查询
+		apiV1.GET("/assets/query", assets_query)
+
+		order := apiV1.Group("/order")
+		{
+			//查询订单
+			order.GET("/", order_query)
+			//创建订单
+			order.POST("/new", order_new)
+			//取消订单
+			order.POST("/cancel", order_cancel)
+			//当前挂单
+			order.GET("/open", order_open)
+			//查询所有订单 获取所有帐户订单； 有效，已取消或已完成。 带有symbol
+			order.GET("/all", order_all)
+		}
 	}
 }
 
 func getUserId(c *gin.Context) int64 {
-	val, _ := c.Get("user_id")
-	switch val.(type) {
-	case int64:
-		return val.(int64)
-	}
-	return -1
+	uinfo, _ := c.Get("user")
+	return uinfo.(*user.User).UserId
 }
 
 func d(ss string) decimal.Decimal {

@@ -12,10 +12,11 @@ const (
 	FreezeStatusNew  FreezeStatus = 0
 	FreezeStatusDone FreezeStatus = 1
 
-	Behavior_Trade    OpBehavior = "trade"
-	Behavior_Recharge OpBehavior = "recharge"
-	Behavior_Withdraw OpBehavior = "withdraw"
-	Behavior_Transfer OpBehavior = "transfer"
+	Behavior_Trade        OpBehavior = "trade"
+	Behavior_Recharge     OpBehavior = "recharge"
+	Behavior_Withdraw     OpBehavior = "withdraw"
+	Behavior_Transfer     OpBehavior = "transfer"
+	Behavior_DemoRecharge OpBehavior = "demo_recharge"
 )
 
 // 用户资产余额表

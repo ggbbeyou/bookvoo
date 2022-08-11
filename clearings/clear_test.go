@@ -47,7 +47,7 @@ func deleteTestTable() {
 	table1 := orders.TradeRecord{Symbol: test_symbol}
 	table2 := orders.GetOrderTableName(test_symbol)
 	db_engine.DropTables(
-		table1,
+		table1.TableName(),
 		table2,
 		new(orders.UnfinishedOrder),
 	)

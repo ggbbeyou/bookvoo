@@ -114,6 +114,32 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/v1/assets/query:
+    get:
+      consumes:
+      - application/json
+      description: 获取交易规则、交易对信息
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: '资产symbols用逗号分隔 eg: eth,usd'
+        in: query
+        name: symbols
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: 用户资产查询
+      tags:
+      - ""
   /api/v1/depth:
     get:
       parameters:
@@ -134,6 +160,27 @@ paths:
           schema:
             $ref: '#/definitions/common.Response'
       summary: 深度信息
+  /api/v1/exchange/info:
+    get:
+      consumes:
+      - application/json
+      description: 获取交易规则、交易对信息
+      parameters:
+      - description: 交易对symbol
+        in: query
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: 交易对信息
+      tags:
+      - ""
   /api/v1/market/klines:
     get:
       consumes:

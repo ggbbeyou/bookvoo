@@ -16,6 +16,45 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/assets/query": {
+            "get": {
+                "description": "获取交易规则、交易对信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    ""
+                ],
+                "summary": "用户资产查询",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "资产symbols用逗号分隔 eg: eth,usd",
+                        "name": "symbols",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/depth": {
             "get": {
                 "produces": [
@@ -35,6 +74,38 @@ const docTemplate = `{
                         "description": "默认100，最大5000",
                         "name": "limit",
                         "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exchange/info": {
+            "get": {
+                "description": "获取交易规则、交易对信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    ""
+                ],
+                "summary": "交易对信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "交易对symbol",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
