@@ -14,9 +14,9 @@ func SetupRouter(router *gin.Engine) {
 	user.InitJwt()
 
 	apiV1 := router.Group("/api/v1")
-	apiV1.GET("/login", user.AuthMiddleware.LoginHandler)
-	apiV1.GET("/logout", user.AuthMiddleware.LogoutHandler)
-	apiV1.GET("/refresh", user.AuthMiddleware.RefreshHandler)
+	apiV1.GET("/user/login", user.AuthMiddleware.LoginHandler)
+	apiV1.GET("/user/logout", user.AuthMiddleware.LogoutHandler)
+	apiV1.GET("/user/refresh", user.AuthMiddleware.RefreshHandler)
 
 	//交易对信息查询
 	apiV1.GET("/exchange/info", exchange_info)
@@ -28,6 +28,8 @@ func SetupRouter(router *gin.Engine) {
 	//需要验证登录的接口
 	apiV1.Use(user.AuthMiddleware.MiddlewareFunc())
 	{
+		//用户信息查询
+		apiV1.GET("/user/query", nil)
 		//用户资产查询
 		apiV1.GET("/assets/query", assets_query)
 

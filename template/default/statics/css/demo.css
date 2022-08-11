@@ -1,3 +1,35 @@
+.main {
+    width: 1440px;
+    margin: auto;
+}
+
+.header {
+    height: 30px;
+    background-color:black;
+    padding-right: 10px;    
+}
+
+.header .login, .userinfo {
+    float: right;
+    right: 10px;    
+    color: aliceblue;
+}
+.header a {
+    color: aliceblue;
+    height: 30px;
+    line-height: 30px;    
+}
+.header span {
+    color: aliceblue;
+    height: 30px;
+    line-height: 30px;    
+    margin-left: 5px;
+}
+
+
+
+
+
 #depth table {
     margin: 0px;
 }

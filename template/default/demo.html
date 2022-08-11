@@ -101,11 +101,22 @@
         </style>
     </div>
 
-    <div class="main ">
+    <div class="main">
+        
+        <div class="header layui-row">
+            <div class="login">
+                <span><a href="javascript:;">Login</a></span>
+            </div>
+
+            <div class="userinfo" style="display: none;">
+                <span class="username">test10010</span> <span><a class="logout" href="javascript:;">[logout]</a></span>
+            </div>
+        </div>
+
 
         <div class="layui-row market-area">
-            <div class="layui-col-md8" id="kchart" style="height: 600px;"></div>
-            <div class="layui-col-md4" id="depth" style="height: 600px;">
+            <div class="layui-col-md8" id="kchart" style="height: 400px;"></div>
+            <div class="layui-col-md4" id="depth" style="height: 400px;">
                 <div class="layui-row" style="height: auto;">
                     <table class="layui-table depth-ask">
                         <tr>
@@ -130,6 +141,7 @@
         
         <div class="layui-row">
             <div class="layui-col-md8 action-order-area">
+                
                 <div class="layui-row">
                     <div class="layui-col-md6 action-ask-area">
                         <form class="layui-form" onsubmit="return false">
@@ -316,10 +328,8 @@
 
     <script src="/statics/libs/layui-v2.6.8/layui.js"></script>
     <!--您的Layui代码start-->
-    
-    <script type="text/javascript" src="/statics/js/func.js"></script>
     <script type="text/javascript" src="/statics/js/demo.js"></script>
-    <script type="text/javascript" src="/statics/js/websocket.js"></script>
+    <!-- <script type="text/javascript" src="/statics/js/websocket.js"></script> -->
 </body>
 
 </html>
