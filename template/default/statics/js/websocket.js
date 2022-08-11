@@ -40,54 +40,7 @@
                  
                 
 
-                conn.onmessage = function (evt) {
-                    var messages = evt.data.split('\n');
-                    for (var i = 0; i < messages.length; i++) {
-                        var msg = JSON.parse(messages[i]);
-                        if (msg.type == "depth."+cur_symbol) {
-                            var info = msg.body;
-                            var askTpl = $("#depth-ask-tpl").html()
-                                , askView = $(".depth-ask")
-                                , bidTpl = $("#depth-bid-tpl").html()
-                                , bidView = $(".depth-bid");
-
-
-                            laytpl(askTpl).render(info.ask.reverse(), function (html) {
-                                askView.html(html);
-                            });
-                            laytpl(bidTpl).render(info.bid, function (html) {
-                                bidView.html(html);
-                            });
-
-                        } else if (msg.type == "trade.record."+cur_symbol) {
-                            $(".latest-price").html(msg.body.price);
-                            rendertradelog(msg.body);
-                            
-                        } else if (msg.type == "new_order."+cur_symbol) {
-                            var myorderView = $(".myorder"),
-                                myorderTpl = $("#myorder-tpl").html();
-
-                            msg.body['create_time'] = formatTime(msg.body.create_time);
-                            laytpl(myorderTpl).render(msg.body, function (html) {
-                                if ($(".order-item").length > 30) {
-                                    $(".order-item").last().remove();
-                                }
-                                myorderView.after(html);
-                            });
-                        } else if (msg.type == "latest_price."+cur_symbol) {
-                            $(".latest-price").html(msg.body.latest_price);
-                        }else if(msg.type=="kline.m1."+cur_symbol){
-                            window.kLchart.updateData({
-                                timestamp: msg.body.open_at * 1000,
-                                open: parseFloat(msg.body.open),
-                                high: parseFloat(msg.body.high),
-                                low: parseFloat(msg.body.low),
-                                close: parseFloat(msg.body.close),
-                                volume: parseFloat(msg.body.volume),
-                            });
-                        }
-                    }
-                };
+                
 
             } else {
                 layer.msg("<b>Your browser does not support WebSockets.</b>");

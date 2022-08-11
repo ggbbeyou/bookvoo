@@ -23,6 +23,49 @@
                 }
             });
         });
+
+        $(".opt").on("click", function () {
+            var side = $(this).hasClass("sell") ? "sell" : "buy";
+            var order_type = $("select[name='order_type_"+ side +"']").val();
+            var mtype = $("input[name='mtype_"+ side +"']:checked").val();
+
+            $.ajax({
+                url: "/api/v1/order/new",
+                type: "post",
+                dataType: "json",
+                contentType: "application/json",
+                data: function () {
+                    var data = {
+                        "order_type": order_type,
+                        "side": side,
+                        "symbol": symbol,
+                    };
+
+                    if (order_type == "market") {
+                        if (mtype == "q") {
+                            data.quantity = $("input[name='quantity_"+ side +"']").val();
+                        } else {
+                            data.amount = $("input[name='amount_"+ side +"']").val();
+                        }
+                    } else {
+                        data.price = $("input[name='price_"+ side +"']").val();
+                        data.quantity = $("input[name='quantity_"+ side +"']").val();
+                    }
+
+                    console.log(data);
+                    return JSON.stringify(data)
+                }(),
+                success: function (d) {
+                    if(d.ok){
+                        layer.msg("order_id: " + d.data.order_id);
+                    }else{
+                        layer.msg(d.reason);
+                    }
+                }
+            });
+        });
+
+
     });
 
 
@@ -56,46 +99,7 @@
     //     }
 
 
-    //     $(".opt").on("click", function () {
-    //         var side = $(this).hasClass("sell") ? "sell" : "buy";
-    //         var order_type = $("select[name='order_type_"+ side +"']").val();
-    //         var mtype = $("input[name='mtype_"+ side +"']:checked").val();
-
-    //         $.ajax({
-    //             url: "/api/v1/order/new",
-    //             type: "post",
-    //             dataType: "json",
-    //             contentType: "application/json",
-    //             data: function () {
-    //                 var data = {
-    //                     "order_type": order_type,
-    //                     "side": side,
-    //                     "symbol": symbol,
-    //                 };
-
-    //                 if (order_type == "market") {
-    //                     if (mtype == "q") {
-    //                         data.quantity = $("input[name='quantity_"+ side +"']").val();
-    //                     } else {
-    //                         data.amount = $("input[name='amount_"+ side +"']").val();
-    //                     }
-    //                 } else {
-    //                     data.price = $("input[name='price_"+ side +"']").val();
-    //                     data.quantity = $("input[name='quantity_"+ side +"']").val();
-    //                 }
-
-    //                 console.log(data);
-    //                 return JSON.stringify(data)
-    //             }(),
-    //             success: function (d) {
-    //                 if(d.ok){
-    //                     layer.msg("order_id: " + d.data.order_id);
-    //                 }else{
-    //                     layer.msg(d.reason);
-    //                 }
-    //             }
-    //         });
-    //     });
+    
 
     //     $(".test-rand").on("click", function () {
     //         var op_type = "ask", me = $(this);
