@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 
 	"math/rand"
@@ -93,7 +94,7 @@ func InitJwt() {
 		},
 
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.JSON(code, gin.H{
+			c.JSON(http.StatusOK, gin.H{
 				"ok":     0,
 				"reason": message,
 			})
@@ -102,7 +103,7 @@ func InitJwt() {
 
 			c.SetCookie("jwt", token, 300, "/", "*", false, false)
 
-			c.JSON(code, gin.H{
+			c.JSON(http.StatusOK, gin.H{
 				"ok": 1,
 				"data": map[string]string{
 					"token":  token,
