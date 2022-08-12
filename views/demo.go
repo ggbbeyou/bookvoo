@@ -16,8 +16,9 @@ import (
 func autoDemoDepthData(symbol string, ask, bid [][2]string, latest decimal.Decimal) {
 
 	size := 10
+	min_price := decimal.NewFromFloat(5.0)
 	if viper.GetString("main.mode") == "demo" {
-		if latest.Cmp(decimal.Zero) == 0 {
+		if latest.Cmp(min_price) == -1 {
 			latest, _ = decimal.NewFromString("10")
 		}
 
@@ -45,9 +46,13 @@ func autoOrder(side orders.OrderSide, symbol string, price decimal.Decimal, n in
 			price = price.Sub(float)
 		}
 
-		order, err := orders.NewLimitOrder(user.BotUserId, symbol, side, price.StringFixedBank(4), fmt.Sprintf("%.4f", qty))
+		_pirce := price.StringFixedBank(4)
+
+		_vol := fmt.Sprintf("%.4f", qty)
+
+		order, err := orders.NewLimitOrder(user.BotUserId, symbol, side, _pirce, _vol)
 		if err != nil {
-			logrus.Error(err)
+			logrus.Errorf("[autoOrder] %s price: %s  vol: %s - %s", symbol, _pirce, _vol, err)
 			return
 		}
 		match.Send <- order
