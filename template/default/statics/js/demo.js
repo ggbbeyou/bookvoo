@@ -1,10 +1,4 @@
 (function(){
-    layui.config({
-        base: '/statics/js/modules/',
-        open: '{%',
-        close: '%}'
-      }); 
-
     layui.use(["func", "kline", "wss"], function(){
         var $ = layui.$;
         var symbols = [$(".symbol").attr("data"), $(".stand_symbol").attr("data")];

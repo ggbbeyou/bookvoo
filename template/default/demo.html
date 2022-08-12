@@ -20,7 +20,7 @@
     <tr>
         <td>{% item[0] %}</td><td>{% item[1] %}</td>
     </tr>
-    {%#  }); %} 
+    {%#  }) %} 
   </script>
 
 <script id="depth-bid-tpl" type="text/html">
@@ -28,7 +28,7 @@
     <tr>
         <td width="40%">{% item[0] %}</td><td>{% item[1] %}</td>
     </tr>
-    {%#  }); %}
+    {%#  }) %}
   </script>
 
 <script id="trade-log-tpl" type="text/html">
@@ -327,6 +327,16 @@
 
 
     <script src="/statics/libs/layui-v2.6.8/layui.js"></script>
+    <script>
+        layui.config({
+            base: '/statics/js/modules/',
+        }); 
+        layui.laytpl.config({
+            open: '{%',
+            close: '%}'
+        });
+    </script>
+    
     <!--您的Layui代码start-->
     <script type="text/javascript" src="/statics/js/demo.js"></script>
     <!-- <script type="text/javascript" src="/statics/js/websocket.js"></script> -->
