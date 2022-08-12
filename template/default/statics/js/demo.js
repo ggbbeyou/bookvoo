@@ -13,6 +13,7 @@
                 
                 var rows = d.data;
                 for(var i=0; i<rows.length; i++) {
+                    rows[i]["create_time"] = layui.func.formatTs2Time(rows[i]["create_time"]/1e9);
                     layui.laytpl(tpl).render(rows[i], function(html){
                         $(".my-open-order").after(html);
                     })
