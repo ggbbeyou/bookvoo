@@ -35,7 +35,7 @@ func Run() {
 				func(res te.TradeResult) {
 					err := NewClearing(res)
 					if err != nil {
-						logrus.Errorf("[clearings] %s", err)
+						logrus.Errorf("[clearings] %s ask: %s bid: %s -- %s", data.Symbol, data.AskOrderId, data.BidOrderId, err)
 					}
 				}(data)
 			}
