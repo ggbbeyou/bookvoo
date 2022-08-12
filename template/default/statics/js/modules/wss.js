@@ -90,6 +90,11 @@ layui.define(['laydate', 'layer', 'table', 'element', 'laytpl', 'form'], functio
                 volume: parseFloat(msg.body.volume),
             });
         },
+
+        handler_message_record: function(msg){
+            msg.body["trade_at"] = msg.body["trade_at"]/1e9;
+            layui.func.render_trade_record(msg.body);
+        },
         onmessage: function(){
             var me = this;
             conn.onmessage = function (evt) {
@@ -101,6 +106,7 @@ layui.define(['laydate', 'layer', 'table', 'element', 'laytpl', 'form'], functio
                         case "depth."+me.symbol: me.handler_message_depth(msg); break;
                         case "new_order."+ me.symbol: me.handler_message_neworder(msg); break;
                         case "kline.m1."+ me.symbol: me.handler_message_kline(msg); break;
+                        case "trade.record." + me.symbol: me.handler_message_record(msg); break;
                         default: console.log("undefine message ", msg);
                     }
                 }

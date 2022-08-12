@@ -81,8 +81,9 @@ func (e *engine) service() {
 				case result := <-obj.ChTradeResult:
 					logrus.Infof("[match] %s ask: %s bid: %s price: %s vol: %s", symbol, result.AskOrderId, result.BidOrderId, result.TradePrice.String(), result.TradeQuantity.String())
 					clearings.Notify <- result
-				case cancel := <-obj.ChCancelResult:
-					logrus.Debugf("[cancelOrder] %s %v", symbol, cancel)
+				case order_id := <-obj.ChCancelResult:
+					logrus.Infof("[match] %s cancel %s", symbol, order_id)
+
 				}
 			}
 		}(symbol, item)

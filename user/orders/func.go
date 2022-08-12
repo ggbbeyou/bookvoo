@@ -32,6 +32,15 @@ func Init(db *xorm.Engine, rdc *redis.Client) {
 
 }
 
+func OrderIDSide(order_id string) OrderSide {
+	if strings.HasPrefix(order_id, "A") {
+		return OrderSideSell
+	} else if strings.HasPrefix(order_id, "B") {
+		return OrderSideBuy
+	}
+	return OrderSideUnknown
+}
+
 func order_id_by_side(side OrderSide) string {
 	if side == OrderSideSell {
 		return make_order_id("A")

@@ -2,9 +2,15 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/yzimhao/bookvoo/base/symbols"
+	"github.com/yzimhao/bookvoo/common"
+	"github.com/yzimhao/bookvoo/match"
+	"github.com/yzimhao/bookvoo/user/orders"
+	"github.com/yzimhao/trading_engine"
 )
 
 type cancel_order_request struct {
+	Symbol  string `json:"symbol"`
 	OrderId string `json:"order_id"`
 }
 
@@ -19,5 +25,26 @@ type cancel_order_request struct {
 // @Success 200 {object} common.Response
 // @Router /api/v1/order/cancel [post]
 func order_cancel(c *gin.Context) {
-	//todo
+	var req cancel_order_request
+	if err := c.BindJSON(&req); err != nil {
+		common.Fail(c, err.Error())
+		return
+	}
+
+	tp, err := symbols.GetExchangeBySymbol(req.Symbol)
+	if err != nil {
+		common.Fail(c, err.Error())
+		return
+	}
+
+	side := orders.OrderIDSide(req.OrderId)
+	tside := func() trading_engine.OrderSide {
+		if side == orders.OrderSideBuy {
+			return trading_engine.OrderSideBuy
+		}
+		return trading_engine.OrderSideSell
+	}()
+
+	match.Engine.Symbols[tp.Symbol].CancelOrder(tside, req.OrderId)
+	common.Success(c, nil)
 }

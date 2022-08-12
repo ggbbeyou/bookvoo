@@ -78,6 +78,15 @@
         });
 
 
+        $("body").on("click", ".cancel", function () {
+            var me = $(this);
+            var order_id = me.parents("tr").attr("order-id");
+            layui.func.cancel_order(symbol, order_id, function(d){
+                me.parents("tr").remove();
+            })
+        });
+
+
     });
 
 
@@ -97,40 +106,9 @@
         
     
 
-    //     function rendertradelog(data) {
-    //         var logView = $(".trade-log .log"),
-    //             logTpl = $("#trade-log-tpl").html();
-        
-    //         data['trade_at'] = formatTs2Time(data.trade_at);
-    //         laytpl(logTpl).render(data, function (html) {
-    //             if ($(".log-item").length > 10) {
-    //                 $(".log-item").last().remove();
-    //             }
-    //             logView.after(html);
-    //         });
-    //     }
-
-
     
 
-    //     $(".test-rand").on("click", function () {
-    //         var op_type = "ask", me = $(this);
-    //         if ($(this).hasClass("buy")) {
-    //             op_type = "bid";
-    //         }
 
-    //         me.attr("disabled", true);
-
-    //         $.ajax({
-    //             url: "/api/test_rand?op_type=" + op_type + "&symbol="+symbol,
-    //             type: "get",
-    //             success: function (d) {
-    //                 layer.msg("操作" + d.ok + " askLen:" + d.data.ask_len + " bidLen:" + d.data.bid_len);
-    //                 me.attr("disabled", false);
-    //             }
-    //         });
-
-    //     });
 
     //     $("body").on("click", ".cancel", function () {
     //         var me = $(this);

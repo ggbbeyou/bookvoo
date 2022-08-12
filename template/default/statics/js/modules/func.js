@@ -18,6 +18,20 @@ layui.define('layer', function(exports){
                 }
             });
         },
+
+        cancel_order: function(symbol, order_id, callback){
+            $.ajax({
+                url: "/api/v1/order/cancel",
+                type: "post",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    "symbol": symbol,
+                    "order_id": order_id
+                }),
+                success: callback()
+            });
+        },
         
         load_assets: function(symbols, callback){
             if (symbols.length == 0){
@@ -51,8 +65,9 @@ layui.define('layer', function(exports){
             var me = this;
             $.get("/api/v1/trade/record?symbol="+symbol+"&limit="+limit, function(d){
                 if(d.ok) {
-                    for(var i=0; i<d.data.length; i++) {
-                        me.render_trade_record(d.data[i]);
+                    var rows = d.data.reverse()
+                    for(var i=0; i<rows.length; i++) {
+                        me.render_trade_record(rows[i]);
                     }
                 }
 
