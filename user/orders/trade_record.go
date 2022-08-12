@@ -20,7 +20,7 @@ type TradeRecord struct {
 	Id     int64  `xorm:"pk autoincr bigint" json:"-"`
 	Symbol string `xorm:"-" json:"-"`
 
-	TradeId string `xorm:"varchar(30) unique(trade_id)" json:"trade_id"`
+	TradeId string `xorm:"varchar(30) unique(trade)" json:"trade_id"`
 	Ask     string `xorm:"varchar(30) unique(trade)" json:"ask"`
 	Bid     string `xorm:"varchar(30) unique(trade)" json:"bid"`
 

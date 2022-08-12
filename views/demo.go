@@ -45,7 +45,7 @@ func autoOrder(side orders.OrderSide, symbol string, price decimal.Decimal, n in
 			price = price.Sub(float)
 		}
 
-		order, err := orders.NewLimitOrder(user.BotUserId, symbol, side, price.String(), fmt.Sprintf("%f", qty))
+		order, err := orders.NewLimitOrder(user.BotUserId, symbol, side, price.StringFixedBank(4), fmt.Sprintf("%.4f", qty))
 		if err != nil {
 			logrus.Error(err)
 			return

@@ -77,7 +77,7 @@ func (e *engine) service() {
 			for {
 				select {
 				case result := <-obj.ChTradeResult:
-					logrus.Debugf("[tradeResult] %s %v", symbol, result)
+					logrus.Infof("[match] %s ask: %s bid: %s price: %s vol: %s", symbol, result.AskOrderId, result.BidOrderId, result.TradePrice.String(), result.TradeQuantity.String())
 					clearings.Notify <- result
 				case cancel := <-obj.ChCancelResult:
 					logrus.Debugf("[cancelOrder] %s %v", symbol, cancel)

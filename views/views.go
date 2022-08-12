@@ -70,7 +70,7 @@ func botNewOrder() {
 				autoDemoDepthData(symbol, ask, bid, obj.LatestPrice())
 
 			}
-			time.Sleep(time.Duration(30) * time.Second)
+			time.Sleep(time.Duration(500) * time.Second)
 		}
 	}()
 }

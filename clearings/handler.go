@@ -31,7 +31,8 @@ func Run() {
 	go func() {
 		for {
 			if data, ok := <-Notify; ok {
-				go func(res te.TradeResult) {
+				logrus.Infof("[clearings] %s ask: %s bid: %s price: %s vol: %s", data.Symbol, data.AskOrderId, data.BidOrderId, data.TradePrice.String(), data.TradeQuantity.String())
+				func(res te.TradeResult) {
 					err := NewClearing(res)
 					if err != nil {
 						logrus.Errorf("[clearings] %s", err)
@@ -44,8 +45,6 @@ func Run() {
 
 //结算一条成交记录
 func NewClearing(data te.TradeResult) (err error) {
-	logrus.Infof("[clearings] %#v", data)
-
 	tradeInfo, err := symbols.GetExchangeBySymbol(data.Symbol)
 	if err != nil {
 		return err

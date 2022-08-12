@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
+	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
 	"xorm.io/xorm"
@@ -133,6 +134,7 @@ func (c *clearing) tradeRecord() error {
 	}
 
 	if err := trade.Save(c.db); err != nil {
+		logrus.Debugf("%+v, %s", trade, err)
 		return err
 	}
 	c.record = &trade
