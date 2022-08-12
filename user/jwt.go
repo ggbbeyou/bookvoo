@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"github.com/yzimhao/bookvoo/common"
 	"github.com/yzimhao/bookvoo/user/assets"
 )
 
@@ -67,12 +68,10 @@ func InitJwt() {
 			if viper.GetString("main.mode") == "demo" {
 				rand.Seed(time.Now().Unix())
 				n := rand.Intn(99)
-				demoUid := int64(1100) + int64(n)
+				demoUid := DemoUserStart + int64(n)
 
-				usd_symbol := 1
-				eth_symbol := 2
-				assets.InitAssetsForDemo(demoUid, usd_symbol, "100000", "R001")
-				assets.InitAssetsForDemo(demoUid, eth_symbol, "100000", "R001")
+				assets.InitAssetsForDemo(demoUid, DemoUsdSymbol, "100000", "R001")
+				assets.InitAssetsForDemo(demoUid, DemoEthSymbol, "100000", "R001")
 
 				return &User{
 					UserId: demoUid,
@@ -113,6 +112,12 @@ func InitJwt() {
 				},
 			})
 		},
+
+		LogoutResponse: func(c *gin.Context, code int) {
+			c.SetCookie("jwt", "", -1, "/", "*", false, false)
+			common.Success(c, nil)
+		},
+
 		// TokenLookup is a string in the form of "<source>:<name>" that is used
 		// to extract token from the request.
 		// Optional. Default value "header:Authorization".

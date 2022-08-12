@@ -12,6 +12,7 @@ import (
 	"github.com/yzimhao/bookvoo/clearings"
 	"github.com/yzimhao/bookvoo/market"
 	"github.com/yzimhao/bookvoo/match"
+	"github.com/yzimhao/bookvoo/user"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
 
@@ -73,10 +74,12 @@ func appStart(configPath string) {
 
 	match.Run()
 	clearings.Run()
+	user.Run()
 
 	router := gin.Default()
 	market.Run(router)
 	views.Run(router)
+
 	viper.SetDefault("main.host", ":8080")
 	router.Run(viper.GetString("main.host"))
 }

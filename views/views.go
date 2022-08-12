@@ -24,6 +24,7 @@ func Init(r *redis.Client) {
 func Run(r *gin.Engine) {
 	setupRouter(r)
 	pushDepth()
+	botNewOrder()
 }
 
 func setupRouter(router *gin.Engine) {
@@ -57,5 +58,19 @@ func pushDepth() {
 			time.Sleep(time.Duration(100) * time.Millisecond)
 		}
 	}()
+}
 
+func botNewOrder() {
+	go func() {
+		for {
+			for symbol, obj := range match.Engine.Symbols {
+				ask := obj.GetAskDepth(10)
+				bid := obj.GetBidDepth(10)
+				//demo模式下自动挂单
+				autoDemoDepthData(symbol, ask, bid, obj.LatestPrice())
+
+			}
+			time.Sleep(time.Duration(30) * time.Second)
+		}
+	}()
 }

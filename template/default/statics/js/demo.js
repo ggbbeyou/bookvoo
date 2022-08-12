@@ -18,6 +18,11 @@
             });
         });
 
+        $(".header .logout").on("click", function(){
+            layui.func.logout();
+            layer.msg("logout sucess");
+        });
+
         $(".opt").on("click", function () {
             var side = $(this).hasClass("sell") ? "sell" : "buy";
             var order_type = $("select[name='order_type_"+ side +"']").val();
