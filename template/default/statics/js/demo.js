@@ -7,6 +7,19 @@
         layui.wss.init(symbol);
         layui.func.user_query();
         layui.func.load_assets(symbols, null);
+        layui.func.load_open_order(symbol, function(d){
+            if(d.ok){
+                var tpl = $("#myopenorder-tpl").html();
+                
+                var rows = d.data;
+                for(var i=0; i<rows.length; i++) {
+                    layui.laytpl(tpl).render(rows[i], function(html){
+                        console.log(html);
+                        $(".my-open-order").after(html);
+                    })
+                }
+            }
+        });
 
         $(".header .login a").on("click", function(){
             layui.func.login(function(d){

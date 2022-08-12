@@ -40,12 +40,13 @@
     </tr>
   </script>
 
-<script id="myorder-tpl" type="text/html">
+<script id="myopenorder-tpl" type="text/html">
     <tr class="order-item" order-id="{% d.order_id%}">
-        <td>{% d.order_type %}</td>
+        <td>
+            {%# if(d.order_type=="limit"){ %}限价{%# }else{ %}市价{%# } %}</td>
         <td>{% d.price %}</td>
         <td>{% d.quantity %}/<span class="qty_ok">0</span></td>
-        <td>{%# if(d.amount==0) { %} - {%#  } else { %}  {% d.amount %} {%# } %}</td>
+        <td>{%# if(d.trade_amount==0) { %} - {%#  } else { %}  {% d.amount %} {%# } %}</td>
         <td>{% d.create_time %}</td>
         <td><a class="cancel" href="javascript:;">撤单</a></td>
     </tr>
@@ -222,11 +223,7 @@
                                 </div>
                             </div>
 
-                            <!-- <div class="layui-form-item">
-                                <div class="layui-input-block">
-                                    <button class="layui-btn layui-btn-normal test-rand buy">随机买10单</button>
-                                </div>
-                            </div> -->
+                        
                         </form>
                     </div>
 
@@ -239,7 +236,7 @@
                     <div class="layui-card">
                         <div class="layui-card-header"><b>我的订单</b></div>
                         <div class="layui-card-body">
-                            <table class="layui-table">
+                            <table class="layui-table open-order">
                                 <tr>
                                     <th>类型</th>
                                     <th>价格</th>
@@ -248,7 +245,7 @@
                                     <th>时间</th>
                                     <th>操作</th>
                                 </tr>
-                                <tr class="myorder"></tr>
+                                <tr class="my-open-order"></tr>
 
                             </table>
                         </div>

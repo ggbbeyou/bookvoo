@@ -37,6 +37,15 @@ layui.define('layer', function(exports){
             });
         },
 
+
+        load_open_order: function(symbol, callback) {
+            $.get("/api/v1/order/open?symbol=" + symbol, function(d){
+                if(d.ok){}
+                if(callback){
+                    callback(d);
+                }
+            });
+        },
         user_query: function(callback){
             $.get("/api/v1/user/query", function(d){
                 if(!d.ok){

@@ -77,3 +77,8 @@
 .trade-log th, td {
     text-align: center;
 }
+
+
+.open-order th {
+    text-align: center;
+}
