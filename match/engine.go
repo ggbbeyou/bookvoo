@@ -50,6 +50,8 @@ func (e *engine) rebuild() {
 		db.Table(new(orders.UnfinishedOrder)).Where("pair_id=?", tp.Id).OrderBy("create_time asc").Find(&rows)
 		for _, row := range rows {
 			row.Symbol = symbol
+			//rebuild的时候总下单数量减去已经成交的重新加载到撮合
+			row.Quantity = d(row.Quantity).Sub(d(row.FinishedQty)).String()
 			Send <- &row
 		}
 	}

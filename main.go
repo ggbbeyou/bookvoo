@@ -98,6 +98,10 @@ func initModule() {
 		return conn
 	}()
 
+	if viper.GetBool("db.show_sql") {
+		default_db.ShowSQL(true)
+	}
+
 	default_rdc := func() *redis.Client {
 		rdc := redis.NewClient(&redis.Options{
 			Addr:     viper.GetString("redis.host"),
