@@ -21,13 +21,14 @@ layui.define(['laydate', 'layer', 'table', 'element', 'laytpl', 'form'], functio
         },
 
         create: function() {
+            var me = this;
             if (window["WebSocket"]) {
                 var protocol = window.location.protocol == "https:" ? "wss:" : "ws:";
                 conn = new WebSocket(protocol + "//" + document.location.host + "/ws");
                 conn.onclose = function (evt) {
                     layer.msg("<b>WebSocket Connection closed</b>");
                     setTimeout(function () {
-                        socket();
+                        me.create();
                     }, 5e3);
                 };
             } else {
