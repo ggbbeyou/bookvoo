@@ -46,6 +46,35 @@ layui.define('layer', function(exports){
                 }
             });
         },
+
+        load_trade_record: function(symbol, limit, callback){
+            var me = this;
+            $.get("/api/v1/trade/record?symbol="+symbol+"&limit="+limit, function(d){
+                if(d.ok) {
+                    for(var i=0; i<d.data.length; i++) {
+                        me.render_trade_record(d.data[i]);
+                    }
+                }
+
+                if(callback) {
+                    callback(d);
+                }
+            });
+        },
+
+        render_trade_record: function(data) {
+            var logView = $(".trade-log .log"),
+                logTpl = $("#trade-record-tpl").html();
+        
+            data['trade_at'] = this.formatTs2Time(data.trade_at);
+            layui.laytpl(logTpl).render(data, function (html) {
+                if ($(".log-item").length > 10) {
+                    $(".log-item").last().remove();
+                }
+                logView.after(html);
+            });
+        },
+
         user_query: function(callback){
             $.get("/api/v1/user/query", function(d){
                 if(!d.ok){

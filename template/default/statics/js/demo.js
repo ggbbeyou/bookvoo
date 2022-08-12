@@ -14,12 +14,12 @@
                 var rows = d.data;
                 for(var i=0; i<rows.length; i++) {
                     layui.laytpl(tpl).render(rows[i], function(html){
-                        console.log(html);
                         $(".my-open-order").after(html);
                     })
                 }
             }
         });
+        layui.func.load_trade_record(symbol, 10, null);
 
         $(".header .login a").on("click", function(){
             layui.func.login(function(d){
