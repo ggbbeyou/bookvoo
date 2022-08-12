@@ -48,7 +48,7 @@ func autoOrder(side orders.OrderSide, symbol string, price decimal.Decimal, n in
 
 		_pirce := price.StringFixedBank(4)
 
-		_vol := fmt.Sprintf("%.4f", qty)
+		_vol := fmt.Sprintf("%.4f", qty*100)
 
 		order, err := orders.NewLimitOrder(user.BotUserId, symbol, side, _pirce, _vol)
 		if err != nil {

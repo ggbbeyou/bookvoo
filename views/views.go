@@ -44,8 +44,8 @@ func pushDepth() {
 	go func() {
 		for {
 			for symbol, obj := range match.Engine.Symbols {
-				ask := obj.GetAskDepth(10)
-				bid := obj.GetBidDepth(10)
+				ask := obj.GetAskDepth(6)
+				bid := obj.GetBidDepth(6)
 
 				base.Wss.Broadcast <- gowss.MsgBody{
 					To: types.SubscribeDepth.Format(map[string]string{"symbol": symbol}),

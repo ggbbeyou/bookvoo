@@ -10,7 +10,7 @@ var (
 )
 
 func Run() {
-	assets.InitAssetsForDemo(BotUserId, DemoUsdSymbol, "1000000", "R001")
+	assets.InitAssetsForDemo(BotUserId, DemoUsdSymbol, "500000000", "R001")
 	assets.InitAssetsForDemo(BotUserId, DemoEthSymbol, "1000000", "R001")
 }
 
