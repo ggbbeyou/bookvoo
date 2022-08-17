@@ -18,9 +18,11 @@ func service() {
 			if err == nil {
 				base.WssPush(gowss.MsgBody{
 					To: fmt.Sprintf("%d", detail.UserId),
-					Body: map[string]any{
-						"type": "cancel_order",
-						"data": data.OrderId,
+					Response: gowss.Response{
+						Type: "cancel_order",
+						Body: map[string]string{
+							"order_id": data.OrderId,
+						},
 					},
 				})
 			} else {

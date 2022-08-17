@@ -118,13 +118,17 @@ func NewClearing(data te.TradeResult) (err error) {
 
 	//成交记录推送到下游
 	if rdc != nil {
+		tag := types.SubscribeTradeRecord.Format(map[string]string{"symbol": data.Symbol})
 		base.WssPush(gowss.MsgBody{
-			To: types.SubscribeTradeRecord.Format(map[string]string{"symbol": data.Symbol}),
-			Body: map[string]interface{}{
-				"price":    tradeInfo.FormatAmount(cl.trade_price.String()),
-				"quantity": tradeInfo.FormatQty(cl.trade_qty.String()),
-				"amount":   tradeInfo.FormatAmount(cl.trade_amount.String()),
-				"trade_at": data.TradeTime,
+			To: tag,
+			Response: gowss.Response{
+				Type: tag,
+				Body: map[string]interface{}{
+					"price":    tradeInfo.FormatAmount(cl.trade_price.String()),
+					"quantity": tradeInfo.FormatQty(cl.trade_qty.String()),
+					"amount":   tradeInfo.FormatAmount(cl.trade_amount.String()),
+					"trade_at": data.TradeTime,
+				},
 			},
 		})
 

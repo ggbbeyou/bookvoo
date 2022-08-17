@@ -78,7 +78,7 @@ func (h *Hub) run() {
 
 					//去重相同两条连续的重复消息
 					newHash := message.BodyHash()
-					if lastHash, ok := client.lastSendMsgHash[message.To]; ok {
+					if lastHash, ok := client.lastSendMsgHash[message.Response.Type]; ok {
 						if newHash == lastHash {
 							continue
 						}

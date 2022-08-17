@@ -12,26 +12,23 @@ type subMessage struct {
 }
 
 type MsgBody struct {
-	To   string      `json:"to"`
-	Body interface{} `json:"body"`
+	To       string
+	Response Response
 }
 
-type response struct {
+type Response struct {
 	Type string      `json:"type"`
 	Body interface{} `json:"body"`
 }
 
 func (m *MsgBody) BodyHash() string {
 	h := md5.New()
-	h.Write([]byte(fmt.Sprintf("%v", m.Body)))
+	h.Write([]byte(fmt.Sprintf("%v", m.Response)))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
 func (m *MsgBody) GetBody() []byte {
-	re := response{
-		Type: m.To,
-		Body: m.Body,
-	}
+	re := m.Response
 	data, _ := json.Marshal(re)
 	return data
 }

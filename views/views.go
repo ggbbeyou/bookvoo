@@ -50,11 +50,15 @@ func pushDepth() {
 				ask := v.GetAskDepth(6)
 				bid := v.GetBidDepth(6)
 
+				tag := types.SubscribeDepth.Format(map[string]string{"symbol": symbol})
 				base.Wss.Broadcast <- gowss.MsgBody{
-					To: types.SubscribeDepth.Format(map[string]string{"symbol": symbol}),
-					Body: gin.H{
-						"ask": ask,
-						"bid": bid,
+					To: tag,
+					Response: gowss.Response{
+						Type: tag,
+						Body: gin.H{
+							"ask": ask,
+							"bid": bid,
+						},
 					},
 				}
 			})
