@@ -45,8 +45,8 @@
         <td>
             {%# if(d.order_type=="limit"){ %}限价{%# }else{ %}市价{%# } %}</td>
         <td>{% d.price %}</td>
-        <td>{% d.quantity %}/<span class="qty_ok">0</span></td>
-        <td>{%# if(d.trade_amount==0) { %} - {%#  } else { %}  {% d.amount %} {%# } %}</td>
+        <td>{% d.quantity %}/<span class="qty_ok">{% d.finished_qty %}</span></td>
+        <td>{%# if(d.trade_amount==0) { %} - {%#  } else { %}  {% d.trade_amount %} {%# } %}</td>
         <td>{% d.create_time %}</td>
         <td><a class="cancel" href="javascript:;">撤单</a></td>
     </tr>
