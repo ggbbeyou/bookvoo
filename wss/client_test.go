@@ -2,12 +2,10 @@ package wss
 
 import (
 	"log"
-	"net/http"
-	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -17,22 +15,20 @@ var _socket *Hub
 func init() {
 	go func() {
 		_socket = NewHub()
-		http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-			_socket.ServeWs(w, r)
+		r := gin.New()
+		r.Any("/ws", func(ctx *gin.Context) {
+			_socket.ServeWs(ctx)
 		})
-		err := http.ListenAndServe(":8090", nil)
-		if err != nil {
-			log.Fatal("ListenAndServe: ", err)
-		}
+		r.Run(":8090")
 	}()
 }
 
 func newClient() *websocket.Conn {
-	s := httptest.NewServer(http.HandlerFunc(_socket.ServeWs))
-	defer s.Close()
+	// s := httptest.NewServer(http.HandlerFunc(_socket.ServeWs))
+	// defer s.Close()
 
 	// Convert http://127.0.0.1 to ws://127.0.0.
-	u := "ws" + strings.TrimPrefix(s.URL, "http")
+	u := "ws://127.0.0.1:8090"
 	// Connect to the server
 	ws, _, err := websocket.DefaultDialer.Dial(u, nil)
 	if err != nil {
@@ -87,8 +83,11 @@ func TestClient(t *testing.T) {
 
 		send := MsgBody{
 			To: "kline.m1.demo",
-			Body: []string{
-				"a", "b",
+			Response: Response{
+				Type: "kline.m1.demo",
+				Body: []string{
+					"a", "b",
+				},
 			},
 		}
 
