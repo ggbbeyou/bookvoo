@@ -1,11 +1,15 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"github.com/yzimhao/bookvoo/base"
 	"github.com/yzimhao/bookvoo/common"
 	"github.com/yzimhao/bookvoo/match"
 	"github.com/yzimhao/bookvoo/user/orders"
+	gowss "github.com/yzimhao/bookvoo/wss"
 	te "github.com/yzimhao/trading_engine"
 )
 
@@ -39,49 +43,55 @@ func order_new(c *gin.Context) {
 		return
 	}
 
+	var newOrder *orders.TradeOrder
+	var err error
 	if req.OrderType == orders.OrderTypeLimit {
-		limit_order(c, req)
-		return
+		newOrder, err = limit_order(c, req)
+		match.Send <- *newOrder
 	} else if req.OrderType == orders.OrderTypeMarket {
-		//todo
 		if d(req.Amount).Cmp(decimal.Zero) > 0 {
 			//按金额操作
-			market_order_by_amount(c, req.Symbol, req.Side, req.Amount)
+			newOrder, err = market_order_by_amount(c, req.Symbol, req.Side, req.Amount)
 		} else if d(req.Quantity).Cmp(decimal.Zero) > 0 {
 			//按数量操作
-			market_order_by_qty(c, req.Symbol, req.Side, req.Quantity)
+			newOrder, err = market_order_by_qty(c, req.Symbol, req.Side, req.Quantity)
 		}
-		return
 	} else {
 		common.Fail(c, "invalid side")
 		return
 	}
-}
 
-func limit_order(c *gin.Context, req new_order_request) {
-	uid := getUserId(c)
-	order, err := orders.NewLimitOrder(uid, req.Symbol, req.Side, req.Price, req.Quantity)
 	if err != nil {
 		common.Fail(c, err.Error())
 		return
 	}
 
-	match.Send <- *order
-	// if req.Side == orders.OrderSideSell {
-	// 	match.Engine[req.Symbol].ChNewOrder <- te.NewAskLimitItem(order.OrderId, d(order.Price), d(order.Quantity), order.CreateTime)
-	// } else if req.Side == orders.OrderSideBuy {
-	// 	match.Engine[req.Symbol].ChNewOrder <- te.NewBidLimitItem(order.OrderId, d(order.Price), d(order.Quantity), order.CreateTime)
-	// }
-	common.Success(c, gin.H{"order_id": order.OrderId})
+	base.WssPush(gowss.MsgBody{
+		To: fmt.Sprintf("%d", newOrder.UserId),
+		Response: gowss.Response{
+			Type: "new_order",
+			Body: newOrder,
+		},
+	})
+
+	common.Success(c, gin.H{"order_id": newOrder.OrderId})
+}
+
+func limit_order(c *gin.Context, req new_order_request) (*orders.TradeOrder, error) {
+	uid := getUserId(c)
+	order, err := orders.NewLimitOrder(uid, req.Symbol, req.Side, req.Price, req.Quantity)
+	if err != nil {
+		return nil, err
+	}
+	return order, nil
 }
 
 //市价按数量操作
-func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, qty string) {
+func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, qty string) (*orders.TradeOrder, error) {
 	uid := getUserId(c)
 	order, err := orders.NewMarketOrderByQty(uid, symbol, side, qty)
 	if err != nil {
-		common.Fail(c, err.Error())
-		return
+		return nil, err
 	}
 
 	t, _ := match.Engine.Get(symbol)
@@ -91,16 +101,15 @@ func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, q
 		t.ChNewOrder <- te.NewBidMarketQtyItem(order.OrderId, d(order.Quantity), d(order.FreezeQty), order.CreateTime)
 	}
 
-	common.Success(c, gin.H{"order_id": order.OrderId})
+	return order, nil
 }
 
 //市价按成交量操作
-func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide, amount string) {
+func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide, amount string) (*orders.TradeOrder, error) {
 	uid := getUserId(c)
 	order, err := orders.NewMarketOrderByAmount(uid, symbol, side, amount)
 	if err != nil {
-		common.Fail(c, err.Error())
-		return
+		return nil, err
 	}
 
 	t, _ := match.Engine.Get(symbol)
@@ -109,6 +118,5 @@ func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide
 	} else if side == orders.OrderSideBuy {
 		t.ChNewOrder <- te.NewBidMarketAmountItem(order.OrderId, d(order.Amount), order.CreateTime)
 	}
-
-	common.Success(c, gin.H{"order_id": order.OrderId})
+	return order, nil
 }
