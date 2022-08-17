@@ -143,7 +143,7 @@ func (c *clearing) tradeRecord() error {
 
 func (c *clearing) transfer() error {
 	//给买家结算交易物品
-	_, err := assets.UnfreezeAssets(c.db, false, c.ask.UserId, c.symbol_id, c.ask_order_id, c.trade_qty.String())
+	_, err := assets.UnfreezeAssets(c.db, false, c.ask.UserId, c.ask_order_id, c.trade_qty.String())
 	if err != nil {
 		return err
 	}
@@ -154,7 +154,7 @@ func (c *clearing) transfer() error {
 
 	//卖家结算本位币
 	amount := d(c.record.Amount).Add(d(c.record.BidFee))
-	_, err = assets.UnfreezeAssets(c.db, false, c.bid.UserId, c.standard_symbol_id, c.bid_order_id, amount.String())
+	_, err = assets.UnfreezeAssets(c.db, false, c.bid.UserId, c.bid_order_id, amount.String())
 	if err != nil {
 		return err
 	}

@@ -93,7 +93,10 @@ func (e *engine) service() {
 					clearings.Notify <- result
 				case order_id := <-obj.ChCancelResult:
 					logrus.Infof("[match] %s cancel %s", symbol, order_id)
-
+					orders.ChCancel <- orders.TradeOrder{
+						Symbol:  symbol,
+						OrderId: order_id,
+					}
 				}
 			}
 		}(k.(string), v.(*te.TradePair))
@@ -110,7 +113,7 @@ func (e *engine) handler() {
 			select {
 			case data := <-Send:
 				logrus.Infof("[match] handler order: %s", data.OrderId)
-				func() {
+				go func() {
 					t, err := e.Get(data.Symbol)
 					if err != nil {
 						return

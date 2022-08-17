@@ -6,11 +6,15 @@ import (
 	"xorm.io/xorm"
 )
 
-func UnfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symbol_id int, business_id, unfreeze_amount string) (success bool, err error) {
-	return unfreezeAssets(db, enable_transaction, user_id, symbol_id, business_id, unfreeze_amount)
+func UnfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, business_id, unfreeze_amount string) (success bool, err error) {
+	return unfreezeAssets(db, enable_transaction, user_id, business_id, unfreeze_amount)
 }
 
-func unfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, symbol_id int, business_id, unfreeze_amount string) (success bool, err error) {
+func UnfreezeAllAssets(db *xorm.Session, enable_transaction bool, user_id int64, business_id string) (success bool, err error) {
+	return unfreezeAssets(db, enable_transaction, user_id, business_id, "0")
+}
+
+func unfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, business_id, unfreeze_amount string) (success bool, err error) {
 	if enable_transaction {
 		db.Begin()
 		defer func() {
@@ -26,9 +30,9 @@ func unfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, sy
 		return false, fmt.Errorf("unfreeze amount should be >= 0")
 	}
 
-	row := assetFreezeRecord{UserId: user_id, SymbolId: symbol_id, BusinessId: business_id}
+	row := assetFreezeRecord{UserId: user_id, BusinessId: business_id}
 
-	has, err := db.Table(new(assetFreezeRecord)).Where("user_id=? and symbol_id=? and business_id=?", user_id, symbol_id, business_id).Get(&row)
+	has, err := db.Table(new(assetFreezeRecord)).Where("business_id=?", business_id).Get(&row)
 	if err != nil {
 		return false, err
 	}
@@ -55,14 +59,14 @@ func unfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, sy
 		row.Status = FreezeStatusDone
 	}
 
-	_, err = db.Table(new(assetFreezeRecord)).Where("user_id=? and symbol_id=? and business_id=?", user_id, symbol_id, business_id).AllCols().Update(&row)
+	_, err = db.Table(new(assetFreezeRecord)).Where("business_id=?", business_id).AllCols().Update(&row)
 	if err != nil {
 		return false, err
 	}
 
 	//解冻资产为可用
-	assets := Assets{UserId: user_id, SymbolId: symbol_id}
-	_, err = db.Table(new(Assets)).Where("user_id=? and symbol_id=?", user_id, symbol_id).ForUpdate().Get(&assets)
+	assets := Assets{UserId: user_id, SymbolId: row.SymbolId}
+	_, err = db.Table(new(Assets)).Where("user_id=? and symbol_id=?", user_id, row.SymbolId).ForUpdate().Get(&assets)
 	if err != nil {
 		return false, err
 	}
@@ -73,7 +77,7 @@ func unfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, sy
 		return false, fmt.Errorf("freeze amount some wrong")
 	}
 
-	_, err = db.Table(new(Assets)).Where("user_id=? and symbol_id=?", user_id, symbol_id).Update(&assets)
+	_, err = db.Table(new(Assets)).Where("user_id=? and symbol_id=?", user_id, row.SymbolId).Update(&assets)
 	if err != nil {
 		return false, err
 	}

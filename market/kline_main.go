@@ -132,7 +132,7 @@ func (ks *kdataHandler) updateKline(tl models.TradeLog, period models.Period) {
 		}
 	}()
 
-	base.WssPush(rdc, gowss.MsgBody{
+	base.WssPush(gowss.MsgBody{
 		To: types.SubscribeKline.Format(map[string]string{
 			"symbol": tl.Symbol,
 			"period": string(period),

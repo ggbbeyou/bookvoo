@@ -145,7 +145,7 @@ func Test_main(t *testing.T) {
 	})
 
 	Convey("解冻不存在的业务订单号", t, func() {
-		f, err := unfreezeAssets(db, true, user1, symbol_usd, "a004", "10")
+		f, err := unfreezeAssets(db, true, user1, "a004", "10")
 		So(err, ShouldBeError, fmt.Errorf("not found business_id"))
 		So(f, ShouldBeFalse)
 	})
@@ -153,7 +153,7 @@ func Test_main(t *testing.T) {
 	Convey("解冻订单号剩余全部资产", t, func() {
 		initAssets(user1, symbol_usd, "100", "T05")
 		freezeAssets(db, true, user1, symbol_usd, "10", "a005", Behavior_Trade)
-		f, err := unfreezeAssets(db, true, user1, symbol_usd, "a005", "0")
+		f, err := unfreezeAssets(db, true, user1, "a005", "0")
 		So(err, ShouldBeNil)
 		So(f, ShouldBeTrue)
 
@@ -169,7 +169,7 @@ func Test_main(t *testing.T) {
 	Convey("解冻业务订单部分资产", t, func() {
 		initAssets(user1, symbol_usd, "100", "T06")
 		freezeAssets(db, true, user1, symbol_usd, "10", "a006", Behavior_Trade)
-		f, err := unfreezeAssets(db, true, user1, symbol_usd, "a006", "1.2")
+		f, err := unfreezeAssets(db, true, user1, "a006", "1.2")
 		So(err, ShouldBeNil)
 		So(f, ShouldBeTrue)
 
@@ -185,7 +185,7 @@ func Test_main(t *testing.T) {
 	Convey("解冻超过业务订单金额的数量", t, func() {
 		initAssets(user1, symbol_usd, "100", "T07")
 		freezeAssets(db, true, user1, symbol_usd, "10", "a006", Behavior_Trade)
-		f, err := unfreezeAssets(db, true, user1, symbol_usd, "a006", "11")
+		f, err := unfreezeAssets(db, true, user1, "a006", "11")
 		So(err, ShouldBeError, fmt.Errorf("unfreeze amount must lt freeze amount"))
 		So(f, ShouldBeFalse)
 
@@ -196,7 +196,7 @@ func Test_main(t *testing.T) {
 	Convey("解冻负数的数量", t, func() {
 		initAssets(user1, symbol_usd, "100", "T08")
 		freezeAssets(db, true, user1, symbol_usd, "10", "a006", Behavior_Trade)
-		f, err := unfreezeAssets(db, true, user1, symbol_usd, "a006", "-2")
+		f, err := unfreezeAssets(db, true, user1, "a006", "-2")
 		So(err, ShouldBeError, fmt.Errorf("unfreeze amount should be >= 0"))
 		So(f, ShouldBeFalse)
 

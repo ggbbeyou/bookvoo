@@ -118,7 +118,7 @@ func NewClearing(data te.TradeResult) (err error) {
 
 	//成交记录推送到下游
 	if rdc != nil {
-		base.WssPush(rdc, gowss.MsgBody{
+		base.WssPush(gowss.MsgBody{
 			To: types.SubscribeTradeRecord.Format(map[string]string{"symbol": data.Symbol}),
 			Body: map[string]interface{}{
 				"price":    tradeInfo.FormatAmount(cl.trade_price.String()),
