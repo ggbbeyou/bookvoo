@@ -3,7 +3,7 @@ package base
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	"github.com/yzimhao/gowss"
+	gowss "github.com/yzimhao/bookvoo/wss"
 )
 
 func WsHandler(ctx *gin.Context) {

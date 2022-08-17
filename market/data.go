@@ -34,6 +34,7 @@ type Klinetips struct {
 }
 
 func Run(router *gin.Engine) {
+	logrus.Info("[market] run")
 	initConfig()
 	setupRouter(router)
 	go handleKLDataService()

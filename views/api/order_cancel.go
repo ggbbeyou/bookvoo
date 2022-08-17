@@ -45,6 +45,7 @@ func order_cancel(c *gin.Context) {
 		return trading_engine.OrderSideSell
 	}()
 
-	match.Engine.Symbols[tp.Symbol].CancelOrder(tside, req.OrderId)
+	t, _ := match.Engine.Get(tp.Symbol)
+	t.CancelOrder(tside, req.OrderId)
 	common.Success(c, nil)
 }

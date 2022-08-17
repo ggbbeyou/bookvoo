@@ -55,6 +55,6 @@ func autoOrder(side orders.OrderSide, symbol string, price decimal.Decimal, n in
 			logrus.Errorf("[autoOrder] %s price: %s  vol: %s - %s", symbol, _pirce, _vol, err)
 			return
 		}
-		match.Send <- order
+		match.Send <- *order
 	}
 }

@@ -66,7 +66,7 @@ func limit_order(c *gin.Context, req new_order_request) {
 		return
 	}
 
-	match.Send <- order
+	match.Send <- *order
 	// if req.Side == orders.OrderSideSell {
 	// 	match.Engine[req.Symbol].ChNewOrder <- te.NewAskLimitItem(order.OrderId, d(order.Price), d(order.Quantity), order.CreateTime)
 	// } else if req.Side == orders.OrderSideBuy {
@@ -84,10 +84,11 @@ func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, q
 		return
 	}
 
+	t, _ := match.Engine.Get(symbol)
 	if side == orders.OrderSideSell {
-		match.Engine.Symbols[symbol].ChNewOrder <- te.NewAskMarketQtyItem(order.OrderId, d(order.Quantity), order.CreateTime)
+		t.ChNewOrder <- te.NewAskMarketQtyItem(order.OrderId, d(order.Quantity), order.CreateTime)
 	} else if side == orders.OrderSideBuy {
-		match.Engine.Symbols[symbol].ChNewOrder <- te.NewBidMarketQtyItem(order.OrderId, d(order.Quantity), d(order.FreezeQty), order.CreateTime)
+		t.ChNewOrder <- te.NewBidMarketQtyItem(order.OrderId, d(order.Quantity), d(order.FreezeQty), order.CreateTime)
 	}
 
 	common.Success(c, gin.H{"order_id": order.OrderId})
@@ -102,11 +103,11 @@ func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide
 		return
 	}
 
+	t, _ := match.Engine.Get(symbol)
 	if side == orders.OrderSideSell {
-
-		match.Engine.Symbols[symbol].ChNewOrder <- te.NewAskMarketAmountItem(order.OrderId, d(amount), d(order.FreezeQty), order.CreateTime)
+		t.ChNewOrder <- te.NewAskMarketAmountItem(order.OrderId, d(amount), d(order.FreezeQty), order.CreateTime)
 	} else if side == orders.OrderSideBuy {
-		match.Engine.Symbols[symbol].ChNewOrder <- te.NewBidMarketAmountItem(order.OrderId, d(order.Amount), order.CreateTime)
+		t.ChNewOrder <- te.NewBidMarketAmountItem(order.OrderId, d(order.Amount), order.CreateTime)
 	}
 
 	common.Success(c, gin.H{"order_id": order.OrderId})

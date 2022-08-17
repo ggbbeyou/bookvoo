@@ -5,12 +5,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/base"
 	"github.com/yzimhao/bookvoo/common/types"
 	"github.com/yzimhao/bookvoo/match"
 	"github.com/yzimhao/bookvoo/views/api"
 	"github.com/yzimhao/bookvoo/views/pages"
-	"github.com/yzimhao/gowss"
+	gowss "github.com/yzimhao/bookvoo/wss"
+	"github.com/yzimhao/trading_engine"
 )
 
 var (
@@ -22,6 +24,7 @@ func Init(r *redis.Client) {
 }
 
 func Run(r *gin.Engine) {
+	logrus.Info("[views] run")
 	setupRouter(r)
 	pushDepth()
 	botNewOrder()
@@ -43,9 +46,22 @@ func setupRouter(router *gin.Engine) {
 func pushDepth() {
 	go func() {
 		for {
-			for symbol, obj := range match.Engine.Symbols {
-				ask := obj.GetAskDepth(6)
-				bid := obj.GetBidDepth(6)
+			// for symbol, obj := range match.Engine.Symbols {
+			// 	ask := obj.GetAskDepth(6)
+			// 	bid := obj.GetBidDepth(6)
+
+			// 	base.Wss.Broadcast <- gowss.MsgBody{
+			// 		To: types.SubscribeDepth.Format(map[string]string{"symbol": symbol}),
+			// 		Body: gin.H{
+			// 			"ask": ask,
+			// 			"bid": bid,
+			// 		},
+			// 	}
+			// }
+
+			match.Engine.Foreach(func(symbol string, v *trading_engine.TradePair) {
+				ask := v.GetAskDepth(6)
+				bid := v.GetBidDepth(6)
 
 				base.Wss.Broadcast <- gowss.MsgBody{
 					To: types.SubscribeDepth.Format(map[string]string{"symbol": symbol}),
@@ -54,7 +70,8 @@ func pushDepth() {
 						"bid": bid,
 					},
 				}
-			}
+			})
+
 			time.Sleep(time.Duration(100) * time.Millisecond)
 		}
 	}()
@@ -63,13 +80,13 @@ func pushDepth() {
 func botNewOrder() {
 	go func() {
 		for {
-			for symbol, obj := range match.Engine.Symbols {
-				ask := obj.GetAskDepth(10)
-				bid := obj.GetBidDepth(10)
-				//demo模式下自动挂单
-				autoDemoDepthData(symbol, ask, bid, obj.LatestPrice())
 
-			}
+			match.Engine.Foreach(func(symbol string, v *trading_engine.TradePair) {
+				ask := v.GetAskDepth(10)
+				bid := v.GetBidDepth(10)
+				//demo模式下自动挂单
+				autoDemoDepthData(symbol, ask, bid, v.LatestPrice())
+			})
 			time.Sleep(time.Duration(30) * time.Second)
 		}
 	}()

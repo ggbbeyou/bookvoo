@@ -15,53 +15,63 @@ import (
 )
 
 var (
-	Send chan *orders.TradeOrder
+	Send chan orders.TradeOrder
 
 	db_engine *xorm.Engine
 	Engine    *engine
 )
 
 type engine struct {
-	Symbols map[string]*te.TradePair
+	symbols sync.Map
 	sync.Mutex
+
+	wgRebuild sync.WaitGroup
 }
 
 func Init(db *xorm.Engine, rdc *redis.Client) {
 	db_engine = db
-	Send = make(chan *orders.TradeOrder)
+	Send = make(chan orders.TradeOrder, 10000)
 	Engine = new(engine)
 }
 
 func Run() {
+
 	Engine.init()
+	Engine.wgRebuild.Add(1)
 	Engine.service()
 	Engine.handler()
 	Engine.rebuild()
+	logrus.Info("[match] run4")
 }
 
 func (e *engine) rebuild() {
+	defer e.wgRebuild.Done()
+
 	db := orders.Db().NewSession()
 	defer db.Close()
 
-	for symbol, _ := range e.Symbols {
-
-		tp, _ := symbols.GetExchangeBySymbol(symbol)
-		rows := []orders.TradeOrder{}
-		db.Table(new(orders.UnfinishedOrder)).Where("pair_id=?", tp.Id).OrderBy("create_time asc").Find(&rows)
-		for _, row := range rows {
-			row.Symbol = symbol
-			//rebuild的时候总下单数量减去已经成交的重新加载到撮合
-			row.Quantity = d(row.Quantity).Sub(d(row.FinishedQty)).String()
-			Send <- &row
-		}
-	}
-}
-
-func (e *engine) init() {
 	e.Lock()
 	defer e.Unlock()
 
-	e.Symbols = make(map[string]*te.TradePair)
+	e.symbols.Range(func(key, value any) bool {
+		symbol := key.(string)
+		tp, _ := symbols.GetExchangeBySymbol(symbol)
+		rows := []orders.TradeOrder{}
+		db.Table(new(orders.UnfinishedOrder)).Where("pair_id=?", tp.Id).OrderBy("create_time asc").Find(&rows)
+		for i, row := range rows {
+			row.Symbol = symbol
+			//rebuild的时候总下单数量减去已经成交的重新加载到撮合
+			row.Quantity = d(row.Quantity).Sub(d(row.FinishedQty)).String()
+			logrus.Infof("[match] rebuild (%d) %s", i, row.OrderId)
+			Send <- row
+		}
+
+		return true
+	})
+
+}
+
+func (e *engine) init() {
 
 	db := db_engine.NewSession()
 	defer db.Close()
@@ -69,12 +79,12 @@ func (e *engine) init() {
 	rows := []symbols.Exchange{}
 	db.Table(new(symbols.Exchange)).Where("status=?", symbols.StatusEnable).Find(&rows)
 	for _, row := range rows {
-		e.Symbols[row.Symbol] = te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec)
+		e.symbols.Store(row.Symbol, te.NewTradePair(row.Symbol, row.PricePrec, row.QtyPrec))
 	}
 }
 
 func (e *engine) service() {
-	for symbol, item := range e.Symbols {
+	e.symbols.Range(func(k, v any) bool {
 		go func(symbol string, obj *te.TradePair) {
 			for {
 				select {
@@ -86,24 +96,30 @@ func (e *engine) service() {
 
 				}
 			}
-		}(symbol, item)
-	}
+		}(k.(string), v.(*te.TradePair))
+		return true
+	})
+
 }
 
 func (e *engine) handler() {
 	go func() {
 		for {
+			e.wgRebuild.Wait()
+
 			select {
 			case data := <-Send:
+				logrus.Infof("[match] handler order: %s", data.OrderId)
 				func() {
-					e.Lock()
-					defer e.Unlock()
-
+					t, err := e.Get(data.Symbol)
+					if err != nil {
+						return
+					}
 					if data.OrderType == orders.OrderTypeLimit {
 						if data.OrderSide == orders.OrderSideSell {
-							e.Symbols[data.Symbol].ChNewOrder <- te.NewAskLimitItem(data.OrderId, d(data.Price), d(data.Quantity), data.CreateTime)
+							t.ChNewOrder <- te.NewAskLimitItem(data.OrderId, d(data.Price), d(data.Quantity), data.CreateTime)
 						} else if data.OrderSide == orders.OrderSideBuy {
-							e.Symbols[data.Symbol].ChNewOrder <- te.NewBidLimitItem(data.OrderId, d(data.Price), d(data.Quantity), data.CreateTime)
+							t.ChNewOrder <- te.NewBidLimitItem(data.OrderId, d(data.Price), d(data.Quantity), data.CreateTime)
 						}
 					}
 
@@ -115,13 +131,18 @@ func (e *engine) handler() {
 }
 
 func (e *engine) Get(symbol string) (*te.TradePair, error) {
-	e.Lock()
-	defer e.Unlock()
-
-	if _, ok := e.Symbols[symbol]; !ok {
-		return nil, fmt.Errorf("invalid symbol")
+	v, ok := e.symbols.Load(symbol)
+	if !ok {
+		return nil, fmt.Errorf("%s tradepair not found", symbol)
 	}
-	return e.Symbols[symbol], nil
+	return v.(*te.TradePair), nil
+}
+
+func (e *engine) Foreach(a func(k string, v *te.TradePair)) {
+	e.symbols.Range(func(key, value any) bool {
+		a(key.(string), value.(*te.TradePair))
+		return true
+	})
 }
 
 func d(ss string) decimal.Decimal {

@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/common/types"
-	"github.com/yzimhao/gowss"
+	gowss "github.com/yzimhao/bookvoo/wss"
 	"xorm.io/xorm"
 )
 

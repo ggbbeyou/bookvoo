@@ -10,7 +10,7 @@ import (
 	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/common/types"
 	"github.com/yzimhao/bookvoo/user/orders"
-	"github.com/yzimhao/gowss"
+	gowss "github.com/yzimhao/bookvoo/wss"
 	te "github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
 )
@@ -27,6 +27,7 @@ func Init(db *xorm.Engine, r *redis.Client) {
 }
 
 func Run() {
+	logrus.Info("[clearings] run")
 	Notify = make(chan te.TradeResult, 1000)
 	go func() {
 		for {

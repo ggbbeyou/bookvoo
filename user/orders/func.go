@@ -30,6 +30,7 @@ func Init(db *xorm.Engine, rdc *redis.Client) {
 		logrus.Errorf("sync2: %s", err)
 	}
 
+	go service()
 }
 
 func OrderIDSide(order_id string) OrderSide {

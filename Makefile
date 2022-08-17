@@ -1,7 +1,8 @@
 
 run:
 	@swag init
-	@go run main.go
+	@export CGO_CPPFLAGS="-Wno-error -Wno-nullability-completeness -Wno-expansion-to-defined -Wno-builtin-requires-header" 
+	@CGO_ENABLED=1 go run -race -v main.go
 
 test:
 	go clean -testcache

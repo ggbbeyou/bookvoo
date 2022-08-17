@@ -13,7 +13,7 @@ import (
 	"github.com/yzimhao/bookvoo/base"
 	"github.com/yzimhao/bookvoo/common/types"
 	"github.com/yzimhao/bookvoo/market/models"
-	"github.com/yzimhao/gowss"
+	gowss "github.com/yzimhao/bookvoo/wss"
 	"github.com/yzimhao/utilgo"
 )
 
