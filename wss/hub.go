@@ -69,7 +69,7 @@ func (h *Hub) run() {
 				h.Lock()
 				defer h.Unlock()
 
-				// log.Printf("broadcast: %+v", message)
+				// logrus.Debugf("[wss] broadcast: %+v", message)
 				for client := range h.clients {
 					//广播消息之前，检查client是否拥有对应属性
 					if !client.hasAttr(message.To) {
@@ -129,4 +129,5 @@ func (h *Hub) ServeWs(ctx *gin.Context) {
 	// new goroutines.
 	go client.writePump()
 	go client.readPump()
+
 }

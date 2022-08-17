@@ -7,11 +7,11 @@ package wss
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -74,7 +74,7 @@ func (c *Client) readPump() {
 		_, message, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				logrus.Errorf("[wss ] IsUnexpectedCloseError: %v", err)
 			}
 			break
 		}
@@ -131,9 +131,6 @@ func (c *Client) writePump() {
 }
 
 func (c *Client) handleRecvData(body []byte) {
-	c.Lock()
-	defer c.Unlock()
-
 	var msg subMessage
 	err := json.Unmarshal(body, &msg)
 	if err != nil {
@@ -143,12 +140,14 @@ func (c *Client) handleRecvData(body []byte) {
 	for _, attr := range msg.Sub {
 		c.setAttr(attr)
 	}
-	//todo 特殊的属性，像用户id之类的处理
+
+	logrus.Debugf("[wss] recv: %v", msg)
 }
 
 func (c *Client) setAttr(tag string) {
 	c.Lock()
 	defer c.Unlock()
+
 	c.attrs[tag] = true
 }
 
