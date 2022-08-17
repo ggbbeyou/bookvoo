@@ -140,12 +140,16 @@ func (c *Client) handleRecvData(body []byte) {
 		return
 	}
 
-	c.attrs = make(map[string]bool)
-
 	for _, attr := range msg.Sub {
-		c.attrs[attr] = true
+		c.setAttr(attr)
 	}
 	//todo 特殊的属性，像用户id之类的处理
+}
+
+func (c *Client) setAttr(tag string) {
+	c.Lock()
+	defer c.Unlock()
+	c.attrs[tag] = true
 }
 
 func (c *Client) hasAttr(tag string) bool {
@@ -155,6 +159,5 @@ func (c *Client) hasAttr(tag string) bool {
 	if _, ok := c.attrs[tag]; ok {
 		return true
 	}
-
 	return false
 }

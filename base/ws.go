@@ -6,7 +6,7 @@ import (
 )
 
 func WsHandler(ctx *gin.Context) {
-	Wss.ServeWs(ctx.Writer, ctx.Request)
+	Wss.ServeWs(ctx)
 }
 
 func WssPush(msg gowss.MsgBody) {

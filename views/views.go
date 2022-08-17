@@ -46,19 +46,6 @@ func setupRouter(router *gin.Engine) {
 func pushDepth() {
 	go func() {
 		for {
-			// for symbol, obj := range match.Engine.Symbols {
-			// 	ask := obj.GetAskDepth(6)
-			// 	bid := obj.GetBidDepth(6)
-
-			// 	base.Wss.Broadcast <- gowss.MsgBody{
-			// 		To: types.SubscribeDepth.Format(map[string]string{"symbol": symbol}),
-			// 		Body: gin.H{
-			// 			"ask": ask,
-			// 			"bid": bid,
-			// 		},
-			// 	}
-			// }
-
 			match.Engine.Foreach(func(symbol string, v *trading_engine.TradePair) {
 				ask := v.GetAskDepth(6)
 				bid := v.GetBidDepth(6)
@@ -80,14 +67,14 @@ func pushDepth() {
 func botNewOrder() {
 	go func() {
 		for {
-
+			time.Sleep(time.Duration(1) * time.Minute)
 			match.Engine.Foreach(func(symbol string, v *trading_engine.TradePair) {
 				ask := v.GetAskDepth(10)
 				bid := v.GetBidDepth(10)
 				//demo模式下自动挂单
 				autoDemoDepthData(symbol, ask, bid, v.LatestPrice())
 			})
-			time.Sleep(time.Duration(30) * time.Second)
+
 		}
 	}()
 }

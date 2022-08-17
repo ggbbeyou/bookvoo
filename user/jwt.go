@@ -32,6 +32,7 @@ func InitJwt() {
 		MaxRefresh: time.Hour,
 
 		IdentityKey: "user",
+		SendCookie:  true,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*User); ok {
 				return jwt.MapClaims{
@@ -100,10 +101,6 @@ func InitJwt() {
 			})
 		},
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
-
-			exp := expire.Unix() - time.Now().Unix()
-			c.SetCookie("jwt", token, int(exp), "/", "*", false, false)
-
 			c.JSON(http.StatusOK, gin.H{
 				"ok": 1,
 				"data": map[string]string{
@@ -114,7 +111,8 @@ func InitJwt() {
 		},
 
 		LogoutResponse: func(c *gin.Context, code int) {
-			c.SetCookie("jwt", "", -1, "/", "*", false, false)
+			// c.SetCookie("jwt", "", -1, "/", "*", false, false)
+
 			common.Success(c, nil)
 		},
 

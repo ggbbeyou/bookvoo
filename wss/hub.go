@@ -5,9 +5,12 @@
 package wss
 
 import (
-	"log"
-	"net/http"
+	"fmt"
 	"sync"
+
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
+	"github.com/yzimhao/bookvoo/user"
 )
 
 // Hub maintains the set of active clients and broadcasts messages to the
@@ -99,18 +102,28 @@ func (h *Hub) run() {
 }
 
 // serveWs handles websocket requests from the peer.
-func (h *Hub) ServeWs(w http.ResponseWriter, r *http.Request) {
+func (h *Hub) ServeWs(ctx *gin.Context) {
 
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
-		log.Println(err)
+		logrus.Errorf("[wss] upgrader.Upgrade %s", err)
 		return
 	}
-	client := &Client{hub: h, conn: conn, send: make(chan []byte, 256)}
 
+	client := &Client{hub: h, conn: conn, send: make(chan []byte, 256)}
 	//注册
 	client.hub.register <- client
 	client.lastSendMsgHash = make(map[string]string)
+	client.attrs = make(map[string]bool)
+
+	//登录信息处理
+	uraw, _ := user.AuthMiddleware.GetClaimsFromJWT(ctx)
+	user_id := int64(0)
+	if _, ok := uraw["user_id"]; ok {
+		user_id = int64(uraw["user_id"].(float64))
+	}
+	client.setAttr(fmt.Sprintf("%d", user_id))
+	logrus.Debugf("[wss] login info %#v  attr: %v", uraw, client.attrs)
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
