@@ -36,6 +36,7 @@ func order_open(c *gin.Context) {
 		rows[i].AvgPrice = es.FormatAmount(item.AvgPrice)
 		rows[i].FinishedQty = es.FormatQty(item.FinishedQty)
 		rows[i].Quantity = es.FormatQty(item.Quantity)
+		rows[i].TradeAmount = es.FormatAmount(item.TradeAmount)
 	}
 	common.Success(c, rows)
 }

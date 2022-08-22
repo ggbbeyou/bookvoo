@@ -95,6 +95,10 @@ layui.define(['laydate', 'layer', 'table', 'element', 'laytpl', 'form'], functio
             msg.body["trade_at"] = msg.body["trade_at"]/1e9;
             layui.func.render_trade_record(msg.body);
         },
+        handler_new_order: function(msg){
+            layui.func.render_open_order(msg.body);
+        },
+        handler_cancel_order: function(msg){},
         onmessage: function(){
             var me = this;
             conn.onmessage = function (evt) {
@@ -107,6 +111,8 @@ layui.define(['laydate', 'layer', 'table', 'element', 'laytpl', 'form'], functio
                         case "new_order."+ me.symbol: me.handler_message_neworder(msg); break;
                         case "kline.m1."+ me.symbol: me.handler_message_kline(msg); break;
                         case "trade.record." + me.symbol: me.handler_message_record(msg); break;
+                        case "new_order": me.handler_new_order(msg); break;
+                        case "cancel_order": me.handler_cancel_order(msg); break;
                         default: console.log("undefine message ", msg);
                     }
                 }

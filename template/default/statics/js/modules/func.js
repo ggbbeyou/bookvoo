@@ -90,6 +90,15 @@ layui.define('layer', function(exports){
             });
         },
 
+        render_open_order: function(data){
+            var tpl = $("#myopenorder-tpl").html();
+            data["create_time"] = this.formatTs2Time(data["create_time"]/1e9);
+                    
+            layui.laytpl(tpl).render(data, function(html){
+                $(".my-open-order").after(html);
+            })
+        },
+
         user_query: function(callback){
             $.get("/api/v1/user/query", function(d){
                 if(!d.ok){
