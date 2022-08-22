@@ -43,7 +43,7 @@
 <script id="myopenorder-tpl" type="text/html">
     <tr class="order-item" order-id="{% d.order_id%}">
         <td>
-            {%# if(d.order_type=="limit"){ %}限价{%# }else{ %}市价{%# } %}</td>
+            {%# if(d.order_type=="limit"){ %}限价{%# }else{ %}市价{%# } %}-{% d.order_side %}</td>
         <td>{% d.price %}</td>
         <td>{% d.quantity %}/<span class="qty_ok">{% d.finished_qty %}</span></td>
         <td>{%# if(d.trade_amount==0) { %} - {%#  } else { %}  {% d.trade_amount %} {%# } %}</td>
