@@ -77,6 +77,14 @@ layui.define('layer', function(exports){
             });
         },
 
+        load_latest_price: function(symbol, callback){
+            var me = this;
+        },
+
+        render_latest_price: function(price) {
+            $(".latest-price").html(price);
+        },
+
         render_trade_record: function(data) {
             var logView = $(".trade-log .log"),
                 logTpl = $("#trade-record-tpl").html();
