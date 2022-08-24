@@ -93,8 +93,6 @@ layui.define(['laydate', 'layer', 'table', 'element', 'laytpl', 'form'], functio
 
         handler_message_record: function(msg){
             msg.body["trade_at"] = msg.body["trade_at"]/1e9;
-
-            layui.func.render_latest_price(msg.body["price"]);
             layui.func.render_trade_record(msg.body);
         },
         handler_new_order: function(msg){

@@ -89,6 +89,7 @@ layui.define('layer', function(exports){
             var logView = $(".trade-log .log"),
                 logTpl = $("#trade-record-tpl").html();
         
+            this.render_latest_price(data["price"]);
             data['trade_at'] = this.formatTs2Time(data.trade_at);
             layui.laytpl(logTpl).render(data, function (html) {
                 if ($(".log-item").length > 10) {

@@ -24,6 +24,8 @@ func SetupRouter(router *gin.Engine) {
 	apiV1.GET("/depth", depth)
 	//成交记录
 	apiV1.GET("/trade/record", trade_record)
+	//最新价格
+	apiV1.GET("/latest/price", latest_price)
 
 	//需要验证登录的接口
 	apiV1.Use(user.AuthMiddleware.MiddlewareFunc())
