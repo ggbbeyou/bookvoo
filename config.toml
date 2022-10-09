@@ -11,7 +11,7 @@ time_zone="Asia/Shanghai"
 
 driver="mysql"
 dsn = "root:root@tcp(localhost:13306)/test?charset=utf8&loc=Local"
-show_sql = false
+show_sql = true
 
 
 [redis]

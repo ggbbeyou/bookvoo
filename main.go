@@ -15,8 +15,8 @@ import (
 	"github.com/yzimhao/bookvoo/user"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
-
 	"github.com/yzimhao/bookvoo/views"
+
 	"xorm.io/xorm"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -71,17 +71,8 @@ func appStart(configPath string) {
 	logrus.SetLevel(level)
 
 	initModule()
+	runModule()
 
-	match.Run()
-	clearings.Run()
-	user.Run()
-
-	router := gin.Default()
-	market.Run(router)
-	views.Run(router)
-
-	viper.SetDefault("main.host", ":8080")
-	router.Run(viper.GetString("main.host"))
 }
 
 //初始化各模块的数据库
@@ -122,4 +113,21 @@ func initModule() {
 	clearings.Init(default_db, default_rdc)
 	//k线行情系统
 	market.Init(default_db, default_rdc)
+}
+
+func runModule() {
+	//撮合服务
+	match.Run()
+	//结算服务
+	clearings.Run()
+	//用户中心
+	user.Run()
+
+	//http api相关接口服务
+	router := gin.Default()
+	market.Run(router)
+	views.Run(router)
+
+	viper.SetDefault("main.host", ":8080")
+	router.Run(viper.GetString("main.host"))
 }
