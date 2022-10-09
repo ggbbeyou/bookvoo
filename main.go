@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/viper"
 	cli "github.com/urfave/cli/v2"
 	"github.com/yzimhao/bookvoo/base"
-	"github.com/yzimhao/bookvoo/clearings"
+	"github.com/yzimhao/bookvoo/clearing"
 	"github.com/yzimhao/bookvoo/match"
 	"github.com/yzimhao/bookvoo/quotation"
 	"github.com/yzimhao/bookvoo/user"
@@ -110,7 +110,7 @@ func initModule() {
 	//撮合
 	match.Init(default_db, default_rdc)
 	//结算
-	clearings.Init(default_db, default_rdc)
+	clearing.Init(default_db, default_rdc)
 	//k线行情系统
 	quotation.Init(default_db, default_rdc)
 }
@@ -119,7 +119,7 @@ func runModule() {
 	//撮合服务
 	match.Run()
 	//结算服务
-	clearings.Run()
+	clearing.Run()
 	//用户中心
 	user.Run()
 

@@ -8,7 +8,7 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/base/symbols"
-	"github.com/yzimhao/bookvoo/clearings"
+	"github.com/yzimhao/bookvoo/clearing"
 	"github.com/yzimhao/bookvoo/user/orders"
 	te "github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
@@ -90,7 +90,7 @@ func (e *engine) service() {
 				select {
 				case result := <-obj.ChTradeResult:
 					logrus.Infof("[match] %s ask: %s bid: %s price: %s vol: %s", symbol, result.AskOrderId, result.BidOrderId, result.TradePrice.String(), result.TradeQuantity.String())
-					clearings.Notify <- result
+					clearing.Notify <- result
 				case order_id := <-obj.ChCancelResult:
 					logrus.Infof("[match] %s cancel %s", symbol, order_id)
 					orders.ChCancel <- orders.TradeOrder{
