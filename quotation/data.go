@@ -1,4 +1,4 @@
-package market
+package quotation
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/yzimhao/bookvoo/common/types"
-	"github.com/yzimhao/bookvoo/market/models"
+	"github.com/yzimhao/bookvoo/quotation/models"
 	te "github.com/yzimhao/trading_engine"
 )
 

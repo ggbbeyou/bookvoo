@@ -1,4 +1,4 @@
-package market
+package quotation
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/yzimhao/bookvoo/market/models"
+	"github.com/yzimhao/bookvoo/quotation/models"
 	"xorm.io/xorm"
 )
 

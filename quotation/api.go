@@ -1,10 +1,10 @@
-package market
+package quotation
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/common"
-	"github.com/yzimhao/bookvoo/market/models"
+	"github.com/yzimhao/bookvoo/quotation/models"
 )
 
 func GetRouter(r *gin.Engine) *gin.Engine {

@@ -1,4 +1,4 @@
-package market
+package quotation
 
 import (
 	"github.com/go-redis/redis/v8"
