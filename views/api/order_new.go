@@ -96,9 +96,9 @@ func market_order_by_qty(c *gin.Context, symbol string, side orders.OrderSide, q
 
 	t, _ := match.Engine.Get(symbol)
 	if side == orders.OrderSideSell {
-		t.ChNewOrder <- te.NewAskMarketQtyItem(order.OrderId, d(order.Quantity), order.CreateTime)
+		t.ChNewOrder <- te.NewAskMarketQtyItem(order.OrderId, d(order.OriginalQuantity), order.CreateTime)
 	} else if side == orders.OrderSideBuy {
-		t.ChNewOrder <- te.NewBidMarketQtyItem(order.OrderId, d(order.Quantity), d(order.FreezeQty), order.CreateTime)
+		t.ChNewOrder <- te.NewBidMarketQtyItem(order.OrderId, d(order.OriginalQuantity), d(order.FreezeAsset), order.CreateTime)
 	}
 
 	return order, nil
@@ -114,9 +114,9 @@ func market_order_by_amount(c *gin.Context, symbol string, side orders.OrderSide
 
 	t, _ := match.Engine.Get(symbol)
 	if side == orders.OrderSideSell {
-		t.ChNewOrder <- te.NewAskMarketAmountItem(order.OrderId, d(amount), d(order.FreezeQty), order.CreateTime)
+		t.ChNewOrder <- te.NewAskMarketAmountItem(order.OrderId, d(amount), d(order.FreezeAsset), order.CreateTime)
 	} else if side == orders.OrderSideBuy {
-		t.ChNewOrder <- te.NewBidMarketAmountItem(order.OrderId, d(order.Amount), order.CreateTime)
+		t.ChNewOrder <- te.NewBidMarketAmountItem(order.OrderId, d(order.OriginalAmount), order.CreateTime)
 	}
 	return order, nil
 }

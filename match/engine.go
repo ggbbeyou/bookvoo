@@ -62,7 +62,7 @@ func (e *engine) rebuild() {
 		for i, row := range rows {
 			row.Symbol = symbol
 			//rebuild的时候总下单数量减去已经成交的重新加载到撮合
-			row.Quantity = d(row.Quantity).Sub(d(row.FinishedQty)).String()
+			row.OriginalQuantity = d(row.OriginalQuantity).Sub(d(row.TradeQty)).String()
 			logrus.Infof("[match] rebuild (%d) %s", i, row.OrderId)
 			Send <- row
 		}
@@ -127,9 +127,9 @@ func (e *engine) handler() {
 					}
 					if data.OrderType == orders.OrderTypeLimit {
 						if data.OrderSide == orders.OrderSideSell {
-							t.ChNewOrder <- te.NewAskLimitItem(data.OrderId, d(data.Price), d(data.Quantity), data.CreateTime)
+							t.ChNewOrder <- te.NewAskLimitItem(data.OrderId, d(data.OriginalPrice), d(data.OriginalQuantity), data.CreateTime)
 						} else if data.OrderSide == orders.OrderSideBuy {
-							t.ChNewOrder <- te.NewBidLimitItem(data.OrderId, d(data.Price), d(data.Quantity), data.CreateTime)
+							t.ChNewOrder <- te.NewBidLimitItem(data.OrderId, d(data.OriginalPrice), d(data.OriginalQuantity), data.CreateTime)
 						}
 					}
 					//todo 市价单

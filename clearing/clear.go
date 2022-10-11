@@ -70,13 +70,13 @@ func (c *clearing) updateOrder(side orders.OrderSide) error {
 	}
 
 	order.Symbol = c.symbol
-	order.FinishedQty = d(order.FinishedQty).Add(c.trade_qty).String()
+	order.TradeQty = d(order.TradeQty).Add(c.trade_qty).String()
 	order.TradeAmount = d(order.TradeAmount).Add(c.trade_amount).String()
-	order.AvgPrice = d(order.TradeAmount).Div(d(order.FinishedQty)).String()
+	order.TradeAvgPrice = d(order.TradeAmount).Div(d(order.TradeQty)).String()
 	//todo 一些必要的边界值检查
 
 	if order.OrderType == orders.OrderTypeLimit {
-		be := d(order.FinishedQty).Cmp(d(order.Quantity))
+		be := d(order.TradeQty).Cmp(d(order.OriginalQuantity))
 		if be > 0 {
 			return fmt.Errorf("finished quantity must be  <= order.Quantity")
 		}

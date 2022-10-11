@@ -31,11 +31,11 @@ func order_open(c *gin.Context) {
 	rows := []orders.TradeOrder{}
 	db.Table(new(orders.UnfinishedOrder)).Where("user_id=? and pair_id=?", getUserId(c), es.Id).Find(&rows)
 	for i, item := range rows {
-		rows[i].Amount = es.FormatAmount(item.Amount)
-		rows[i].Price = es.FormatAmount(item.Price)
-		rows[i].AvgPrice = es.FormatAmount(item.AvgPrice)
-		rows[i].FinishedQty = es.FormatQty(item.FinishedQty)
-		rows[i].Quantity = es.FormatQty(item.Quantity)
+		rows[i].OriginalAmount = es.FormatAmount(item.OriginalAmount)
+		rows[i].OriginalPrice = es.FormatAmount(item.OriginalPrice)
+		rows[i].OriginalQuantity = es.FormatQty(item.OriginalQuantity)
+		rows[i].TradeAvgPrice = es.FormatAmount(item.TradeAvgPrice)
+		rows[i].TradeQty = es.FormatQty(item.TradeQty)
 		rows[i].TradeAmount = es.FormatAmount(item.TradeAmount)
 	}
 	common.Success(c, rows)

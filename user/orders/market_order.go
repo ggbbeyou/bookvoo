@@ -18,22 +18,24 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 	//todo 检查交易对限制
 
 	neworder := TradeOrder{
-		OrderId:     order_id_by_side(side),
-		Symbol:      trade_symbol,
-		PairId:      tp.Id,
-		OrderSide:   side,
-		OrderType:   OrderTypeMarket,
-		UserId:      user_id,
-		Price:       "-1",
-		Amount:      "0",
-		AvgPrice:    "0",
-		Quantity:    qty,
-		FinishedQty: "0",
+		OrderId:          order_id_by_side(side),
+		Symbol:           trade_symbol,
+		PairId:           tp.Id,
+		OrderSide:        side,
+		OrderType:        OrderTypeMarket,
+		UserId:           user_id,
+		OriginalPrice:    "-1",
+		OriginalQuantity: qty,
+		OriginalAmount:   "0",
+		TradeAvgPrice:    "0",
+		TradeQty:         "0",
+		TradeAmount:      "0",
+
 		Fee:         "0",
-		FreezeQty:   "0",
-		TradeAmount: "0",
-		FeeRate:     string(tp.FeeRate),
-		Status:      OrderStatusNew,
+		FreezeAsset: "0",
+
+		FeeRate: string(tp.FeeRate),
+		Status:  OrderStatusNew,
 	}
 
 	db := db_engine.NewSession()
@@ -58,7 +60,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		if err != nil {
 			return nil, err
 		}
-		neworder.FreezeQty = qty
+		neworder.FreezeAsset = qty
 	} else if neworder.OrderSide == OrderSideBuy {
 		//冻结所有可用
 		_, err = assets.FreezeTotalAssets(db, false, user_id, tp.StandardSymbolId, neworder.OrderId, assets.Behavior_Trade)
@@ -70,7 +72,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		if err != nil {
 			return nil, err
 		}
-		neworder.FreezeQty = freeze.FreezeAmount
+		neworder.FreezeAsset = freeze.FreezeAmount
 	}
 
 	if err = neworder.Save(db); err != nil {
@@ -94,21 +96,22 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 	//todo 检查交易对限制
 
 	neworder := TradeOrder{
-		OrderId:     order_id_by_side(side),
-		Symbol:      trade_symbol,
-		PairId:      tp.Id,
-		OrderSide:   side,
-		OrderType:   OrderTypeMarket,
-		UserId:      user_id,
-		Price:       "-1",
-		AvgPrice:    "0",
-		Quantity:    "0",
-		FinishedQty: "0",
-		Fee:         "0",
-		TradeAmount: "0",
-		FreezeQty:   "0",
-		FeeRate:     string(tp.FeeRate),
-		Status:      OrderStatusNew,
+		OrderId:          order_id_by_side(side),
+		Symbol:           trade_symbol,
+		PairId:           tp.Id,
+		OrderSide:        side,
+		OrderType:        OrderTypeMarket,
+		UserId:           user_id,
+		OriginalPrice:    "-1",
+		OriginalQuantity: "0",
+
+		TradeAvgPrice: "0",
+		TradeQty:      "0",
+		TradeAmount:   "0",
+		Fee:           "0",
+		FreezeAsset:   "0",
+		FeeRate:       string(tp.FeeRate),
+		Status:        OrderStatusNew,
 	}
 
 	db := db_engine.NewSession()
@@ -137,14 +140,14 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 		if err != nil {
 			return nil, err
 		}
-		neworder.FreezeQty = freeze.FreezeAmount
+		neworder.FreezeAsset = freeze.FreezeAmount
 
 	} else if neworder.OrderSide == OrderSideBuy {
 		_, err = assets.FreezeAssets(db, false, user_id, tp.StandardSymbolId, amount, neworder.OrderId, assets.Behavior_Trade)
 		if err != nil {
 			return nil, err
 		}
-		neworder.FreezeQty = amount
+		neworder.FreezeAsset = amount
 	}
 
 	if err = neworder.Save(db); err != nil {
