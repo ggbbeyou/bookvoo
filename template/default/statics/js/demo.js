@@ -1,6 +1,7 @@
 (function(){
-    layui.use(["func", "kline", "wss"], function(){
+    layui.use(["func", "kline", "wss", "form"], function(){
         var $ = layui.$;
+        var form = layui.form;
         var symbols = [$(".symbol").attr("data"), $(".stand_symbol").attr("data")];
         
         layui.kline.init("kchart");
@@ -83,114 +84,39 @@
         });
 
 
+
+        form.on('select(order_type)', function (data) {
+            var tt = $(data.elem).attr("data");
+            if (data.value == "limit") {
+                $(".item-price-"+tt).show();
+                $(".item-quantity-"+tt).show();
+                $(".item-amount-"+tt).hide();
+                $(".item-market-type-"+tt).hide();
+                $(".qty-tips-"+tt).hide();
+            } else if (data.value == "market") {
+                $(".item-price-"+tt).hide();
+                $(".item-market-type-"+tt).show();
+                $(".qty-tips-"+tt).show();
+            }
+            form.render('select');
+        });
+        form.on('radio(market-type)', function (data) {
+            if (data.value == "q") {
+                $(".item-quantity").show();
+                $(".item-amount").hide();
+                $(".qty-tips").show();
+            } else {
+                $(".item-quantity").hide();
+                $(".qty-tips").hide();
+                $(".item-amount").show();
+            }
+        });
+
     });
 
 
 
 
 
-    // layui.use(['laydate', 'layer', 'table', 'element', 'laytpl', 'form', "global"], function () {
-    //     var laydate = layui.laydate //日期
-    //         , layer = layui.layer //弹层
-    //         , table = layui.table //表格
-    //         , $ = layui.$
-    //         , laytpl = layui.laytpl
-    //         , form = layui.form
-    //         , element = layui.element; //元素操作 等等...
-
-
-        
     
-
-    
-
-
-
-    //     $("body").on("click", ".cancel", function () {
-    //         var me = $(this);
-    //         $.ajax({
-    //             url: "/api/v1/order/cancel",
-    //             type: "post",
-    //             dataType: "json",
-    //             contentType: "application/json",
-    //             data: JSON.stringify({
-    //                 "symbol": symbol,
-    //                 order_id: me.parents("tr").attr("order-id")
-    //             }),
-    //             success: function (d) {
-    //                 layer.msg("取消 " + d.ok);
-    //                 if (d.ok) {
-    //                     me.parents("tr").remove();
-    //                 }
-    //             }
-    //         });
-    //     });
-
-
-    //     form.on('select(order_type)', function (data) {
-    //         var tt = $(data.elem).attr("data");
-    //         if (data.value == "limit") {
-    //             $(".item-price-"+tt).show();
-    //             $(".item-quantity-"+tt).show();
-    //             $(".item-amount-"+tt).hide();
-    //             $(".item-market-type-"+tt).hide();
-    //             $(".qty-tips-"+tt).hide();
-    //         } else if (data.value == "market") {
-    //             $(".item-price-"+tt).hide();
-    //             $(".item-market-type-"+tt).show();
-    //             $(".qty-tips-"+tt).show();
-    //         }
-    //         form.render('select');
-    //     });
-    //     form.on('radio(market-type)', function (data) {
-    //         if (data.value == "q") {
-    //             $(".item-quantity").show();
-    //             $(".item-amount").hide();
-    //             $(".qty-tips").show();
-    //         } else {
-    //             $(".item-quantity").hide();
-    //             $(".qty-tips").hide();
-    //             $(".item-amount").show();
-    //         }
-    //     });
-
-    //     var load_trade_log = function(){
-    //         $.get("/api/v1/trade/record?symbol="+symbol, function (d) {
-    //             if (d.ok) {
-    //                 var latest_price = d.data[0].price;
-    //                 $(".latest-price").html(latest_price);
-
-    //                 var recent_log = d.data.reverse();
-    //                 for(var i=0; i<recent_log.length; i++){
-    //                     rendertradelog(recent_log[i]);
-    //                 }
-    //             }
-    //         });
-    //     };
-
-    //     var load_assets = function(){
-    //         var symbols = [$(".symbol").attr("data"), $(".stand_symbol").attr("data")];
-    //         $.get("/api/v1/assets/query?symbols=" + symbols.join(","), function(d){
-    //             if(d.ok) {
-    //                 for(var k in d.data){
-    //                     $(".symbol_balance_"+ k).html(d.data[k].available);
-    //                 }
-    //             }else{
-    //                 layer.msg(d.reason);
-    //             }
-    //         });
-    //     };
-
-    //     $().ready(function(){
-    //         load_trade_log();
-    //         load_assets();
-    //     });
-
-
-        
-
-
-        
-
-    // });
 })()
