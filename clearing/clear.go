@@ -41,11 +41,11 @@ func (c *clearing) check() error {
 	}
 
 	if c.ask.Status != orders.OrderStatusNew {
-		return fmt.Errorf("ask status error")
+		return fmt.Errorf("%s status error", c.ask_order_id)
 	}
 
 	if c.bid.Status != orders.OrderStatusNew {
-		return fmt.Errorf("bid status error")
+		return fmt.Errorf("%s status error", c.bid_order_id)
 	}
 	return nil
 }
@@ -99,6 +99,11 @@ func (c *clearing) updateOrder(side orders.OrderSide) error {
 			if err != nil {
 				return err
 			}
+		}
+	} else if order.OrderType == orders.OrderTypeMarket {
+		_, err := c.db.Table(order.TableName()).Where("order_id=?", order.OrderId).AllCols().Update(order)
+		if err != nil {
+			return err
 		}
 	}
 

@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	"github.com/shopspring/decimal"
@@ -34,13 +35,22 @@ func init() {
 	}
 	db_engine = conn
 
-	Init(db_engine, nil)
+	redis_conn := func() *redis.Client {
+		rdc := redis.NewClient(&redis.Options{
+			Addr:     "localhost:16379",
+			DB:       15,
+			Password: "",
+		})
+		return rdc
+	}()
+
+	Init(db_engine, redis_conn)
 	db_engine.ShowSQL(true)
 	deleteTestTable()
 
-	base.Init(db_engine, nil)
-	assets.Init(db_engine, nil)
-	orders.Init(db_engine, nil)
+	base.Init(db_engine, redis_conn)
+	assets.Init(db_engine, redis_conn)
+	orders.Init(db_engine, redis_conn)
 }
 
 func deleteTestTable() {

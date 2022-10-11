@@ -35,19 +35,20 @@ type TradeOrder struct {
 	OrderSide OrderSide `xorm:"varchar(10) index(order_side)" json:"order_side"`
 	OrderType OrderType `xorm:"varchar(10)" json:"order_type"` //价格策略，市价单，限价单
 	UserId    int64     `xorm:"bigint index(userid) notnull" json:"-"`
-	Price     string    `xorm:"decimal(40,20) notnull default(0)" json:"price"`
-	Quantity  string    `xorm:"decimal(40,20) notnull default(0)" json:"quantity"`
 	FeeRate   string    `xorm:"decimal(40,20) notnull default(0)" json:"-"`
-	Amount    string    `xorm:"decimal(40,20) notnull default(0)" json:"-"`
-	//根据订单类型的不同，冻结的资产也不同
-	FreezeQty string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	//用户委托原始信息
+	OriginalPrice    string `xorm:"decimal(40,20) notnull default(0)" json:"original_price"`
+	OriginalQuantity string `xorm:"decimal(40,20) notnull default(0)" json:"original_quantity"`
+	OriginalAmount   string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
+	//根据订单方向不同，冻结的资产也不同
+	FreezeAsset string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 
-	//订单撮合成功 结算逻辑写入的字段
-	AvgPrice    string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
-	FinishedQty string `xorm:"decimal(40,20) notnull default(0)" json:"finished_qty"`
-	Fee         string `xorm:"decimal(40,20) notnull default(0)" json:"-"`
-	TradeAmount string `xorm:"decimal(40,20) notnull default(0)" json:"trade_amount"`
+	//成交的部分信息
+	TradeAvgPrice string `xorm:"decimal(40,20) notnull default(0)" json:"trade_avg_price"`
+	TradeQty      string `xorm:"decimal(40,20) notnull default(0)" json:"trade_qty"`
+	TradeAmount   string `xorm:"decimal(40,20) notnull default(0)" json:"trade_amount"`
 
+	Fee        string      `xorm:"decimal(40,20) notnull default(0)" json:"-"`
 	Status     orderStatus `xorm:"tinyint(1)" json:"status"`
 	CreateTime int64       `xorm:"bigint" json:"create_time"` //时间戳 精确到纳秒
 	UpdateTime time.Time   `xorm:"timestamp updated" json:"-"`

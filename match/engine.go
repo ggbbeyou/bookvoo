@@ -3,6 +3,7 @@ package match
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/shopspring/decimal"
@@ -92,10 +93,16 @@ func (e *engine) service() {
 					logrus.Infof("[match] %s ask: %s bid: %s price: %s vol: %s", symbol, result.AskOrderId, result.BidOrderId, result.TradePrice.String(), result.TradeQuantity.String())
 					clearing.Notify <- result
 				case order_id := <-obj.ChCancelResult:
-					logrus.Infof("[match] %s cancel %s", symbol, order_id)
-					orders.ChCancel <- orders.TradeOrder{
-						Symbol:  symbol,
-						OrderId: order_id,
+					logrus.Infof("[match] %s 取消订单 %s", symbol, order_id)
+					if !clearing.ClearingLockExist(order_id) {
+						time.Sleep(time.Duration(1) * time.Second)
+						//取消订单之前，需要确认订单释放已经有锁
+						// orders.ChCancel <- orders.TradeOrder{
+						// 	Symbol:  symbol,
+						// 	OrderId: order_id,
+						// }
+					} else {
+						logrus.Warnf("[match] 订单结算锁还未释放 %s", order_id)
 					}
 				}
 			}

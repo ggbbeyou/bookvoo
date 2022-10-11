@@ -1,7 +1,6 @@
 package orders
 
 import (
-	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/user/assets"
 )
@@ -26,6 +25,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		OrderType:   OrderTypeMarket,
 		UserId:      user_id,
 		Price:       "-1",
+		Amount:      "0",
 		AvgPrice:    "0",
 		Quantity:    qty,
 		FinishedQty: "0",
@@ -74,7 +74,6 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 	}
 
 	if err = neworder.Save(db); err != nil {
-		logrus.Error(err, " 26")
 		return nil, err
 	}
 

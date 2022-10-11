@@ -27,16 +27,15 @@ func Init(db *xorm.Engine, r *redis.Client) {
 }
 
 func Run() {
-	logrus.Info("[clearings] run")
 	Notify = make(chan te.TradeResult, 1000)
 	go func() {
 		for {
 			if data, ok := <-Notify; ok {
-				logrus.Infof("[clearings] %s ask: %s bid: %s price: %s vol: %s", data.Symbol, data.AskOrderId, data.BidOrderId, data.TradePrice.String(), data.TradeQuantity.String())
+				logrus.Infof("[clearing] %s ask: %s bid: %s price: %s vol: %s", data.Symbol, data.AskOrderId, data.BidOrderId, data.TradePrice.String(), data.TradeQuantity.String())
 				func(res te.TradeResult) {
 					err := NewClearing(res)
 					if err != nil {
-						logrus.Errorf("[clearings] %s ask: %s bid: %s -- %s", data.Symbol, data.AskOrderId, data.BidOrderId, err)
+						logrus.Errorf("[clearing] 结算出错 %s %s %s %s", data.Symbol, data.AskOrderId, data.BidOrderId, err)
 					}
 				}(data)
 			}
@@ -59,12 +58,17 @@ func NewClearing(data te.TradeResult) (err error) {
 		return err
 	}
 
-	//todo lock 双方订单
+	//标记双方订单 防止还未结算完成，就被撤单了
+	flag := NewClearingLock(data.AskOrderId, data.BidOrderId)
+	flag.Lock()
 
 	defer func() {
 		if err != nil {
+			logrus.Errorf("[clearing]出现异常 %s %s %s", data.AskOrderId, data.BidOrderId, err)
 			db.Rollback()
 		} else {
+			//正常结算结束，释放掉redis缓存的锁
+			flag.UnLock()
 			db.Commit()
 		}
 	}()
