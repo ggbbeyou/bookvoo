@@ -18,7 +18,7 @@ require (
 	github.com/swaggo/gin-swagger v1.5.1
 	github.com/swaggo/swag v1.8.4
 	github.com/urfave/cli/v2 v2.11.1
-	github.com/yzimhao/trading_engine v0.0.0-20220816093909-b4ee053db138
+	github.com/yzimhao/trading_engine v0.0.0-20221013080314-ea8e9d68f3f1
 	github.com/yzimhao/utilgo v0.0.1
 	xorm.io/xorm v1.3.1
 )

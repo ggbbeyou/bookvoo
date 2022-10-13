@@ -600,6 +600,8 @@ github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9dec
 github.com/yuin/goldmark v1.4.0/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
 github.com/yzimhao/trading_engine v0.0.0-20220816093909-b4ee053db138 h1:EVrYp4haDGNnMcVo7LDq3e5jMFZj3IVAEafdjF5d5so=
 github.com/yzimhao/trading_engine v0.0.0-20220816093909-b4ee053db138/go.mod h1:boXJ7gd7AVnyG8WmPLfZYIR1eadDH9/KwVwDieGrWB8=
+github.com/yzimhao/trading_engine v0.0.0-20221013080314-ea8e9d68f3f1 h1:MXOAgk/4SaecVd21VrlP/BbB0bIdPozSzhjyIDofOoA=
+github.com/yzimhao/trading_engine v0.0.0-20221013080314-ea8e9d68f3f1/go.mod h1:boXJ7gd7AVnyG8WmPLfZYIR1eadDH9/KwVwDieGrWB8=
 github.com/yzimhao/utilgo v0.0.1 h1:vrkVLq20oTC8XYvuYodyAZ6gHkyhf7mfZj6NWgmSOmY=
 github.com/yzimhao/utilgo v0.0.1/go.mod h1:KwdCEGisy4yVmn1rJpwmKko8JHizquM2joN7qLGH3N0=
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
@@ -807,8 +809,6 @@ golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220412211240-33da011f77ad/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab h1:2QkjZIsXupsJbJIdSjjUOgWK3aEtzyuh2mPt3l/CkeU=
-golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 h1:Sx/u41w+OwrInGdEckYmEuU5gHoGSL4QbDz3S9s6j4U=
 golang.org/x/sys v0.0.0-20220818161305-2296e01440c6/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=

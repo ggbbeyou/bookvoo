@@ -80,11 +80,7 @@ func NewClearing(data te.TradeResult) (err error) {
 		symbol_id:          tradeInfo.TargetSymbolId,
 		standard_symbol_id: tradeInfo.StandardSymbolId,
 
-		ask_order_id: data.AskOrderId,
-		bid_order_id: data.BidOrderId,
-		trade_price:  data.TradePrice,
-		trade_qty:    data.TradeQuantity,
-		trade_amount: data.TradePrice.Mul(data.TradeQuantity),
+		raw: data,
 
 		ask:    new(orders.TradeOrder),
 		bid:    new(orders.TradeOrder),
@@ -128,9 +124,9 @@ func NewClearing(data te.TradeResult) (err error) {
 			Response: gowss.Response{
 				Type: tag,
 				Body: map[string]interface{}{
-					"price":    tradeInfo.FormatAmount(cl.trade_price.String()),
-					"quantity": tradeInfo.FormatQty(cl.trade_qty.String()),
-					"amount":   tradeInfo.FormatAmount(cl.trade_amount.String()),
+					"price":    tradeInfo.FormatAmount(cl.raw.TradePrice.String()),
+					"quantity": tradeInfo.FormatQty(cl.raw.TradeQuantity.String()),
+					"amount":   tradeInfo.FormatAmount(cl.raw.TradeAmount.String()),
 					"trade_at": data.TradeTime,
 				},
 			},

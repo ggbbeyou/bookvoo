@@ -1,7 +1,6 @@
 package orders
 
 import (
-	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/user/assets"
 )
 
@@ -21,9 +20,6 @@ func cancel_order(symbol, order_id string) (order *TradeOrder, err error) {
 			db.Commit()
 		}
 	}()
-	//todo 订单锁
-
-	logrus.Infof("[orders] %s cancel: %s", symbol, order_id)
 
 	order = &TradeOrder{
 		Symbol:  symbol,

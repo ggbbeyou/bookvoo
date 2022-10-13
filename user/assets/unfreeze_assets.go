@@ -6,6 +6,7 @@ import (
 	"xorm.io/xorm"
 )
 
+//解除资产冻结，unfreeze_amount="0" 则解除当前business_id全部冻结的资产
 func UnfreezeAssets(db *xorm.Session, enable_transaction bool, user_id int64, business_id, unfreeze_amount string) (success bool, err error) {
 	return unfreezeAssets(db, enable_transaction, user_id, business_id, unfreeze_amount)
 }

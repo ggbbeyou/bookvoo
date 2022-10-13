@@ -24,7 +24,7 @@ func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty st
 		OrderSide:        side,
 		OrderType:        OrderTypeMarket,
 		UserId:           user_id,
-		OriginalPrice:    "-1",
+		OriginalPrice:    "0",
 		OriginalQuantity: qty,
 		OriginalAmount:   "0",
 		TradeAvgPrice:    "0",
@@ -102,7 +102,7 @@ func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amo
 		OrderSide:        side,
 		OrderType:        OrderTypeMarket,
 		UserId:           user_id,
-		OriginalPrice:    "-1",
+		OriginalPrice:    "0",
 		OriginalQuantity: "0",
 
 		TradeAvgPrice: "0",

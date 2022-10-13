@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
+	"github.com/yzimhao/trading_engine"
 	"xorm.io/xorm"
 )
 
@@ -17,11 +18,7 @@ type clearing struct {
 	symbol             string
 	symbol_id          int
 	standard_symbol_id int
-	ask_order_id       string
-	bid_order_id       string
-	trade_price        decimal.Decimal
-	trade_qty          decimal.Decimal
-	trade_amount       decimal.Decimal
+	raw                trading_engine.TradeResult
 	record             *orders.TradeRecord
 	ask                *orders.TradeOrder
 	bid                *orders.TradeOrder
@@ -30,22 +27,22 @@ type clearing struct {
 func (c *clearing) check() error {
 	//
 
-	_, err := c.db.Table(orders.GetOrderTableName(c.symbol)).Where("order_id=?", c.ask_order_id).ForUpdate().Get(c.ask)
+	_, err := c.db.Table(orders.GetOrderTableName(c.symbol)).Where("order_id=?", c.raw.AskOrderId).ForUpdate().Get(c.ask)
 	if err != nil {
 		return err
 	}
 
-	_, err = c.db.Table(orders.GetOrderTableName(c.symbol)).Where("order_id=?", c.bid_order_id).ForUpdate().Get(c.bid)
+	_, err = c.db.Table(orders.GetOrderTableName(c.symbol)).Where("order_id=?", c.raw.BidOrderId).ForUpdate().Get(c.bid)
 	if err != nil {
 		return err
 	}
 
 	if c.ask.Status != orders.OrderStatusNew {
-		return fmt.Errorf("%s status error", c.ask_order_id)
+		return fmt.Errorf("%s status error", c.raw.AskOrderId)
 	}
 
 	if c.bid.Status != orders.OrderStatusNew {
-		return fmt.Errorf("%s status error", c.bid_order_id)
+		return fmt.Errorf("%s status error", c.raw.BidOrderId)
 	}
 	return nil
 }
@@ -70,8 +67,8 @@ func (c *clearing) updateOrder(side orders.OrderSide) error {
 	}
 
 	order.Symbol = c.symbol
-	order.TradeQty = d(order.TradeQty).Add(c.trade_qty).String()
-	order.TradeAmount = d(order.TradeAmount).Add(c.trade_amount).String()
+	order.TradeQty = d(order.TradeQty).Add(c.raw.TradeQuantity).String()
+	order.TradeAmount = d(order.TradeAmount).Add(c.raw.TradeAmount).String()
 	order.TradeAvgPrice = d(order.TradeAmount).Div(d(order.TradeQty)).String()
 	//todo 一些必要的边界值检查
 
@@ -101,6 +98,10 @@ func (c *clearing) updateOrder(side orders.OrderSide) error {
 			}
 		}
 	} else if order.OrderType == orders.OrderTypeMarket {
+		//如果这个订单是最后一个撮合结果，则标记完成
+		if c.raw.MarketOrder == order.OrderId {
+			order.Status = orders.OrderStatusDone
+		}
 		_, err := c.db.Table(order.TableName()).Where("order_id=?", order.OrderId).AllCols().Update(order)
 		if err != nil {
 			return err
@@ -114,9 +115,9 @@ func (c *clearing) tradeRecord() error {
 
 	trade := orders.TradeRecord{
 		Symbol:  c.symbol,
-		TradeId: trade_id(c.ask_order_id, c.bid_order_id),
-		Ask:     c.ask_order_id,
-		Bid:     c.bid_order_id,
+		TradeId: trade_id(c.raw.AskOrderId, c.raw.BidOrderId),
+		Ask:     c.raw.AskOrderId,
+		Bid:     c.raw.BidOrderId,
 		TradeBy: func() orders.TradeBy {
 			if c.ask.CreateTime > c.bid.CreateTime {
 				return orders.TradeBySell
@@ -127,15 +128,15 @@ func (c *clearing) tradeRecord() error {
 
 		AskUid:   c.ask.UserId,
 		BidUid:   c.bid.UserId,
-		Price:    c.trade_price.String(),
-		Quantity: c.trade_qty.String(),
-		Amount:   c.trade_price.Mul(c.trade_qty).String(),
+		Price:    c.raw.TradePrice.String(),
+		Quantity: c.raw.TradeQuantity.String(),
+		Amount:   c.raw.TradeAmount.String(),
 
 		AskFeeRate: c.ask.FeeRate,
-		AskFee:     c.trade_amount.Mul(d(c.ask.FeeRate)).String(),
+		AskFee:     c.raw.TradeAmount.Mul(d(c.ask.FeeRate)).String(),
 
 		BidFeeRate: c.bid.FeeRate,
-		BidFee:     c.trade_amount.Mul(d(c.bid.FeeRate)).String(),
+		BidFee:     c.raw.TradeAmount.Mul(d(c.bid.FeeRate)).String(),
 	}
 
 	if err := trade.Save(c.db); err != nil {
@@ -147,19 +148,31 @@ func (c *clearing) tradeRecord() error {
 }
 
 func (c *clearing) transfer() error {
+	//市价单最后一笔成交，解除全部冻结
+
 	//给买家结算交易物品
-	_, err := assets.UnfreezeAssets(c.db, false, c.ask.UserId, c.ask_order_id, c.trade_qty.String())
+	_, err := assets.UnfreezeAssets(c.db, false, c.ask.UserId, c.raw.AskOrderId, func() string {
+		if c.raw.MarketOrder == c.raw.AskOrderId {
+			return "0"
+		}
+		return c.raw.TradeQuantity.String()
+	}())
 	if err != nil {
 		return err
 	}
-	_, err = assets.Transfer(c.db, false, c.ask.UserId, c.bid.UserId, c.symbol_id, c.trade_qty.String(), c.record.TradeId, assets.Behavior_Trade)
+	_, err = assets.Transfer(c.db, false, c.ask.UserId, c.bid.UserId, c.symbol_id, c.raw.TradeQuantity.String(), c.record.TradeId, assets.Behavior_Trade)
 	if err != nil {
 		return err
 	}
 
 	//卖家结算本位币
 	amount := d(c.record.Amount).Add(d(c.record.BidFee))
-	_, err = assets.UnfreezeAssets(c.db, false, c.bid.UserId, c.bid_order_id, amount.String())
+	_, err = assets.UnfreezeAssets(c.db, false, c.bid.UserId, c.raw.BidOrderId, func() string {
+		if c.raw.MarketOrder == c.raw.BidOrderId {
+			return "0"
+		}
+		return amount.String()
+	}())
 	if err != nil {
 		return err
 	}
@@ -175,6 +188,7 @@ func (c *clearing) transfer() error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

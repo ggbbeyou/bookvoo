@@ -73,10 +73,10 @@ func botNewOrder() {
 		for {
 			time.Sleep(time.Duration(1) * time.Minute)
 			match.Engine.Foreach(func(symbol string, v *trading_engine.TradePair) {
-				ask := v.GetAskDepth(10)
-				bid := v.GetBidDepth(10)
+				// ask := v.GetAskDepth(10)
+				// bid := v.GetBidDepth(10)
 				//demo模式下自动挂单
-				autoDemoDepthData(symbol, ask, bid, v.LatestPrice())
+				// autoDemoDepthData(symbol, ask, bid, v.LatestPrice())
 			})
 
 		}
