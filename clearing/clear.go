@@ -99,7 +99,7 @@ func (c *clearing) updateOrder(side orders.OrderSide) error {
 		}
 	} else if order.OrderType == orders.OrderTypeMarket {
 		//如果这个订单是最后一个撮合结果，则标记完成
-		if c.raw.MarketOrder == order.OrderId {
+		if c.raw.MarketDone == order.OrderId {
 			order.Status = orders.OrderStatusDone
 		}
 		_, err := c.db.Table(order.TableName()).Where("order_id=?", order.OrderId).AllCols().Update(order)
@@ -152,7 +152,7 @@ func (c *clearing) transfer() error {
 
 	//给买家结算交易物品
 	_, err := assets.UnfreezeAssets(c.db, false, c.ask.UserId, c.raw.AskOrderId, func() string {
-		if c.raw.MarketOrder == c.raw.AskOrderId {
+		if c.raw.MarketDone == c.raw.AskOrderId {
 			return "0"
 		}
 		return c.raw.TradeQuantity.String()
@@ -168,7 +168,7 @@ func (c *clearing) transfer() error {
 	//卖家结算本位币
 	amount := d(c.record.Amount).Add(d(c.record.BidFee))
 	_, err = assets.UnfreezeAssets(c.db, false, c.bid.UserId, c.raw.BidOrderId, func() string {
-		if c.raw.MarketOrder == c.raw.BidOrderId {
+		if c.raw.MarketDone == c.raw.BidOrderId {
 			return "0"
 		}
 		return amount.String()
