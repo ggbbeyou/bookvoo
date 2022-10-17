@@ -47,7 +47,9 @@ func order_new(c *gin.Context) {
 	var err error
 	if req.OrderType == orders.OrderTypeLimit {
 		newOrder, err = limit_order(c, req)
-		match.Send <- *newOrder
+		if err == nil {
+			match.Send <- *newOrder
+		}
 	} else if req.OrderType == orders.OrderTypeMarket {
 		if d(req.Amount).Cmp(decimal.Zero) > 0 {
 			//按金额操作
