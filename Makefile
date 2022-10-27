@@ -1,4 +1,12 @@
 
+
+init:
+	# admin 
+	go get github.com/GoAdminGroup/adm
+	go install github.com/GoAdminGroup/adm
+	wget -O admin/db/admin.sql https://gitee.com/go-admin/go-admin/raw/master/data/admin.sql 
+	wget -O admin/db/admin.pgsql https://gitee.com/go-admin/go-admin/raw/master/data/admin.pgsql 
+
 run:
 	@swag init
 	@go run main.go
