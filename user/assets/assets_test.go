@@ -4,34 +4,24 @@ import (
 	"fmt"
 	"testing"
 
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
+	"github.com/yzimhao/bookvoo/common"
+	"github.com/yzimhao/utilgo"
 
-	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
-	"xorm.io/xorm"
 )
 
 func init() {
-	driver := "mysql"
-	dsn := "root:root@tcp(localhost:13306)/test?charset=utf8&loc=Local"
+	utilgo.ViperInit("../../config.toml")
+	db := common.Default_db()
+	db.ShowSQL(true)
 
-	logrus.Infof("dsn: %s", dsn)
-
-	conn, err := xorm.NewEngine(driver, dsn)
-	if err != nil {
-		logrus.Panic(err)
-	}
-	db_engine = conn
-	db_engine.ShowSQL(true)
-
-	db_engine.DropTables(
+	db.DropTables(
 		new(Assets),
 		new(assetsLog),
 		new(assetFreezeRecord),
 	)
 
-	Init(db_engine, nil)
+	Init(db, nil)
 }
 
 func cleanUserAssets(user_id int64) (err error) {

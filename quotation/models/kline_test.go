@@ -3,22 +3,17 @@ package models
 import (
 	"testing"
 
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
+	"github.com/yzimhao/bookvoo/common"
+	"github.com/yzimhao/utilgo"
 
-	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
-	"xorm.io/xorm"
 )
 
 func init() {
-	driver := "mysql"
-	dsn := "root:root@tcp(localhost:13306)/test?charset=utf8&loc=Local"
-	conn, err := xorm.NewEngine(driver, dsn)
-	if err != nil {
-		logrus.Panic(err)
-	}
-	SetDbEngine(conn)
+	utilgo.ViperInit("../../config.toml")
+	db_engine := common.Default_db()
+	// redis_conn := common.Default_redis()
+	SetDbEngine(db_engine)
 }
 
 func TestNewKline(t *testing.T) {

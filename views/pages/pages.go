@@ -24,7 +24,7 @@ func SetupRouter(router *gin.Engine) {
 	//交易界面
 	router.GET("/t/:symbol", func(c *gin.Context) {
 		symbol := strings.ToLower(c.Param("symbol"))
-		tp, err := symbols.GetExchangeBySymbol(symbol)
+		tp, err := symbols.GetPairBySymbol(symbol)
 		if err != nil || tp == nil {
 			c.Status(http.StatusNotFound)
 			return

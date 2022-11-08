@@ -19,7 +19,7 @@ import (
 // @Router /api/v1/exchange/info [get]
 func exchange_info(c *gin.Context) {
 	symbol := strings.ToLower(c.Query("symbol"))
-	tp, err := symbols.GetExchangeBySymbol(symbol)
+	tp, err := symbols.GetPairBySymbol(symbol)
 	if err != nil {
 		c.HTML(http.StatusNotFound, "", nil)
 		return

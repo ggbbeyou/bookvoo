@@ -3,14 +3,12 @@ package orders
 import (
 	"testing"
 
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
 	"github.com/yzimhao/bookvoo/base"
+	"github.com/yzimhao/bookvoo/common"
 	"github.com/yzimhao/bookvoo/user/assets"
+	"github.com/yzimhao/utilgo"
 
-	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
-	"xorm.io/xorm"
 )
 
 var (
@@ -20,15 +18,10 @@ var (
 )
 
 func init() {
-	driver := "mysql"
-	dsn := "root:root@tcp(localhost:13306)/test?charset=utf8&loc=Local"
-	logrus.Infof("dsn: %s", dsn)
-	conn, err := xorm.NewEngine(driver, dsn)
-	if err != nil {
-		logrus.Panic(err)
-	}
-
-	Init(conn, nil)
+	utilgo.ViperInit("../../config.toml")
+	db := common.Default_db()
+	db.ShowSQL(true)
+	Init(db, nil)
 	db_engine.ShowSQL(true)
 
 	table := TradeOrder{Symbol: test_symbol}

@@ -21,7 +21,7 @@ const (
 	StatusEnable  status = 1
 )
 
-type SymbolInfo struct {
+type Symbol struct {
 	Id           int       `xorm:"pk autoincr int" json:"id"`
 	Symbol       string    `xorm:"varchar(100) notnull unique(symbol)" json:"symbol"`
 	Name         string    `xorm:"varchar(250) notnull" json:"name"`
@@ -33,7 +33,7 @@ type SymbolInfo struct {
 	UpdateTime   time.Time `xorm:"timestamp updated" json:"-"`
 }
 
-type Exchange struct {
+type Pairs struct {
 	Id     int    `xorm:"pk autoincr int" json:"-"`
 	Symbol string `xorm:"varchar(100) notnull unique(symbol)" json:"symbol"`
 	Name   string `xorm:"varchar(250) notnull" json:"name"`
@@ -53,30 +53,26 @@ type Exchange struct {
 	CreateTime time.Time `xorm:"timestamp created" json:"-"`
 	UpdateTime time.Time `xorm:"timestamp updated" json:"-"`
 
-	Target   SymbolInfo `xorm:"-" json:"target"`
-	Standard SymbolInfo `xorm:"-" json:"standard"`
+	Target   Symbol `xorm:"-" json:"target"`
+	Standard Symbol `xorm:"-" json:"standard"`
 }
 
-func (t *Exchange) TableName() string {
-	return "exchange_option"
-}
-
-func (t *Exchange) FormatAmount(a string) string {
+func (t *Pairs) FormatAmount(a string) string {
 	q, _ := decimal.NewFromString(a)
 	return q.StringFixedBank(int32(t.PricePrec))
 }
 
-func (t *Exchange) FormatQty(qty string) string {
+func (t *Pairs) FormatQty(qty string) string {
 	q, _ := decimal.NewFromString(qty)
 	return q.StringFixedBank(int32(t.QtyPrec))
 }
 
-func GetExchangeBySymbol(symbol string) (*Exchange, error) {
+func GetPairBySymbol(symbol string) (*Pairs, error) {
 	db := db_engine.NewSession()
 	defer db.Close()
 
-	item := Exchange{}
-	has, err := db.Table(new(Exchange)).Where("symbol=?", symbol).Get(&item)
+	item := Pairs{}
+	has, err := db.Table(new(Pairs)).Where("symbol=?", symbol).Get(&item)
 	if err != nil {
 		return nil, err
 	}
@@ -89,15 +85,15 @@ func GetExchangeBySymbol(symbol string) (*Exchange, error) {
 	return &item, err
 }
 
-func GetSymbolInfo(id int) SymbolInfo {
-	var one SymbolInfo
-	db_engine.Table(new(SymbolInfo)).Where("id=?", id).Get(&one)
+func GetSymbolInfo(id int) Symbol {
+	var one Symbol
+	db_engine.Table(new(Symbol)).Where("id=?", id).Get(&one)
 	return one
 }
 
-func GetSymbolInfoBySymbol(symbol string) (*SymbolInfo, error) {
-	var one SymbolInfo
-	has, err := db_engine.Table(new(SymbolInfo)).Where("symbol=?", symbol).Get(&one)
+func GetSymbolInfoBySymbol(symbol string) (*Symbol, error) {
+	var one Symbol
+	has, err := db_engine.Table(new(Symbol)).Where("symbol=?", symbol).Get(&one)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +103,7 @@ func GetSymbolInfoBySymbol(symbol string) (*SymbolInfo, error) {
 	return &one, nil
 }
 
-func (s *SymbolInfo) FormatNumber(n string) string {
+func (s *Symbol) FormatNumber(n string) string {
 	q, _ := decimal.NewFromString(n)
 	return q.StringFixedBank(int32(s.ShowPrec))
 }
@@ -116,7 +112,7 @@ func Init(db *xorm.Engine, rdc *redis.Client) {
 	db_engine = db
 
 	db_engine.Sync2(
-		new(SymbolInfo),
-		new(Exchange),
+		new(Symbol),
+		new(Pairs),
 	)
 }

@@ -45,7 +45,7 @@ func Run() {
 
 //结算一条成交记录
 func NewClearing(data te.TradeResult) (err error) {
-	tradeInfo, err := symbols.GetExchangeBySymbol(data.Symbol)
+	tradeInfo, err := symbols.GetPairBySymbol(data.Symbol)
 	if err != nil {
 		return err
 	}

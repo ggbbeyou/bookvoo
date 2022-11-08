@@ -47,7 +47,7 @@ func apiKlines(c *gin.Context) {
 		return l
 	}()
 
-	tp, err := symbols.GetExchangeBySymbol(symbol)
+	tp, err := symbols.GetPairBySymbol(symbol)
 	if err != nil {
 		common.Fail(c, err.Error())
 		return

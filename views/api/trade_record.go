@@ -30,7 +30,7 @@ func trade_record(c *gin.Context) {
 		return n
 	}()
 
-	tp, err := symbols.GetExchangeBySymbol(symbol)
+	tp, err := symbols.GetPairBySymbol(symbol)
 	if err != nil {
 		common.Fail(c, err.Error())
 		return

@@ -4,17 +4,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-redis/redis/v8"
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
 	"github.com/shopspring/decimal"
 
-	"github.com/sirupsen/logrus"
 	"github.com/yzimhao/bookvoo/base"
+	"github.com/yzimhao/bookvoo/common"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
 	"github.com/yzimhao/trading_engine"
-	"xorm.io/xorm"
+	"github.com/yzimhao/utilgo"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -27,22 +24,9 @@ var (
 
 func init() {
 
-	driver := "mysql"
-	dsn := "root:root@tcp(localhost:13306)/test?charset=utf8&loc=Local"
-	conn, err := xorm.NewEngine(driver, dsn)
-	if err != nil {
-		logrus.Panic(err)
-	}
-	db_engine = conn
-
-	redis_conn := func() *redis.Client {
-		rdc := redis.NewClient(&redis.Options{
-			Addr:     "localhost:16379",
-			DB:       15,
-			Password: "",
-		})
-		return rdc
-	}()
+	utilgo.ViperInit("../config.toml")
+	db_engine = common.Default_db()
+	redis_conn := common.Default_redis()
 
 	Init(db_engine, redis_conn)
 	db_engine.ShowSQL(true)

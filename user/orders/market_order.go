@@ -10,7 +10,7 @@ func NewMarketOrderByQty(user_id int64, trade_symbol string, side OrderSide, qty
 }
 
 func market_order_qty(user_id int64, trade_symbol string, side OrderSide, qty string) (order *TradeOrder, err error) {
-	tp, err := symbols.GetExchangeBySymbol(trade_symbol)
+	tp, err := symbols.GetPairBySymbol(trade_symbol)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func NewMarketOrderByAmount(user_id int64, trade_symbol string, side OrderSide, 
 
 func market_order_amount(user_id int64, trade_symbol string, side OrderSide, amount string) (order *TradeOrder, err error) {
 
-	tp, err := symbols.GetExchangeBySymbol(trade_symbol)
+	tp, err := symbols.GetPairBySymbol(trade_symbol)
 	if err != nil {
 		return nil, err
 	}

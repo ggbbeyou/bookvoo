@@ -22,7 +22,7 @@ func order_open(c *gin.Context) {
 	db := orders.Db().NewSession()
 	defer db.Close()
 
-	es, err := symbols.GetExchangeBySymbol(symbol)
+	es, err := symbols.GetPairBySymbol(symbol)
 	if err != nil {
 		common.Fail(c, err.Error())
 		return

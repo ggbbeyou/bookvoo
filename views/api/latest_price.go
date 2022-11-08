@@ -20,7 +20,7 @@ import (
 func latest_price(c *gin.Context) {
 	symbol := c.Query("symbol")
 
-	tp, err := symbols.GetExchangeBySymbol(symbol)
+	tp, err := symbols.GetPairBySymbol(symbol)
 	if err != nil {
 		common.Fail(c, err.Error())
 		return

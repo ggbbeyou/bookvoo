@@ -31,7 +31,7 @@ func order_cancel(c *gin.Context) {
 		return
 	}
 
-	tp, err := symbols.GetExchangeBySymbol(req.Symbol)
+	tp, err := symbols.GetPairBySymbol(req.Symbol)
 	if err != nil {
 		common.Fail(c, err.Error())
 		return

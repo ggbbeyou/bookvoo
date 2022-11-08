@@ -4,20 +4,19 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	cli "github.com/urfave/cli/v2"
 	"github.com/yzimhao/bookvoo/base"
+	"github.com/yzimhao/bookvoo/base/symbols"
 	"github.com/yzimhao/bookvoo/clearing"
+	"github.com/yzimhao/bookvoo/common"
 	"github.com/yzimhao/bookvoo/match"
 	"github.com/yzimhao/bookvoo/quotation"
 	"github.com/yzimhao/bookvoo/user"
 	"github.com/yzimhao/bookvoo/user/assets"
 	"github.com/yzimhao/bookvoo/user/orders"
 	"github.com/yzimhao/bookvoo/views"
-
-	"xorm.io/xorm"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -79,30 +78,11 @@ func appStart(configPath string) {
 func initModule() {
 
 	//后面可以根据不同模块拆分到不同的数据库
-	default_db := func() *xorm.Engine {
-		dsn := viper.GetString("db.dsn")
-		driver := viper.GetString("db.driver")
-		conn, err := xorm.NewEngine(driver, dsn)
-		if err != nil {
-			logrus.Panic(err)
-		}
-		return conn
-	}()
-
-	if viper.GetBool("db.show_sql") {
-		default_db.ShowSQL(true)
-	}
-
-	default_rdc := func() *redis.Client {
-		rdc := redis.NewClient(&redis.Options{
-			Addr:     viper.GetString("redis.host"),
-			DB:       viper.GetInt("redis.db"),
-			Password: viper.GetString("redis.password"),
-		})
-		return rdc
-	}()
+	default_db := common.Default_db()
+	default_rdc := common.Default_redis()
 
 	base.Init(default_db, default_rdc)
+	symbols.Init(default_db, default_rdc)
 	//资产
 	assets.Init(default_db, default_rdc)
 	//订单

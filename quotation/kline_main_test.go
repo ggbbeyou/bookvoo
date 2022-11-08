@@ -7,14 +7,10 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
-
-	"github.com/go-redis/redis/v8"
-	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/yzimhao/bookvoo/common"
 	"github.com/yzimhao/bookvoo/quotation/models"
-	"xorm.io/xorm"
+	"github.com/yzimhao/utilgo"
 )
 
 var (
@@ -24,22 +20,12 @@ var (
 )
 
 func init() {
-	rdc = redis.NewClient(&redis.Options{
-		Addr:     ":16379",
-		DB:       0,
-		Password: "",
-	})
-
-	driver := "mysql"
-	dsn := "root:root@tcp(localhost:13306)/test?charset=utf8&loc=Local"
-	conn, err := xorm.NewEngine(driver, dsn)
-	if err != nil {
-		logrus.Panic(err)
-	}
-	models.SetDbEngine(conn)
+	utilgo.ViperInit("../config.toml")
+	db_engine := common.Default_db()
+	rdc = common.Default_redis()
+	models.SetDbEngine(db_engine)
 
 	deleteTestTable()
-
 	all := models.Periods()
 	need := []string{}
 	for _, v := range all {

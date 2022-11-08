@@ -4,7 +4,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+	"xorm.io/xorm"
+
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 )
 
 type Response struct {
@@ -29,4 +35,30 @@ func Success(c *gin.Context, data interface{}) {
 func Fail(c *gin.Context, reason string) {
 	logrus.Debugf("[fail] %s, %s", c.Request.RequestURI, reason)
 	ResponseJson(c, 0, reason, nil)
+}
+
+func Default_db() *xorm.Engine {
+	dsn := viper.GetString("db.dsn")
+	driver := viper.GetString("db.driver")
+	conn, err := xorm.NewEngine(driver, dsn)
+	if err != nil {
+		logrus.Panic(err)
+	}
+
+	// tbMapper := core.NewPrefixMapper(core.SnakeMapper{}, "ex_")
+	// conn.SetTableMapper(tbMapper)
+
+	if viper.GetBool("db.show_sql") {
+		conn.ShowSQL(true)
+	}
+	return conn
+}
+
+func Default_redis() *redis.Client {
+	rdc := redis.NewClient(&redis.Options{
+		Addr:     viper.GetString("redis.host"),
+		DB:       viper.GetInt("redis.db"),
+		Password: viper.GetString("redis.password"),
+	})
+	return rdc
 }

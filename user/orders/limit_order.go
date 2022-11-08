@@ -33,7 +33,7 @@ func is_allow_open_reverse_order(user_id int64, pair_id int, cur_side OrderSide,
 }
 
 func limit_order(user_id int64, trade_symbol string, side OrderSide, price, qty string) (order *TradeOrder, err error) {
-	tp, err := symbols.GetExchangeBySymbol(trade_symbol)
+	tp, err := symbols.GetPairBySymbol(trade_symbol)
 	if err != nil {
 		return nil, err
 	}

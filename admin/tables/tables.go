@@ -12,9 +12,15 @@ import "github.com/GoAdminGroup/go-admin/plugins/admin/modules/table"
 //
 // example:
 //
+// "assets" => http://localhost:9033/admin/info/assets
+// "exchange_option" => http://localhost:9033/admin/info/exchange_option
+//
 // example end
 //
 var Generators = map[string]table.Generator{
+
+	"assets":          GetAssetsTable,
+	"exchange_option": GetExchangeOptionTable,
 
 	// generators end
 }
